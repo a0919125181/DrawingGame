@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+
+    <RelativeLayout
+        android:layout_width="50dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="4dp"
+        android:layout_marginLeft="4dp"
+        android:layout_marginTop="8dp">
+
+        <LinearLayout
+            android:id="@+id/linearLayoutPlayers"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+
+            <android.support.constraint.ConstraintLayout
+                android:id="@+id/constraintLayoutPlayer1"
+                android:layout_width="50dp"
+                android:layout_height="80dp"
+                android:visibility="invisible"/>
+
+
+            <android.support.constraint.ConstraintLayout
+                android:id="@+id/constraintLayoutPlayer2"
+                android:layout_width="50dp"
+                android:layout_height="80dp"
+                android:visibility="invisible"/>
+
+
+            <android.support.constraint.ConstraintLayout
+                android:id="@+id/constraintLayoutPlayer3"
+                android:layout_width="50dp"
+                android:layout_height="80dp"
+                android:visibility="invisible"/>
+
+            <android.support.constraint.ConstraintLayout
+                android:id="@+id/constraintLayoutPlayer4"
+                android:layout_width="50dp"
+                android:layout_height="80dp"
+                android:visibility="invisible"/>
+
+
+        </LinearLayout>
+
+
+    </RelativeLayout>
+
+
+    <RelativeLayout
+        android:id="@+id/drawing_container"
+        android:layout_width="450dp"
+        android:layout_height="320dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="60dp">
+
+    </RelativeLayout>
+
+
+    <LinearLayout
+        android:layout_width="250dp"
+        android:layout_height="50dp"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginEnd="40dp"
+        android:layout_marginRight="40dp"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/textViewCountDown"
+            android:layout_width="50dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center_horizontal"
+            android:text="60"
+            android:textAlignment="center" />
+
+        <Button
+            android:id="@+id/buttonStart"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:enabled="true"
+            android:text="開始" />
+
+        <Button
+            android:id="@+id/buttonReady"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="準備" />
+
+        <Button
+            android:id="@+id/buttonLeave"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="離開" />
+
+    </LinearLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginStart="65dp"
+        android:layout_marginLeft="65dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="460dp"
+        android:layout_marginRight="460dp"
+        android:layout_marginBottom="60dp"
+        android:background="#666666">
+
+        <ScrollView
+            android:id="@+id/scrollViewChat"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="2dp"
+            android:background="@color/colorBackgroundWhite"
+            android:scrollbars="vertical">
+
+            <LinearLayout
+                android:id="@+id/linearLayoutChat"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="2dp"
+                android:orientation="vertical">
+
+            </LinearLayout>
+        </ScrollView>
+
+    </RelativeLayout>
+
+    <FrameLayout
+        android:id="@+id/process_container"
+        android:layout_width="300dp"
+        android:layout_height="200dp"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true">
+
+    </FrameLayout>
+
+    <RelativeLayout
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentBottom="true"
+        android:orientation="horizontal">
+
+        <EditText
+            android:id="@+id/editTextChat"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:maxLines="1"
+            tools:text="Say something..." />
+
+
+        <Button
+            android:id="@+id/buttonSubmit"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_toEndOf="@+id/editTextChat"
+            android:layout_toRightOf="@+id/editTextChat"
+            android:text="OK" />
+
+        <Button
+            android:id="@+id/buttonMic"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:text="Mic" />
+
+    </RelativeLayout>
+
+
+</RelativeLayout>

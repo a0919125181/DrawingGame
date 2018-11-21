@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="12dp">
+
+    <Button
+        android:id="@+id/buttonBoy"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toStartOf="@+id/textViewMid"
+        android:layout_toLeftOf="@+id/textViewMid"
+        android:background="@mipmap/boy" />
+
+    <TextView
+        android:id="@+id/textViewMid"
+        android:layout_width="40dp"
+        android:layout_height="10dp"
+        android:layout_centerInParent="true" />
+
+    <Button
+        android:id="@+id/buttonGirl"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toEndOf="@+id/textViewMid"
+        android:layout_toRightOf="@+id/textViewMid"
+        android:background="@mipmap/girl" />
+
+
+</RelativeLayout>

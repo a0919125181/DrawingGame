@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="utf-8"?><!--<ScrollView></ScrollView>-->
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ImageView
+        android:id="@+id/infoPhoto"
+        android:layout_width="90dp"
+        android:layout_height="90dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginBottom="8dp"
+        android:background="@mipmap/avatar"
+        android:enabled="false" />
+
+    <TextView
+        android:id="@+id/textViewID"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginTop="12dp"
+        android:layout_toEndOf="@+id/infoPhoto"
+        android:layout_toRightOf="@+id/infoPhoto"
+        android:text="ID: 12345"
+        android:textSize="16sp" />
+
+    <Button
+        android:id="@+id/buttonEdit"
+        android:layout_width="70dp"
+        android:layout_height="40dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginEnd="12dp"
+        android:layout_marginRight="12dp"
+        android:text="Edit" />
+
+    <Button
+        android:id="@+id/buttonDone"
+        android:layout_width="70dp"
+        android:layout_height="40dp"
+        android:layout_below="@+id/buttonEdit"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginEnd="12dp"
+        android:layout_marginRight="12dp"
+        android:text="Done"
+        android:visibility="invisible" />
+
+    <TextView
+        android:id="@+id/textViewName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/buttonEdit"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginBottom="8dp"
+        android:layout_toEndOf="@+id/infoPhoto"
+        android:layout_toRightOf="@+id/infoPhoto"
+        android:text="名字: "
+        android:textSize="20sp" />
+
+
+    <TextView
+        android:id="@+id/textViewPlayerName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@id/textViewName"
+        android:layout_toEndOf="@+id/textViewName"
+        android:layout_toRightOf="@+id/textViewName"
+        android:ems="5"
+        android:enabled="false"
+        android:maxLength="10"
+        android:singleLine="true"
+        android:text="Name"
+        android:textAlignment="center"
+        android:textSize="22sp" />
+
+    <EditText
+        android:id="@+id/editTextName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@id/textViewName"
+        android:layout_toEndOf="@+id/textViewName"
+        android:layout_toRightOf="@+id/textViewName"
+        android:ems="5"
+        android:maxLength="10"
+        android:singleLine="true"
+        android:text="Name"
+        android:textAlignment="center"
+        android:textSize="22sp"
+        android:visibility="invisible" />
+
+    <TextView
+        android:id="@+id/textViewGender"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/textViewName"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_toEndOf="@+id/infoPhoto"
+        android:text="性別: "
+        android:textSize="20sp"
+        tools:ignore="RtlCompat" />
+
+    <TextView
+        android:id="@+id/textViewPlayerGender"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@id/textViewGender"
+        android:layout_toEndOf="@+id/textViewGender"
+        android:layout_toRightOf="@+id/textViewGender"
+        android:enabled="false"
+        android:maxLength="1"
+        android:text="男"
+        android:textSize="22sp" />
+
+    <TextView
+        android:id="@+id/textViewAge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/textViewName"
+        android:layout_marginStart="45dp"
+        android:layout_marginLeft="45dp"
+        android:layout_toEndOf="@+id/textViewPlayerGender"
+        android:layout_toRightOf="@+id/textViewPlayerGender"
+        android:text="年齡: "
+        android:textSize="20sp" />
+
+    <TextView
+        android:id="@+id/textViewPlayerAge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@id/textViewAge"
+        android:layout_toEndOf="@+id/textViewAge"
+        android:layout_toRightOf="@+id/textViewAge"
+        android:enabled="false"
+        android:maxLength="3"
+        android:text="18"
+        android:textSize="22sp" />
+
+    <TextView
+        android:id="@+id/textViewIntro"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/textViewGender"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginTop="20dp"
+        android:text="自我介紹(50個字以內): " />
+
+    <TextView
+        android:id="@+id/textViewPlayerIntro"
+        android:layout_width="250dp"
+        android:layout_height="100dp"
+        android:layout_below="@+id/textViewIntro"
+        android:layout_centerInParent="true"
+        android:layout_marginStart="20dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginBottom="20dp"
+        android:enabled="false"
+        android:text="introduction"
+        android:textSize="16sp"
+        android:textStyle="bold" />
+
+
+</RelativeLayout>
+

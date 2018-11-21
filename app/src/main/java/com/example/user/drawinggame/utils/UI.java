@@ -1,0 +1,116 @@
+package com.example.user.drawinggame.utils;
+
+import android.app.Activity;
+import android.app.Dialog;
+import android.graphics.Point;
+import android.graphics.drawable.Drawable;
+import android.os.Build;
+import android.support.v4.app.Fragment;
+import android.view.Display;
+import android.view.View;
+import android.view.WindowManager;
+
+import com.example.user.drawinggame.MainActivity;
+import com.example.user.drawinggame.R;
+
+import java.io.InputStream;
+import java.net.URL;
+
+public class UI {
+
+    public static int width;
+    public static int height;
+
+    public static void getWindowSize(Display display) {
+        Point size = new Point();
+        display.getSize(size);
+        width = size.x;
+        height = size.y;
+    }
+
+
+    private static final int FLAGS = View.SYSTEM_UI_FLAG_IMMERSIVE
+//            View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+            // Set the content to appear under the system bars so that the
+            // content doesn't resize when the system bars hide and show.
+            | View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+            | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+            | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+            // Hide the nav bar and status bar
+            | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+            | View.SYSTEM_UI_FLAG_FULLSCREEN;
+
+    public static void hideSystemUI(final View decorView) {
+        // Enables regular immersive mode.
+        // For "lean back" mode, remove SYSTEM_UI_FLAG_IMMERSIVE.
+        // Or for "sticky immersive," replace it with SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            decorView.setSystemUiVisibility(FLAGS);
+        }
+    }
+
+    public static void hideSystemUI(Activity activity) {
+        // Enables regular immersive mode.
+        // For "lean back" mode, remove SYSTEM_UI_FLAG_IMMERSIVE.
+        // Or for "sticky immersive," replace it with SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+        final View decorView = activity.getWindow().getDecorView();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            decorView.setSystemUiVisibility(FLAGS);
+            decorView.setOnSystemUiVisibilityChangeListener(new View.OnSystemUiVisibilityChangeListener() {
+                @Override
+                public void onSystemUiVisibilityChange(int visibility) {
+                    if ((visibility & View.SYSTEM_UI_FLAG_FULLSCREEN) == 0) {
+                        decorView.setSystemUiVisibility(FLAGS);
+                    }
+                }
+            });
+        }
+    }
+
+    // Shows the system bars by removing all the flags
+    // except for the ones that make the content appear under the system bars.
+    public static void showSystemUI(Activity activity) {
+        View decorView = activity.getWindow().getDecorView();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            decorView.setSystemUiVisibility(
+                    View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                            | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                            | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
+        }
+    }
+
+    public static void showImmersiveModeDialog(Dialog dialog, Boolean cancel) {
+        // 全螢幕 https://stackoverflow.com/questions/22794049/how-do-i-maintain-the-immersive-mode-in-dialogs
+        dialog.getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE, WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE);
+        dialog.setCanceledOnTouchOutside(cancel);
+        dialog.show();
+        dialog.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE);
+        hideSystemUI(dialog.getWindow().getDecorView());
+
+    }
+
+
+    public static void fragmentSwitcher(Fragment fragment, Boolean back) {
+        if (back) {
+            MainActivity.fragmentManager.beginTransaction()
+                    .replace(R.id.fragment_container, fragment)
+                    .addToBackStack(null)
+                    .commit();
+        } else {
+            MainActivity.fragmentManager.beginTransaction()
+                    .replace(R.id.fragment_container, fragment)
+                    .commit();
+        }
+    }
+
+    // https://stackoverflow.com/questions/6407324/how-to-display-image-from-url-on-android
+    public static Drawable LoadImageFromWebOperations(String url) {
+        try {
+            InputStream is = (InputStream) new URL(url).getContent();
+            Drawable d = Drawable.createFromStream(is, "src name");
+            return d;
+        } catch (Exception e) {
+            return null;
+        }
+    }
+}

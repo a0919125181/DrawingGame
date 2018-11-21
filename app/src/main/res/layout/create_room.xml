@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:ols="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="300dp"
+    android:layout_height="250dp"
+    android:layout_marginBottom="16dp">
+
+    <TextView
+        android:id="@+id/textViewRoomName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/editTextRoomName"
+        android:layout_marginEnd="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_toStartOf="@+id/buttonCreate"
+        android:layout_toLeftOf="@+id/buttonCreate"
+        android:text="房間名稱: " />
+
+    <EditText
+        android:id="@+id/editTextRoomName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/editTextRoomPassword"
+        android:layout_alignStart="@+id/buttonCreate"
+        android:layout_alignLeft="@+id/buttonCreate"
+        android:layout_marginBottom="8dp"
+        android:ems="6"
+        android:inputType="textPersonName"
+        android:maxLength="10"
+        android:maxLines="1"
+        tools:text="Name" />
+
+    <TextView
+        android:id="@+id/textViewRoomPassword"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/editTextRoomPassword"
+        android:layout_alignTop="@+id/editTextRoomPassword"
+        android:layout_marginEnd="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_toStartOf="@+id/buttonCreate"
+        android:layout_toLeftOf="@+id/buttonCreate"
+        android:text="房間密碼: " />
+
+    <EditText
+        android:id="@+id/editTextRoomPassword"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/buttonCreate"
+        android:layout_alignStart="@+id/buttonCreate"
+        android:layout_alignLeft="@+id/buttonCreate"
+        android:layout_marginBottom="8dp"
+        android:ems="6"
+        android:inputType="textPassword"
+        android:maxLength="10"
+        android:maxLines="1"
+        tools:text="Name" />
+
+
+    <Button
+        android:id="@+id/buttonCreate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="16dp"
+        android:text="建立" />
+
+</RelativeLayout>
