@@ -20,10 +20,13 @@ public interface MessageDao {
     Message getMessageByID(int msg_id);
 
     @Query("SELECT * FROM messages")
-    List<Message> getAllMessage();
+    List<Message> getAllMessages();
 
     @Query("SELECT * FROM messages WHERE :sender_id = sender_id")
     List<Message> getSomeoneMSG(int sender_id);
+
+    @Query("SELECT * FROM messages WHERE :type = type")
+    List<Message> getMessagesByType(int type);
 
     @Delete
     void deleteMessage(Message message);

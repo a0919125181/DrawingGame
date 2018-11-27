@@ -7,7 +7,9 @@ import com.example.user.drawinggame.database_classes.Player;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class SearchThread extends ConnectThread{
+public class SearchThread extends ConnectThread {
+
+    public boolean isDone = false;
 
     private Player searched_player;
 
@@ -36,7 +38,7 @@ public class SearchThread extends ConnectThread{
     }
 
     @Override
-    protected synchronized void afterReceived() {
+    protected void afterReceived() {
         try {
             JSONObject object = new JSONObject(getStr_received());
             searched_player.setUserName(object.getString("userName"));
@@ -44,8 +46,10 @@ public class SearchThread extends ConnectThread{
             searched_player.setAge(object.getInt("age"));
             searched_player.setGender(object.getInt("sex"));
             searched_player.setLevel(object.getInt("lv"));
+            searched_player.setPicURL("http://140.127.74.133/drawgame/picture/" + object.getString("userPhoto"));
 
-            Log.e("name", searched_player.getUserName());
+            Log.e("searched player name", searched_player.getUserName());
+            isDone = true;
         } catch (JSONException e) {
             e.printStackTrace();
         }

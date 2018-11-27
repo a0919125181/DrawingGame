@@ -44,7 +44,7 @@
             android:layout_alignParentTop="true"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="16dp"
-            app:srcCompat="@mipmap/brush" />
+            android:src="@mipmap/brush" />
 
 
         <ImageView

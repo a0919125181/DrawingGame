@@ -1,7 +1,6 @@
 package com.example.user.drawinggame.Lobby;
 
 
-import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -9,8 +8,6 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.util.Log;
@@ -24,13 +21,15 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.user.drawinggame.Lobby.Friend.FriendFragment;
+import com.example.user.drawinggame.Lobby.Message.MessageFragment;
 import com.example.user.drawinggame.MainActivity;
 import com.example.user.drawinggame.R;
 import com.example.user.drawinggame.Room.RoomFragment;
 import com.example.user.drawinggame.connections.php.EditThread;
 import com.example.user.drawinggame.connections.TCP.EnterRoomThread;
 import com.example.user.drawinggame.connections.php.GetMsgThread;
-import com.example.user.drawinggame.connections.php.GetPictureThread;
+import com.example.user.drawinggame.connections.php.LobbyGetPictureThread;
 import com.example.user.drawinggame.database_classes.Player;
 import com.example.user.drawinggame.utils.Listeners;
 import com.example.user.drawinggame.utils.UI;
@@ -80,9 +79,17 @@ public class LobbyFragment extends Fragment implements View.OnClickListener {
     private TextView textViewPlayerAge;
     private TextView textViewPlayerIntro;
 
-    private static ImageView infoPhoto;
+    private ImageView infoPhoto;
     private File tempFile;
+    private String picURL;
 
+    public String getPicURL() {
+        return picURL;
+    }
+
+    public void setPicURL(String picURL) {
+        this.picURL = picURL;
+    }
 
     // edit intro xml
     private EditText editTextIntro;
@@ -124,6 +131,16 @@ public class LobbyFragment extends Fragment implements View.OnClickListener {
         // 右上
         imageViewPhoto = view.findViewById(R.id.imageViewPhoto);
         imageViewPhoto.setOnClickListener(imageViewPhotoListener());
+
+        new LobbyGetPictureThread(player, LobbyFragment.this).start();
+
+        try {
+            Thread.sleep(200);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        new UI.DownloadImageTask(imageViewPhoto).execute(getPicURL());
 
         textViewName = view.findViewById(R.id.textViewName);
         textViewName.setText(player.getUserName());
@@ -181,6 +198,11 @@ public class LobbyFragment extends Fragment implements View.OnClickListener {
         return view;
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        new UI.DownloadImageTask(imageViewPhoto).execute(getPicURL());
+    }
 
     private View.OnClickListener imageViewPhotoListener() {
         return new View.OnClickListener() {
@@ -192,7 +214,15 @@ public class LobbyFragment extends Fragment implements View.OnClickListener {
                 infoPhoto = (ImageView) viewShowInfo.findViewById(R.id.infoPhoto);
                 infoPhoto.setEnabled(false);
                 infoPhoto.setOnClickListener(LobbyFragment.this);
-                new GetPictureThread(player, LobbyFragment.this, infoPhoto).start();
+                new LobbyGetPictureThread(player, LobbyFragment.this).start();
+
+                try {
+                    Thread.sleep(200);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
+                new UI.DownloadImageTask(infoPhoto).execute(getPicURL());
 
                 textViewID = (TextView) viewShowInfo.findViewById(R.id.textViewID);
                 textViewID.setText("ID: " + player.getUserID());
@@ -233,7 +263,7 @@ public class LobbyFragment extends Fragment implements View.OnClickListener {
                         .create();
 
 
-                Log.e("show","dialog");
+                Log.e("show", "dialog");
                 UI.showImmersiveModeDialog(alertDialogShowInfo, true);
             }
         };
@@ -358,7 +388,7 @@ public class LobbyFragment extends Fragment implements View.OnClickListener {
                     }
                 });
 
-                Log.e("show","dialog");
+                Log.e("show", "dialog");
                 UI.showImmersiveModeDialog(alertDialogEditIntro, true);
                 break;
 

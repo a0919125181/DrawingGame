@@ -84,4 +84,18 @@ public class Friend {
     public void setPicURL(String picURL) {
         this.picURL = picURL;
     }
+
+    public Friend() {
+
+    }
+
+    public Friend(Player player) {
+        this.userID = player.getUserID();
+        this.userName = player.getUserName();
+        this.intro = player.getIntro();
+        this.age = player.getAge();
+        this.gender = player.getGender();
+        this.level = player.getLevel();
+        this.picURL = player.getPicURL();
+    }
 }

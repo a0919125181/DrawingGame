@@ -52,7 +52,7 @@ public class Client_FunctionCode {
     }
 
     @SuppressLint("DefaultLocale")
-    private void sendFunction() {
+    private synchronized void sendFunction() {
         switch (functionCode) {
             case "020": // 取消準備
                 new Thread(new Runnable() {

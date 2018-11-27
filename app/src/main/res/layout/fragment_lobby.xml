@@ -86,7 +86,7 @@
             android:layout_marginLeft="70dp"
             android:layout_toEndOf="@+id/textViewTopMid"
             android:layout_toRightOf="@+id/textViewTopMid"
-            android:background="@mipmap/avatar"
+            android:src="@mipmap/avatar"
             tools:text="Photo" />
 
         <TextView

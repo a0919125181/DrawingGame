@@ -4,20 +4,19 @@ import android.os.Message;
 import android.support.constraint.ConstraintLayout;
 import android.util.Log;
 import android.view.View;
+import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.Toast;
 
-import com.example.user.drawinggame.R;
-import com.example.user.drawinggame.Room.Drawing.DrawFragment;
-import com.example.user.drawinggame.Room.Drawing.GuessFragment;
 import com.example.user.drawinggame.Room.Drawing.GuessView;
-import com.example.user.drawinggame.connections.php.ConnectThread;
-import com.example.user.drawinggame.connections.php.SearchThread;
 import com.example.user.drawinggame.connections.TCP.Util;
+import com.example.user.drawinggame.connections.php.SearchThread;
 import com.example.user.drawinggame.database_classes.Player;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 
 
 public class Server_FunctionCode {
@@ -29,6 +28,13 @@ public class Server_FunctionCode {
 
     private byte[] ID_array;
     private String ID;
+
+
+    private String question;
+
+    public String getQuestion() {
+        return question;
+    }
 
     public Server_FunctionCode(String functionCode, InputStream receiveFromServer, RoomFragment fragment) {
         this.functionCode = functionCode;
@@ -68,12 +74,23 @@ public class Server_FunctionCode {
             Log.i(ID, "準備");
     }
 
+    // 03
     private void playerSequence() {
         try {
             ID_array = new byte[15];
             receiveFromServer.read(ID_array, 0, 15); // 接收ID
             ID = new String(ID_array);
             Log.i("順序", ID);
+
+            int firstID = Integer.parseInt(ID.substring(0, 2));
+            int secondID = Integer.parseInt(ID.substring(3, 5));
+            int thirdID = Integer.parseInt(ID.substring(6, 8));
+            int fourthID = Integer.parseInt(ID.substring(9, 11));
+            int fifthID = Integer.parseInt(ID.substring(12, 14));
+
+            // 排順序
+            List<Player> playerList = fragment.playerSequenceList;
+            playerList.add(new Player(firstID));
 
             Message msg = new Message();
             msg.what = 3;
@@ -84,7 +101,9 @@ public class Server_FunctionCode {
         }
     }
 
-    private void playerTurn() {
+
+    // 功能碼04
+    private void readQuestion() {
         ID_array = new byte[3];
         try {
             receiveFromServer.read(ID_array, 0, 3); // 接收ID
@@ -92,19 +111,15 @@ public class Server_FunctionCode {
             e.printStackTrace();
         }
         ID = new String(ID_array);
-        Log.e("換", ID);
+        Log.e(ID, "看題目");
 
-
-        if (ID.equals(String.valueOf(fragment.player.getUserID()))) {
+        if (Integer.parseInt(ID) == fragment.player.getUserID()) {
             Message msg = new Message();
-            msg.what = 1;
+            msg.what = 5;
             fragment.handler_room.sendMessage(msg);
         } else {
-            Message msg = new Message();
-            msg.what = 2;
-            fragment.handler_room.sendMessage(msg);
-        }
 
+        }
     }
 
     private void painting() {
@@ -162,7 +177,7 @@ public class Server_FunctionCode {
         new SearchThread(player_enter).start();
 
         try {
-            Thread.sleep(250);
+            Thread.sleep(200);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -187,15 +202,42 @@ public class Server_FunctionCode {
         });
     }
 
-    private void getQuestion() {
+
+    private void receiveQuestion() {
         byte[] question_array = new byte[6];
         try {
             receiveFromServer.read(question_array, 0, 6); // 接收題目
         } catch (IOException e) {
             e.printStackTrace();
         }
-        String question = new String(question_array);
+        question = new String(question_array);
         Log.i("收到題目", question);
+    }
+
+
+    // 08
+    private void playerTurn() {
+        ID_array = new byte[3];
+        try {
+            receiveFromServer.read(ID_array, 0, 3); // 接收ID
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        ID = new String(ID_array);
+        Log.e("換", ID);
+
+
+        if (ID.equals(String.valueOf(fragment.player.getUserID()))) {
+            Message msg = new Message();
+            msg.what = 1;
+            fragment.handler_room.sendMessage(msg);
+        } else {
+            Message msg = new Message();
+            msg.what = 2;
+            fragment.handler_room.sendMessage(msg);
+        }
+
+
     }
 
     private void playerLeave() {
@@ -208,19 +250,25 @@ public class Server_FunctionCode {
         ID = new String(ID_array);
         Log.e(ID, "斷線");
 
-        final PlayerFragment pf = new PlayerFragment(new Player(ID));
-        fragment.playerFragmentList.remove(pf);
+        final int leaveID = Integer.parseInt(ID);
 
+        final List<PlayerFragment> pfl = fragment.playerFragmentList;
+        final List<ConstraintLayout> layoutList = fragment.playerLayoutList;
 
         // UI
         fragment.getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                for (int i = 0; i < fragment.playerFragmentList.size(); i++) {
-                    ConstraintLayout layout = fragment.playerLayoutList.get(i);
-                    if (layout.getVisibility() == View.VISIBLE) {
+
+                for (int i = 0; i < layoutList.size(); i++) {
+                    ConstraintLayout layout = layoutList.get(i);
+                    if (pfl.get(i).getPlayer().getUserID() == leaveID) {
+                        PlayerFragment pf = pfl.get(i);
+                        pfl.remove(pf);
+
                         layout.setVisibility(View.INVISIBLE);
                         fragment.fragmentManagerRoom.beginTransaction().remove(pf).commit();
+
                         break;
                     }
                 }
@@ -249,6 +297,14 @@ public class Server_FunctionCode {
                     tv.setText(tv.getText() + say);
                     fragment.linearLayoutChat.addView(tv);
 
+                    final ScrollView sv = fragment.getScrollViewChat();
+                    sv.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            sv.fullScroll(ScrollView.FOCUS_DOWN);
+                        }
+                    });
+
                 }
             });
 
@@ -258,6 +314,22 @@ public class Server_FunctionCode {
         }
     }
 
+    private void guess() {
+        Log.e("guess", "answer ");
+        byte[] guess_array = new byte[3];
+        try {
+            receiveFromServer.read(guess_array, 0, 3); // 訊息bytes 大小
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    private void endGame() {
+        Message msg = new Message();
+        msg.what = 4;
+        fragment.handler_room.sendMessage(msg);
+    }
 
     private void getFunction() {
         switch (functionCode) {
@@ -271,7 +343,7 @@ public class Server_FunctionCode {
                 playerSequence();
                 break;
             case "04":
-                playerTurn();
+                readQuestion();
                 break;
             case "05":
                 painting();
@@ -280,7 +352,10 @@ public class Server_FunctionCode {
                 playerEnter();
                 break;
             case "07":
-                getQuestion();
+                receiveQuestion();
+                break;
+            case "08":
+                playerTurn();
                 break;
             case "09":
                 playerLeave();
@@ -288,6 +363,14 @@ public class Server_FunctionCode {
             case "10":
                 chatting();
                 break;
+            case "11":
+                guess();
+                break;
+            case "20":
+                endGame();
+                break;
         }
     }
+
+
 }

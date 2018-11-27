@@ -3,28 +3,27 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#C87630"
-    tools:context=".Lobby.Message.MessageFragment">
-
+    android:background="#1A1AD7"
+    tools:context=".Lobby.Friend.FriendInviteFragment">
 
     <!--https://ppt.cc/f3WMWx-->
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_margin="5dp"
+        android:layout_margin="4dp"
         android:background="@color/colorBackgroundWhite"
         android:fillViewport="true"
         android:scrollbars="vertical">
 
         <LinearLayout
-            android:id="@+id/linearLayoutMessage"
+            android:id="@+id/linearLayoutFriend"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
 
             <ListView
-                android:id="@+id/listViewMessage"
+                android:id="@+id/listViewFriend"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 

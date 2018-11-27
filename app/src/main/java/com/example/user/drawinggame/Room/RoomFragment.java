@@ -20,6 +20,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.example.user.drawinggame.Lobby.LobbyFragment;
@@ -40,6 +41,7 @@ import com.example.user.drawinggame.utils.UI;
 import java.io.IOException;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.LinkedList;
 
 
 /**
@@ -59,6 +61,12 @@ public class RoomFragment extends Fragment implements View.OnClickListener {
 
     // chatting area commands
     LinearLayout linearLayoutChat;
+    private ScrollView scrollViewChat;
+
+    public ScrollView getScrollViewChat() {
+        return scrollViewChat;
+    }
+
     private EditText editTextChat;
 
     // game controllers
@@ -85,11 +93,18 @@ public class RoomFragment extends Fragment implements View.OnClickListener {
 
     // players
     ArrayList<PlayerFragment> playerFragmentList = new ArrayList<>();
+    String playerLeaveID;
+    LinkedList<Player> playerSequenceList = new LinkedList<>();
+
 
     ProcessFragment processFragment = new ProcessFragment();
 
 
-    TextView textViewChat;
+    private TextView textViewChat;
+
+    public TextView getTextViewChat() {
+        return textViewChat;
+    }
 
     @SuppressLint("HandlerLeak")
     public Handler handler_room = new Handler() {
@@ -128,9 +143,48 @@ public class RoomFragment extends Fragment implements View.OnClickListener {
                     break;
 
                 case 4:
+                    fragmentManagerRoom
+                            .beginTransaction()
+                            .replace(R.id.drawing_container, new FingerDrawFragment())
+                            .commit();
 
+                    buttonReady.setText("準備");
                     break;
 
+                case 5:
+                    textViewChat = new TextView(getContext());
+                    textViewChat.setText("題目: " + conn_server_tcp.sfc.getQuestion());
+                    textViewChat.setTextColor(Color.BLUE);
+                    linearLayoutChat.addView(textViewChat);
+
+                    scrollViewChat.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            scrollViewChat.fullScroll(ScrollView.FOCUS_DOWN);
+                        }
+                    });
+                    break;
+
+                case 6:
+                    for (PlayerFragment pf : playerFragmentList) {
+                    }
+
+                    textViewChat = new TextView(getContext());
+                    textViewChat.setText("");
+                    textViewChat.setTextColor(Color.BLUE);
+                    linearLayoutChat.addView(textViewChat);
+
+                    scrollViewChat.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            scrollViewChat.fullScroll(ScrollView.FOCUS_DOWN);
+                        }
+                    });
+                    break;
+                case 7:
+
+
+                    break;
             }
         }
     };
@@ -153,10 +207,11 @@ public class RoomFragment extends Fragment implements View.OnClickListener {
         fragmentManagerRoom.beginTransaction().replace(R.id.drawing_container, new FingerDrawFragment()).commit();
 
         player = MainActivity.appDatabase.playerDao().getPlayerBySerialID(Build.SERIAL);
-
+//        playerFragmentList.add(new PlayerFragment(player));
 
         // chatting area
         linearLayoutChat = (LinearLayout) view.findViewById(R.id.linearLayoutChat);
+        scrollViewChat = (ScrollView) view.findViewById(R.id.scrollViewChat);
         editTextChat = (EditText) view.findViewById(R.id.editTextChat);
 
         Button buttonSubmit = (Button) view.findViewById(R.id.buttonSubmit);
@@ -209,6 +264,13 @@ public class RoomFragment extends Fragment implements View.OnClickListener {
                     linearLayoutChat.addView(textViewChat);
                     editTextChat.setText("");
 
+                    scrollViewChat.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            scrollViewChat.fullScroll(ScrollView.FOCUS_DOWN);
+                        }
+                    });
+
                     String say = String.valueOf(textViewChat.getText());
 
                     new Client_FunctionCode("10", roomSocket, say);
@@ -232,18 +294,21 @@ public class RoomFragment extends Fragment implements View.OnClickListener {
                 break;
 
             case R.id.buttonStart:
-                processFragmentSwitcher(processFragment);
                 break;
 
             case R.id.buttonReady:
                 if (buttonReady.getText().equals("準備")) {
                     new Client_FunctionCode("021", roomSocket);
                     buttonReady.setText("取消");
+                    new Client_FunctionCode("10", roomSocket, player.getUserName() + "已準備");
+
                 } else if (buttonReady.getText().equals("取消")) {
                     new Client_FunctionCode("020", roomSocket);
                     buttonReady.setText("準備");
+                    new Client_FunctionCode("10", roomSocket, player.getUserName() + "取消準備");
                 }
                 break;
+
             case R.id.buttonLeave:
                 AlertDialog alertDialog = new AlertDialog.Builder(getContext())
                         .setTitle("離開房間")

@@ -42,7 +42,7 @@ public class GetPictureThread extends ConnectThread {
     }
 
     @Override
-    protected synchronized void afterReceived() {
+    protected void afterReceived() {
         // 接收處理
         String picURL = "http://140.127.74.133" + getStr_received();
         imageView.setImageDrawable(UI.LoadImageFromWebOperations(picURL));

@@ -8,11 +8,14 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.user.drawinggame.R;
+import com.example.user.drawinggame.connections.php.SendMsgThread;
 import com.example.user.drawinggame.database_classes.Player;
+import com.example.user.drawinggame.utils.UI;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -23,6 +26,14 @@ public class PlayerFragment extends Fragment {
     private TextView textViewPlayerName;
 
     private Player player;
+
+    public Player getPlayer() {
+        return player;
+    }
+
+    public void setPlayer(Player player) {
+        this.player = player;
+    }
 
     public PlayerFragment() {
         // Required empty public constructor
@@ -40,37 +51,41 @@ public class PlayerFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_player, container, false);
 
         imageViewPlayer = (ImageView) view.findViewById(R.id.imageViewPlayer);
+        new UI.DownloadImageTask(imageViewPlayer).execute(player.getPicURL());
+
         textViewPlayerName = (TextView) view.findViewById(R.id.textViewPlayerName);
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                while (!textViewPlayerName.getText().equals(player.getUserName())) {
-                    textViewPlayerName.setText(player.getUserName());
-                }
-            }
-        }).start();
+        textViewPlayerName.setText(player.getUserName());
+
 
         imageViewPlayer.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 View viewFriendInfo = LayoutInflater.from(getActivity()).inflate(R.layout.show_friend_info, null);
 
+                ImageView imageViewFriend = viewFriendInfo.findViewById(R.id.imageViewFriend);
+                new UI.DownloadImageTask(imageViewFriend).execute(player.getPicURL());
+
+                Button buttonAddFriend = viewFriendInfo.findViewById(R.id.buttonAddFriend);
+                buttonAddFriend.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        new SendMsgThread(player, "好友++", player.getUserID(), 1).start();
+
+                    }
+                });
+
                 TextView textViewID = viewFriendInfo.findViewById(R.id.textViewID);
-                textViewID.setText("ID: " + String.valueOf(player.getUserID()));
-
                 TextView textViewName = viewFriendInfo.findViewById(R.id.textViewName);
-                textViewName.setText("名字: " + player.getUserName());
-
                 TextView textViewIntro = viewFriendInfo.findViewById(R.id.textViewIntro);
-                textViewIntro.setText("自我介紹: " + player.getIntro());
-
                 TextView textViewAge = viewFriendInfo.findViewById(R.id.textViewAge);
-                textViewAge.setText("年紀: " + String.valueOf(player.getAge()));
-
                 TextView textViewGender = viewFriendInfo.findViewById(R.id.textViewGender);
-                textViewGender.setText(player.getGender() == 1 ? "性別: 男" : "性別: 女");
-
                 TextView textViewLevel = viewFriendInfo.findViewById(R.id.textViewLevel);
+
+                textViewID.setText("ID: " + String.valueOf(player.getUserID()));
+                textViewName.setText("名字: " + player.getUserName());
+                textViewIntro.setText("自我介紹: " + player.getIntro());
+                textViewAge.setText("年紀: " + String.valueOf(player.getAge()));
+                textViewGender.setText(player.getGender() == 1 ? "性別: 男" : "性別: 女");
                 textViewLevel.setText("等級: " + String.valueOf(player.getLevel()));
 
                 new AlertDialog.Builder(getContext())

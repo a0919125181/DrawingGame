@@ -76,7 +76,7 @@ public abstract class ConnectThread extends Thread {
                 }
                 in.close();
 
-                Log.e(phpFileName + " get from php", sb.toString());
+//                Log.e(phpFileName + " get from php", sb.toString());
                 str_received = sb.toString();
                 // 接收處理
                 afterReceived();

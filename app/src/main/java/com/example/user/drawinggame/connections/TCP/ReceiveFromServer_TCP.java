@@ -19,6 +19,8 @@ public class ReceiveFromServer_TCP extends Thread {
     private RoomFragment fragment;
     private String receivedCode;
 
+    public Server_FunctionCode sfc;
+
     public boolean exit = true;
 
     public String getReceivedCode() {
@@ -40,7 +42,7 @@ public class ReceiveFromServer_TCP extends Thread {
                 receiveFromServer.read(functionCode, 0, 2); // receive function code
                 receivedCode = new String(functionCode);
                 Log.i("接收功能代碼", receivedCode);
-                new Server_FunctionCode(receivedCode, receiveFromServer, fragment); // 啟動對應function
+                sfc = new Server_FunctionCode(receivedCode, receiveFromServer, fragment); // 啟動對應function
             } catch (SocketException e) {
                 UI.fragmentSwitcher(new LobbyFragment(), false);
                 e.printStackTrace();
