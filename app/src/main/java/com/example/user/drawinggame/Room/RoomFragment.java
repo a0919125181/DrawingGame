@@ -14,6 +14,7 @@ import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -26,6 +27,8 @@ import android.widget.TextView;
 import com.example.user.drawinggame.Lobby.LobbyFragment;
 import com.example.user.drawinggame.MainActivity;
 import com.example.user.drawinggame.R;
+import com.example.user.drawinggame.Room.Audio.Audio;
+import com.example.user.drawinggame.Room.Audio.AudioConnect;
 import com.example.user.drawinggame.Room.Audio.AudioRecordRecord;
 import com.example.user.drawinggame.Room.Audio.AudioTrackPlay;
 import com.example.user.drawinggame.Room.Audio.AudioTrackReceive;
@@ -76,10 +79,12 @@ public class RoomFragment extends Fragment implements View.OnClickListener {
     private Button buttonLeave;
 
     //Audio
+    Audio audio;
     AudioRecordRecord arr;
     AudioTrackReceive atr;
     AudioTrack track;
     private Button buttonMic;
+    boolean flag = true;
 
     RelativeLayout drawing_container;
     GuessFragment guessFragment;
@@ -244,8 +249,47 @@ public class RoomFragment extends Fragment implements View.OnClickListener {
 
 
         // Audio
+        AudioConnect ac = new AudioConnect(VoiceCallPort_UDP, String.valueOf(player.getUserID()));
+        audio = ac.getAudio();
+
+        //AudioTrack設置
+        new AudioTrackSet(RoomFragment.this);
+
+        //播放語音 放到另外一個thread
+        AudioTrackPlay atp = new AudioTrackPlay(track);
+        atp.start();
+
+        //接收語音
+        atr = new AudioTrackReceive(audio.getDatagramSocket(), track, atp);
+        atr.start();
+
+
+
         buttonMic = (Button) view.findViewById(R.id.buttonMic);
-        buttonMic.setOnClickListener(this);
+        buttonMic.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if(event.getAction() == MotionEvent.ACTION_DOWN){
+                    if (flag) {
+                        // 錄製
+                        arr = new AudioRecordRecord(audio);
+                        arr.start();
+                        flag = false;
+                    } else {
+                        // notify
+                        arr.restartRecording();
+                    }
+                }else if(event.getAction() == MotionEvent.ACTION_UP){
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            arr.stopRecording();
+                        }
+                    }).start();
+                }
+                return true;
+            }
+        });
 
 
         return view;
@@ -276,22 +320,22 @@ public class RoomFragment extends Fragment implements View.OnClickListener {
                     new Client_FunctionCode("10", roomSocket, say);
                 }
                 break;
-            case R.id.buttonMic:
-                // 建立語音連線
-                arr = new AudioRecordRecord(VoiceCallPort_UDP, player.getUserID());
-                arr.start();
-
-                //AudioTrack設置
-                new AudioTrackSet(RoomFragment.this);
-
-                //播放語音 放到另外一個thread
-                AudioTrackPlay atp = new AudioTrackPlay(track);
-                atp.start();
-
-                //接收語音
-                atr = new AudioTrackReceive(arr.getSendSocket(), track, atp);
-                atr.start();
-                break;
+//            case R.id.buttonMic:
+//                // 建立語音連線
+//                arr = new AudioRecordRecord(VoiceCallPort_UDP, player.getUserID());
+//                arr.start();
+//
+//                //AudioTrack設置
+//                new AudioTrackSet(RoomFragment.this);
+//
+//                //播放語音 放到另外一個thread
+//                AudioTrackPlay atp = new AudioTrackPlay(track);
+//                atp.start();
+//
+//                //接收語音
+//                atr = new AudioTrackReceive(arr.getSendSocket(), track, atp);
+//                atr.start();
+//                break;
 
             case R.id.buttonStart:
                 break;

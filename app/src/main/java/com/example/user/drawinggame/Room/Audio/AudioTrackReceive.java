@@ -29,8 +29,6 @@ public class AudioTrackReceive extends Thread {
                 socket.receive(packet); //receive
 
                 atp.putVoice(buffer);
-
-
             } catch (IOException e) {
                 e.printStackTrace();
             }
