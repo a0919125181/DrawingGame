@@ -113,20 +113,27 @@ public class DrawView extends View {
         int width = getWidth();
         int height = getHeight();
 
-        new Client_FunctionCode("05", roomSocket, userID,
-                width + " " + height + " " + x + " " + y + " " + String.format("%02d", penSize) + " " + mPaint.getColor());
+        String state = "U";
 
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
+                state = "D";
                 touch_start(x, y);
                 break;
             case MotionEvent.ACTION_MOVE:
+                state = "M";
                 touch_move(x, y);
                 break;
             case MotionEvent.ACTION_UP:
+                state = "U";
                 touch_up();
                 break;
         }
+
+        new Client_FunctionCode("05", roomSocket, userID,
+                width + " " + height + " " + x + " " + y + " " + String.format("%02d", penSize) + " " + mPaint.getColor() + " " + state);
+
+
         invalidate();
         return true;
     }

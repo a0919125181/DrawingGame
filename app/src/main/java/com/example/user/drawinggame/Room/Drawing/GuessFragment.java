@@ -18,7 +18,11 @@ public class GuessFragment extends Fragment {
 
     private FrameLayout frameLayoutGuess;
     private GuessView guessView;
+    private GuessPath guessPath;
 
+    public GuessPath getGuessPath() {
+        return guessPath;
+    }
 
     public GuessFragment() {
         // Required empty public constructor
@@ -33,6 +37,7 @@ public class GuessFragment extends Fragment {
 
         frameLayoutGuess = view.findViewById(R.id.frameLayoutGuess);
         guessView = new GuessView(frameLayoutGuess.getContext());
+        guessPath = new GuessPath();
 
         frameLayoutGuess.addView(guessView);
 

@@ -47,26 +47,29 @@ public class GetMsgThread extends ConnectThread {
 
         String[] msg_arr = msg.split("##&#!");
 
-        for (String s : msg_arr) {
-            try {
-                JSONObject msg_object = new JSONObject(s);
-                Message message = new Message(
-                        msg_object.getInt("messageID"),
-                        msg_object.getInt("senderID"),
-                        msg_object.getString("userName"),
-                        player.getUserID(),
-                        player.getUserName(),
-                        msg_object.getString("text"),
-                        new Date().toString(),
-                        0,
-                        msg_object.getInt("style"));
-                MainActivity.appDatabase.messageDao().addMessage(message);
-                MainActivity.appDatabase.messageDao().updateMessage(message);
+        if (!msg_arr[0].equals("")){
+            for (String s : msg_arr) {
+                try {
+                    JSONObject msg_object = new JSONObject(s);
+                    Message message = new Message(
+                            msg_object.getInt("messageID"),
+                            msg_object.getInt("senderID"),
+                            msg_object.getString("userName"),
+                            player.getUserID(),
+                            player.getUserName(),
+                            msg_object.getString("text"),
+                            new Date().toString(),
+                            0,
+                            msg_object.getInt("style"));
+                    MainActivity.appDatabase.messageDao().addMessage(message);
+                    MainActivity.appDatabase.messageDao().updateMessage(message);
 
-            } catch (JSONException e) {
-                e.printStackTrace();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             }
         }
+
 
 
     }

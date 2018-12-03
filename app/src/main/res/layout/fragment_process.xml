@@ -3,8 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Room.ProcessFragment"
-    android:background="#7684AA">
+    android:background="#7684AA"
+    tools:context=".Room.ProcessFragment">
 
     <TextView
         android:id="@+id/textViewTitle"
@@ -12,7 +12,8 @@
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
-        android:text="遊戲開始"
+        android:layout_margin="8dp"
+        android:text="TITLE"
         android:textSize="40dp" />
 
 </RelativeLayout>

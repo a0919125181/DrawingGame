@@ -1,5 +1,6 @@
 package com.example.user.drawinggame.Room;
 
+import android.graphics.Color;
 import android.os.Message;
 import android.support.constraint.ConstraintLayout;
 import android.util.Log;
@@ -15,6 +16,7 @@ import com.example.user.drawinggame.database_classes.Player;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -29,12 +31,6 @@ public class Server_FunctionCode {
     private byte[] ID_array;
     private String ID;
 
-
-    private String question;
-
-    public String getQuestion() {
-        return question;
-    }
 
     public Server_FunctionCode(String functionCode, InputStream receiveFromServer, RoomFragment fragment) {
         this.functionCode = functionCode;
@@ -82,15 +78,22 @@ public class Server_FunctionCode {
             ID = new String(ID_array);
             Log.i("順序", ID);
 
-            int firstID = Integer.parseInt(ID.substring(0, 2));
-            int secondID = Integer.parseInt(ID.substring(3, 5));
-            int thirdID = Integer.parseInt(ID.substring(6, 8));
-            int fourthID = Integer.parseInt(ID.substring(9, 11));
-            int fifthID = Integer.parseInt(ID.substring(12, 14));
+            int firstID = Integer.parseInt(ID.substring(0, 3));
+            int secondID = Integer.parseInt(ID.substring(3, 6));
+            int thirdID = Integer.parseInt(ID.substring(6, 9));
+            int fourthID = Integer.parseInt(ID.substring(9, 12));
+            int fifthID = Integer.parseInt(ID.substring(12, 15));
+
 
             // 排順序
-            List<Player> playerList = fragment.playerSequenceList;
-            playerList.add(new Player(firstID));
+            List<PlayerFragment> playerFragmentList = fragment.playerFragmentList;
+            List<Player> playerSequenceList = fragment.playerSequenceList;
+
+            addSequenceList(playerFragmentList, playerSequenceList, firstID);
+            addSequenceList(playerFragmentList, playerSequenceList, secondID);
+            addSequenceList(playerFragmentList, playerSequenceList, thirdID);
+            addSequenceList(playerFragmentList, playerSequenceList, fourthID);
+            addSequenceList(playerFragmentList, playerSequenceList, fifthID);
 
             Message msg = new Message();
             msg.what = 3;
@@ -98,6 +101,19 @@ public class Server_FunctionCode {
 
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    private void addSequenceList(List<PlayerFragment> pfl, List<Player> psl, int id) {
+        for (PlayerFragment pf : pfl) {
+            if (id == 0) {
+                break;
+            }
+            if (pf.getPlayer().getUserID() == id) {
+                psl.add(pf.getPlayer());
+            } else if (fragment.player.getUserID() == id) {
+                psl.add(fragment.player);
+            }
         }
     }
 
@@ -113,12 +129,33 @@ public class Server_FunctionCode {
         ID = new String(ID_array);
         Log.e(ID, "看題目");
 
-        if (Integer.parseInt(ID) == fragment.player.getUserID()) {
+
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+
+        final int id = Integer.parseInt(ID);
+        if (id == fragment.player.getUserID()) {
             Message msg = new Message();
             msg.what = 5;
             fragment.handler_room.sendMessage(msg);
         } else {
-
+            fragment.getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    for (PlayerFragment pf : fragment.playerFragmentList) {
+                        if (pf.getPlayer().getUserID() == id) {
+                            fragment.processFragment.setTitle(pf.getPlayer().getUserName() + " 看題目");
+                            Message msg = new Message();
+                            msg.what = 7;
+                            fragment.handler_room.sendMessage(msg);
+                        }
+                    }
+                }
+            });
         }
     }
 
@@ -130,6 +167,7 @@ public class Server_FunctionCode {
         byte[] drawPointY_array = new byte[4];
         byte[] thickThin_array = new byte[2];
         byte[] color_array = new byte[1];
+        byte[] state_array = new byte[1];
 
         try {
             receiveFromServer.read(ID_array, 0, 3);             // 接收ID
@@ -138,7 +176,8 @@ public class Server_FunctionCode {
             receiveFromServer.read(drawPointX_array, 0, 4);     // 接收X座標
             receiveFromServer.read(drawPointY_array, 0, 4);     // 接收Y座標
             receiveFromServer.read(thickThin_array, 0, 2);      // 接收粗細
-            receiveFromServer.read(color_array, 0, 1);         // 接收畫筆顏色
+            receiveFromServer.read(color_array, 0, 1);          // 接收畫筆顏色
+            receiveFromServer.read(state_array, 0, 1);          // 接收state Down Move Up
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -150,15 +189,22 @@ public class Server_FunctionCode {
         String drawPointY = new String(drawPointY_array);
         String thickThin = new String(thickThin_array);
         String color = new String(color_array);
+        String state = new String(state_array);
 
         Log.i("對方View寬高", screenWidth + " , " + screenHeight);
         Log.i("接收座標", drawPointX + " , " + drawPointY + " 粗細 " + thickThin + " 畫筆顏色 " + color);
+        Log.i("狀態",state);
 
-        //
         GuessView gv = fragment.guessFragment.getGuessView();
-
         gv.convertSize(screenWidth, screenHeight);
-        gv.setPathPen(drawPointX, drawPointY, thickThin, color);
+        if(state.equals("D")){
+            fragment.guessFragment.getGuessPath().setPast(drawPointX, drawPointY);
+        }else if(state.equals("M")){
+            gv.setPathPen(fragment.guessFragment.getGuessPath().getPastX(), fragment.guessFragment.getGuessPath().getPastY(), drawPointX, drawPointY, thickThin, color);
+            fragment.guessFragment.getGuessPath().setPast(drawPointX, drawPointY) ;
+        }else{
+            gv.setPathPen(fragment.guessFragment.getGuessPath().getPastX(), fragment.guessFragment.getGuessPath().getPastY(), drawPointX, drawPointY, thickThin, color);
+        }
     }
 
 
@@ -185,19 +231,35 @@ public class Server_FunctionCode {
         Log.e("player enter", "name: " + player_enter.getUserName());
         final PlayerFragment pf = new PlayerFragment(player_enter);
         fragment.playerFragmentList.add(pf);
+//        final String enterName = pf.getPlayer().getUserName();
 
         // UI
         fragment.getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
+
                 for (int i = 0; i < fragment.playerFragmentList.size(); i++) {
                     ConstraintLayout layout = fragment.playerLayoutList.get(i);
                     if (layout.getVisibility() == View.INVISIBLE) {
                         layout.setVisibility(View.VISIBLE);
                         fragment.fragmentManagerRoom.beginTransaction().replace(layout.getId(), pf).commit();
+
                         break;
                     }
                 }
+
+//                TextView textViewChat = new TextView(fragment.getContext());
+//                textViewChat.setText(enterName + " 進入房間");
+//                textViewChat.setTextColor(Color.MAGENTA);
+//                fragment.linearLayoutChat.addView(textViewChat);
+//
+//                final ScrollView scrollViewChat = fragment.getScrollViewChat();
+//                scrollViewChat.post(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        scrollViewChat.fullScroll(ScrollView.FOCUS_DOWN);
+//                    }
+//                });
             }
         });
     }
@@ -210,8 +272,10 @@ public class Server_FunctionCode {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        question = new String(question_array);
+        String question = new String(question_array);
         Log.i("收到題目", question);
+
+        fragment.setQuestion(question);
     }
 
 
@@ -226,7 +290,7 @@ public class Server_FunctionCode {
         ID = new String(ID_array);
         Log.e("換", ID);
 
-
+        // 切換
         if (ID.equals(String.valueOf(fragment.player.getUserID()))) {
             Message msg = new Message();
             msg.what = 1;
@@ -259,11 +323,13 @@ public class Server_FunctionCode {
         fragment.getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
+                String leaveName = "有人";
 
                 for (int i = 0; i < layoutList.size(); i++) {
                     ConstraintLayout layout = layoutList.get(i);
                     if (pfl.get(i).getPlayer().getUserID() == leaveID) {
                         PlayerFragment pf = pfl.get(i);
+                        leaveName = pf.getPlayer().getUserName();
                         pfl.remove(pf);
 
                         layout.setVisibility(View.INVISIBLE);
@@ -272,6 +338,19 @@ public class Server_FunctionCode {
                         break;
                     }
                 }
+
+                TextView textViewChat = new TextView(fragment.getContext());
+                textViewChat.setText(leaveName + " 離開房間");
+                textViewChat.setTextColor(Color.MAGENTA);
+                fragment.linearLayoutChat.addView(textViewChat);
+
+                final ScrollView scrollViewChat = fragment.getScrollViewChat();
+                scrollViewChat.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        scrollViewChat.fullScroll(ScrollView.FOCUS_DOWN);
+                    }
+                });
             }
         });
 
@@ -315,7 +394,7 @@ public class Server_FunctionCode {
     }
 
     private void guess() {
-        Log.e("guess", "answer ");
+        Log.e("guess", "answer");
         byte[] guess_array = new byte[3];
         try {
             receiveFromServer.read(guess_array, 0, 3); // 訊息bytes 大小
@@ -323,7 +402,13 @@ public class Server_FunctionCode {
             e.printStackTrace();
         }
 
+
+        Message msg = new Message();
+        msg.what = 6;
+        fragment.handler_room.sendMessage(msg);
+
     }
+
 
     private void endGame() {
         Message msg = new Message();
@@ -371,6 +456,7 @@ public class Server_FunctionCode {
                 break;
         }
     }
+
 
 
 }

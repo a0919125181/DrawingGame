@@ -24,6 +24,7 @@ public class Client_FunctionCode {
     private String y;
     private int penSize;
     private int penColor;
+    private String state;
 
     private String say;
 
@@ -82,11 +83,6 @@ public class Client_FunctionCode {
                 }).start();
                 break;
 
-            case "03":
-                break;
-            case "04":
-                break;
-
             case "05":
                 String[] tempData = dataStr.split(" ");
                 userID_temp = userID;
@@ -106,15 +102,15 @@ public class Client_FunctionCode {
 
                 } else {
                     penColor = 0;
-
                 }
+                state = tempData[6];
 
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
                         try {
                             OutputStream out = roomSocket.getOutputStream();
-                            out.write(("05" + userID_temp + width + height + x + y + penSize + penColor).getBytes());
+                            out.write(("05" + userID_temp + width + height + x + y + penSize + penColor + state).getBytes());
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
@@ -157,7 +153,6 @@ public class Client_FunctionCode {
                     }
                 }).start();
                 break;
-
 
         }
     }

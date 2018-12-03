@@ -181,13 +181,13 @@
             android:layout_toRightOf="@+id/editTextChat"
             android:text="OK" />
 
-        <Button
-            android:id="@+id/buttonMic"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
+        <ImageView
+            android:id="@+id/imageViewMic"
+            android:layout_width="45dp"
+            android:layout_height="45dp"
             android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"
-            android:text="Mic" />
+            android:src="@mipmap/microphone" />
 
     </RelativeLayout>
 

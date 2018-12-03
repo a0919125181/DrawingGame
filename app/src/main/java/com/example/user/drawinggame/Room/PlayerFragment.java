@@ -23,6 +23,11 @@ import com.example.user.drawinggame.utils.UI;
 public class PlayerFragment extends Fragment {
 
     private ImageView imageViewPlayer;
+
+    public ImageView getImageViewPlayer() {
+        return imageViewPlayer;
+    }
+
     private TextView textViewPlayerName;
 
     private Player player;

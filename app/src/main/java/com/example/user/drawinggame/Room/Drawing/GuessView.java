@@ -52,14 +52,14 @@ public class GuessView extends View {
         canvas.drawPath(mPath, paint);
     }
 
-    public void setPathPen(String x, String y, String penSize, String color) {
+    public void setPathPen(String pastX, String pastY, String x, String y, String penSize, String color) {
         float float_x = Float.parseFloat(x) * widthScale;
         float float_y = Float.parseFloat(y) * heightScale;
+        float float_pastX = Float.parseFloat(pastX) * widthScale;
+        float float_pastY = Float.parseFloat(pastY) * heightScale;
 
-        mX = float_x;
-        mY = float_y;
         mPath.moveTo(float_x, float_y);
-        mPath.quadTo(mX, mY, (float_x + mX) / 2, (float_y + mY) / 2);
+        mPath.quadTo(float_x, float_y, float_pastX, float_pastY);
 
         if (color.equals("1"))
             paint.setColor(Color.BLACK); //顏色
@@ -71,9 +71,7 @@ public class GuessView extends View {
 
         mCanvas.drawPath(mPath, paint);
 
-        // invalidate();
         postInvalidate();
-
         mPath.reset();
     }
 
@@ -81,7 +79,7 @@ public class GuessView extends View {
         int ownWidth = this.getWidth();
         int ownHeight = this.getHeight();
 
-        widthScale = Integer.parseInt(width) / ownWidth;
-        heightScale = Integer.parseInt(height) / ownHeight;
+        widthScale = ownWidth / Integer.parseInt(width);
+        heightScale = ownHeight / Integer.parseInt(height);
     }
 }

@@ -6,6 +6,7 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.graphics.Color;
 import android.media.AudioTrack;
+import android.media.Image;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -13,16 +14,19 @@ import android.os.Message;
 import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.user.drawinggame.Lobby.LobbyFragment;
 import com.example.user.drawinggame.MainActivity;
@@ -35,6 +39,7 @@ import com.example.user.drawinggame.Room.Audio.AudioTrackReceive;
 import com.example.user.drawinggame.Room.Audio.AudioTrackSet;
 import com.example.user.drawinggame.Room.Drawing.DrawFragment;
 import com.example.user.drawinggame.Room.Drawing.GuessFragment;
+import com.example.user.drawinggame.Room.Drawing.GuessPath;
 import com.example.user.drawinggame.Room.Drawing.GuessView;
 import com.example.user.drawinggame.Room.Drawing.PaintAPP.FingerDrawFragment;
 import com.example.user.drawinggame.connections.TCP.ReceiveFromServer_TCP;
@@ -83,11 +88,18 @@ public class RoomFragment extends Fragment implements View.OnClickListener {
     AudioRecordRecord arr;
     AudioTrackReceive atr;
     AudioTrack track;
-    private Button buttonMic;
+    AudioTrackPlay atp;
+    private ImageView imageViewMic;
     boolean flag = true;
 
+    public AudioTrackReceive getAtr() {
+        return atr;
+    }
+
+    //draw
     RelativeLayout drawing_container;
     GuessFragment guessFragment;
+    GuessPath gp;
 
     // 玩家資訊
     ConstraintLayout constraintLayoutPlayer1;
@@ -104,6 +116,15 @@ public class RoomFragment extends Fragment implements View.OnClickListener {
 
     ProcessFragment processFragment = new ProcessFragment();
 
+    private String question;
+
+    public String getQuestion() {
+        return question;
+    }
+
+    public void setQuestion(String question) {
+        this.question = question;
+    }
 
     private TextView textViewChat;
 
@@ -121,6 +142,7 @@ public class RoomFragment extends Fragment implements View.OnClickListener {
                             .beginTransaction()
                             .replace(R.id.drawing_container, new DrawFragment(roomSocket))
                             .commit();
+
                     break;
                 case 2:
                     fragmentManagerRoom
@@ -128,19 +150,17 @@ public class RoomFragment extends Fragment implements View.OnClickListener {
                             .replace(R.id.drawing_container, guessFragment = new GuessFragment())
                             .commit();
 
+                    gp = new GuessPath();
                     guessFragment.setGuessView(new GuessView(getContext()));
                     break;
                 case 3:
-                    fragmentManagerRoom
-                            .beginTransaction()
-                            .setCustomAnimations(R.anim.fade_in, R.anim.fade_in)
-                            .replace(R.id.process_container, processFragment)
-                            .commit();
+                    processFragment.setTitle("遊戲開始");
+
+                    processFragmentSwitcher(processFragment);
 
                     postDelayed(new Runnable() {
                         @Override
                         public void run() {
-                            processFragment.getTextViewTitle().setText("");
                             processFragmentSwitcher(processFragment);
                         }
                     }, 1500);
@@ -153,42 +173,73 @@ public class RoomFragment extends Fragment implements View.OnClickListener {
                             .replace(R.id.drawing_container, new FingerDrawFragment())
                             .commit();
 
+                    processFragment.setTitle("遊戲結束");
+
+                    processFragmentSwitcher(processFragment);
+
+                    postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            processFragmentSwitcher(processFragment);
+                        }
+                    }, 1500);
+
                     buttonReady.setText("準備");
                     break;
 
                 case 5:
+
                     textViewChat = new TextView(getContext());
-                    textViewChat.setText("題目: " + conn_server_tcp.sfc.getQuestion());
+                    textViewChat.setText("題目: " + getQuestion());
                     textViewChat.setTextColor(Color.BLUE);
                     linearLayoutChat.addView(textViewChat);
 
+                    final ScrollView scrollViewChat = getScrollViewChat();
                     scrollViewChat.post(new Runnable() {
                         @Override
                         public void run() {
                             scrollViewChat.fullScroll(ScrollView.FOCUS_DOWN);
                         }
                     });
+
+                    processFragment.setTitle("題目: " + question);
+
+                    processFragmentSwitcher(processFragment);
+
+                    postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            processFragmentSwitcher(processFragment);
+                        }
+                    }, 1500);
                     break;
 
                 case 6:
-                    for (PlayerFragment pf : playerFragmentList) {
-                    }
+                    // 猜題
+                    processFragment.setTitle("猜題");
 
-                    textViewChat = new TextView(getContext());
-                    textViewChat.setText("");
-                    textViewChat.setTextColor(Color.BLUE);
-                    linearLayoutChat.addView(textViewChat);
+                    processFragmentSwitcher(processFragment);
 
-                    scrollViewChat.post(new Runnable() {
+                    postDelayed(new Runnable() {
                         @Override
                         public void run() {
-                            scrollViewChat.fullScroll(ScrollView.FOCUS_DOWN);
+                            processFragmentSwitcher(processFragment);
                         }
-                    });
+                    }, 1500);
+
+                    playerSequenceList.clear();
+
                     break;
                 case 7:
+                    // username 看題目
+                    processFragmentSwitcher(processFragment);
 
-
+                    postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            processFragmentSwitcher(processFragment);
+                        }
+                    }, 1500);
                     break;
             }
         }
@@ -200,6 +251,7 @@ public class RoomFragment extends Fragment implements View.OnClickListener {
     }
 
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
@@ -212,7 +264,7 @@ public class RoomFragment extends Fragment implements View.OnClickListener {
         fragmentManagerRoom.beginTransaction().replace(R.id.drawing_container, new FingerDrawFragment()).commit();
 
         player = MainActivity.appDatabase.playerDao().getPlayerBySerialID(Build.SERIAL);
-//        playerFragmentList.add(new PlayerFragment(player));
+
 
         // chatting area
         linearLayoutChat = (LinearLayout) view.findViewById(R.id.linearLayoutChat);
@@ -256,7 +308,7 @@ public class RoomFragment extends Fragment implements View.OnClickListener {
         new AudioTrackSet(RoomFragment.this);
 
         //播放語音 放到另外一個thread
-        AudioTrackPlay atp = new AudioTrackPlay(track);
+        atp = new AudioTrackPlay(track, this);
         atp.start();
 
         //接收語音
@@ -264,12 +316,11 @@ public class RoomFragment extends Fragment implements View.OnClickListener {
         atr.start();
 
 
-
-        buttonMic = (Button) view.findViewById(R.id.buttonMic);
-        buttonMic.setOnTouchListener(new View.OnTouchListener() {
+        imageViewMic = (ImageView) view.findViewById(R.id.imageViewMic);
+        imageViewMic.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                if(event.getAction() == MotionEvent.ACTION_DOWN){
+                if (event.getAction() == MotionEvent.ACTION_DOWN) {
                     if (flag) {
                         // 錄製
                         arr = new AudioRecordRecord(audio);
@@ -279,7 +330,8 @@ public class RoomFragment extends Fragment implements View.OnClickListener {
                         // notify
                         arr.restartRecording();
                     }
-                }else if(event.getAction() == MotionEvent.ACTION_UP){
+
+                } else if (event.getAction() == MotionEvent.ACTION_UP) {
                     new Thread(new Runnable() {
                         @Override
                         public void run() {
@@ -291,6 +343,24 @@ public class RoomFragment extends Fragment implements View.OnClickListener {
             }
         });
 
+
+        // who is talking
+
+        Runnable talkingRunnable = new Runnable() {
+            @Override
+            public void run() {
+                while (playerFragmentList != null) {
+                    for (PlayerFragment pf : playerFragmentList) {
+                        if (pf != null && pf.getPlayer().getUserID() == atr.getSenderID()) {
+                            pf.getImageViewPlayer().setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_pf_yello));
+                        }
+                    }
+
+                }
+            }
+        };
+        Thread talkingThread = new Thread(talkingRunnable);
+//        talkingThread.start();
 
         return view;
     }
@@ -338,6 +408,12 @@ public class RoomFragment extends Fragment implements View.OnClickListener {
 //                break;
 
             case R.id.buttonStart:
+                String seq = "順序:";
+                for (int i = 0; i < playerSequenceList.size(); i++) {
+                    seq += "\nPlayer " + (i + 1) + ": " + playerSequenceList.get(i).getUserName();
+                }
+                Toast.makeText(getContext(), seq, Toast.LENGTH_LONG).show();
+
                 break;
 
             case R.id.buttonReady:
@@ -400,4 +476,8 @@ public class RoomFragment extends Fragment implements View.OnClickListener {
     }
 
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+    }
 }

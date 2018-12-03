@@ -21,6 +21,8 @@ public class ProcessFragment extends Fragment {
 
     private TextView textViewTitle;
 
+    private String title;
+
 
     public ProcessFragment() {
         // Required empty public constructor
@@ -34,6 +36,7 @@ public class ProcessFragment extends Fragment {
 
 
         textViewTitle = (TextView) view.findViewById(R.id.textViewTitle);
+        textViewTitle.setText(title);
 
         return view;
     }
@@ -42,5 +45,8 @@ public class ProcessFragment extends Fragment {
         return textViewTitle;
     }
 
+    public void setTitle(String title) {
+        this.title = title;
+    }
 
 }
