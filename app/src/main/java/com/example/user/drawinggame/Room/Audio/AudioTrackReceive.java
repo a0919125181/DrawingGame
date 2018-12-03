@@ -6,6 +6,7 @@ import android.util.Log;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.net.SocketException;
 
 public class AudioTrackReceive extends Thread {
     private boolean isReceiving;
@@ -44,6 +45,9 @@ public class AudioTrackReceive extends Thread {
                 id[2] = packet.getData()[2502];
                 senderID = Integer.parseInt(new String(id));
 
+            } catch (SocketException e) {
+                isReceiving = false;
+                e.printStackTrace();
             } catch (IOException e) {
                 e.printStackTrace();
             }

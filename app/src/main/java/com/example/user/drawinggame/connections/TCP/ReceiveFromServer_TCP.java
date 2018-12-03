@@ -44,9 +44,11 @@ public class ReceiveFromServer_TCP extends Thread {
                 Log.i("接收功能代碼", receivedCode);
                 sfc = new Server_FunctionCode(receivedCode, receiveFromServer, fragment); // 啟動對應function
             } catch (SocketException e) {
+                exit = false;
                 UI.fragmentSwitcher(new LobbyFragment(), false);
                 e.printStackTrace();
             } catch (IOException e) {
+                exit = false;
                 UI.fragmentSwitcher(new LobbyFragment(), false);
                 e.printStackTrace();
             }

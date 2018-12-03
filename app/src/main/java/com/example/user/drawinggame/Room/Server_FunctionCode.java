@@ -290,6 +290,12 @@ public class Server_FunctionCode {
         ID = new String(ID_array);
         Log.e("換", ID);
 
+        try {
+            Thread.sleep(200);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
         // 切換
         if (ID.equals(String.valueOf(fragment.player.getUserID()))) {
             Message msg = new Message();

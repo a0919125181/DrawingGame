@@ -130,8 +130,13 @@ public class DrawView extends View {
                 break;
         }
 
+
+        if (penSize < 10) {
+            penSize = 10;
+        }
+
         new Client_FunctionCode("05", roomSocket, userID,
-                width + " " + height + " " + x + " " + y + " " + String.format("%02d", penSize) + " " + mPaint.getColor() + " " + state);
+                width + " " + height + " " + x + " " + y + " " + penSize + " " + mPaint.getColor() + " " + state);
 
 
         invalidate();

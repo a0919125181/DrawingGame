@@ -42,7 +42,7 @@ public class GetMsgThread extends ConnectThread {
     protected void afterReceived() {
         // 接收處理
         String msg = getStr_received();
-        Log.e("get msg", msg);
+//        Log.e("get msg", msg);
 
 
         String[] msg_arr = msg.split("##&#!");

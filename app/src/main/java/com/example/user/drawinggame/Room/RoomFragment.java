@@ -185,6 +185,19 @@ public class RoomFragment extends Fragment implements View.OnClickListener {
                     }, 1500);
 
                     buttonReady.setText("準備");
+
+                    textViewChat = new TextView(getContext());
+                    textViewChat.setText("答案: " + getQuestion());
+                    textViewChat.setTextColor(Color.BLUE);
+                    linearLayoutChat.addView(textViewChat);
+
+                    getScrollViewChat().post(new Runnable() {
+                        @Override
+                        public void run() {
+                            scrollViewChat.fullScroll(ScrollView.FOCUS_DOWN);
+                        }
+                    });
+
                     break;
 
                 case 5:
@@ -194,8 +207,7 @@ public class RoomFragment extends Fragment implements View.OnClickListener {
                     textViewChat.setTextColor(Color.BLUE);
                     linearLayoutChat.addView(textViewChat);
 
-                    final ScrollView scrollViewChat = getScrollViewChat();
-                    scrollViewChat.post(new Runnable() {
+                    getScrollViewChat().post(new Runnable() {
                         @Override
                         public void run() {
                             scrollViewChat.fullScroll(ScrollView.FOCUS_DOWN);
@@ -479,5 +491,7 @@ public class RoomFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onDestroy() {
         super.onDestroy();
+
+        audio.getDatagramSocket().close();
     }
 }
