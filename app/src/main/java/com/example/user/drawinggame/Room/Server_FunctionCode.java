@@ -105,15 +105,17 @@ public class Server_FunctionCode {
     }
 
     private void addSequenceList(List<PlayerFragment> pfl, List<Player> psl, int id) {
+        Log.e("seq", String.valueOf(id));
         for (PlayerFragment pf : pfl) {
             if (id == 0) {
                 break;
             }
             if (pf.getPlayer().getUserID() == id) {
                 psl.add(pf.getPlayer());
-            } else if (fragment.player.getUserID() == id) {
-                psl.add(fragment.player);
             }
+        }
+        if (fragment.player.getUserID() == id) {
+            psl.add(fragment.player);
         }
     }
 
@@ -193,16 +195,16 @@ public class Server_FunctionCode {
 
         Log.i("對方View寬高", screenWidth + " , " + screenHeight);
         Log.i("接收座標", drawPointX + " , " + drawPointY + " 粗細 " + thickThin + " 畫筆顏色 " + color);
-        Log.i("狀態",state);
+        Log.i("狀態", state);
 
         GuessView gv = fragment.guessFragment.getGuessView();
         gv.convertSize(screenWidth, screenHeight);
-        if(state.equals("D")){
+        if (state.equals("D")) {
             fragment.guessFragment.getGuessPath().setPast(drawPointX, drawPointY);
-        }else if(state.equals("M")){
+        } else if (state.equals("M")) {
             gv.setPathPen(fragment.guessFragment.getGuessPath().getPastX(), fragment.guessFragment.getGuessPath().getPastY(), drawPointX, drawPointY, thickThin, color);
-            fragment.guessFragment.getGuessPath().setPast(drawPointX, drawPointY) ;
-        }else{
+            fragment.guessFragment.getGuessPath().setPast(drawPointX, drawPointY);
+        } else {
             gv.setPathPen(fragment.guessFragment.getGuessPath().getPastX(), fragment.guessFragment.getGuessPath().getPastY(), drawPointX, drawPointY, thickThin, color);
         }
     }
@@ -399,6 +401,7 @@ public class Server_FunctionCode {
         }
     }
 
+    // 11
     private void guess() {
         Log.e("guess", "answer");
         byte[] guess_array = new byte[3];
@@ -462,7 +465,6 @@ public class Server_FunctionCode {
                 break;
         }
     }
-
 
 
 }

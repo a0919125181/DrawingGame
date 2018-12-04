@@ -84,11 +84,12 @@ public class RoomFragment extends Fragment implements View.OnClickListener {
     private Button buttonLeave;
 
     //Audio
-    Audio audio;
-    AudioRecordRecord arr;
-    AudioTrackReceive atr;
-    AudioTrack track;
-    AudioTrackPlay atp;
+    private Audio audio;
+    private AudioConnect ac;
+    private AudioRecordRecord arr;
+    private AudioTrackReceive atr;
+    private AudioTrack track;
+    private AudioTrackPlay atp;
     private ImageView imageViewMic;
     boolean flag = true;
 
@@ -110,7 +111,6 @@ public class RoomFragment extends Fragment implements View.OnClickListener {
 
     // players
     ArrayList<PlayerFragment> playerFragmentList = new ArrayList<>();
-    String playerLeaveID;
     LinkedList<Player> playerSequenceList = new LinkedList<>();
 
 
@@ -227,6 +227,11 @@ public class RoomFragment extends Fragment implements View.OnClickListener {
                     break;
 
                 case 6:
+                    fragmentManagerRoom
+                            .beginTransaction()
+                            .replace(R.id.drawing_container, new FingerDrawFragment())
+                            .commit();
+
                     // 猜題
                     processFragment.setTitle("猜題");
 
@@ -238,6 +243,13 @@ public class RoomFragment extends Fragment implements View.OnClickListener {
                             processFragmentSwitcher(processFragment);
                         }
                     }, 1500);
+
+                    if (player.getUserID() != playerSequenceList.getFirst().getUserID()){
+                        textViewChat = new TextView(getContext());
+                        textViewChat.setText("請輸入答案:");
+                        textViewChat.setTextColor(Color.parseColor("#006400"));
+                        linearLayoutChat.addView(textViewChat);
+                    }
 
                     playerSequenceList.clear();
 
@@ -313,7 +325,7 @@ public class RoomFragment extends Fragment implements View.OnClickListener {
 
 
         // Audio
-        AudioConnect ac = new AudioConnect(VoiceCallPort_UDP, String.valueOf(player.getUserID()));
+        ac = new AudioConnect(VoiceCallPort_UDP, String.valueOf(player.getUserID()));
         audio = ac.getAudio();
 
         //AudioTrack設置
@@ -357,7 +369,6 @@ public class RoomFragment extends Fragment implements View.OnClickListener {
 
 
         // who is talking
-
         Runnable talkingRunnable = new Runnable() {
             @Override
             public void run() {
@@ -402,22 +413,9 @@ public class RoomFragment extends Fragment implements View.OnClickListener {
                     new Client_FunctionCode("10", roomSocket, say);
                 }
                 break;
-//            case R.id.buttonMic:
-//                // 建立語音連線
-//                arr = new AudioRecordRecord(VoiceCallPort_UDP, player.getUserID());
-//                arr.start();
-//
-//                //AudioTrack設置
-//                new AudioTrackSet(RoomFragment.this);
-//
-//                //播放語音 放到另外一個thread
-//                AudioTrackPlay atp = new AudioTrackPlay(track);
-//                atp.start();
-//
-//                //接收語音
-//                atr = new AudioTrackReceive(arr.getSendSocket(), track, atp);
-//                atr.start();
-//                break;
+
+            case R.id.imageViewMic:
+                break;
 
             case R.id.buttonStart:
                 String seq = "順序:";
