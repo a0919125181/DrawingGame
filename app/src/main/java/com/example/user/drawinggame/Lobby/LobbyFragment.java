@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.media.Image;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -38,6 +39,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.List;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -63,11 +65,12 @@ public class LobbyFragment extends Fragment implements View.OnClickListener {
     private Button buttonEnterRoom;
 
     // 左邊
-    private Button buttonMessage;
-    private Button buttonFriend;
-    private Button buttonBag;
-    private Button buttonInfo;
-    private Button buttonSetting;
+    private ImageView imageViewMessage;
+    private ImageView imageViewFriend;
+    private ImageView imageViewBag;
+    private ImageView imageViewInfo;
+    private ImageView imageViewSetting;
+    private List<ImageView> leftImageViewList = new ArrayList<>();
 
     // 個人資料
     private TextView textViewID;
@@ -78,6 +81,8 @@ public class LobbyFragment extends Fragment implements View.OnClickListener {
     private TextView textViewPlayerGender;
     private TextView textViewPlayerAge;
     private TextView textViewPlayerIntro;
+
+    private String mImagePath = "/data/user/0/com.example.user.drawinggame/app_imageDir/";
 
     private ImageView infoPhoto;
     private File tempFile;
@@ -140,7 +145,8 @@ public class LobbyFragment extends Fragment implements View.OnClickListener {
             e.printStackTrace();
         }
 
-        new UI.DownloadImageTask(imageViewPhoto).execute(getPicURL());
+        new UI.SaveImageTask(getContext(), imageViewPhoto, mImagePath, "myPhoto").execute(getPicURL());
+
 
         textViewName = view.findViewById(R.id.textViewName);
         textViewName.setText(player.getUserName());
@@ -164,20 +170,25 @@ public class LobbyFragment extends Fragment implements View.OnClickListener {
 
 
         // 左邊
-        buttonMessage = view.findViewById(R.id.buttonMessage);
-        buttonMessage.setOnClickListener(this);
+        imageViewMessage = view.findViewById(R.id.imageViewMessage);
+        imageViewMessage.setOnClickListener(this);
+        leftImageViewList.add(imageViewMessage);
 
-        buttonFriend = view.findViewById(R.id.buttonFriend);
-        buttonFriend.setOnClickListener(this);
+        imageViewFriend = view.findViewById(R.id.imageViewFriend);
+        imageViewFriend.setOnClickListener(this);
+        leftImageViewList.add(imageViewFriend);
 
-        buttonBag = view.findViewById(R.id.buttonBag);
-        buttonBag.setOnClickListener(this);
+        imageViewBag = view.findViewById(R.id.imageViewBag);
+        imageViewBag.setOnClickListener(this);
+        leftImageViewList.add(imageViewBag);
 
-        buttonInfo = view.findViewById(R.id.buttonInfo);
-        buttonInfo.setOnClickListener(this);
+        imageViewInfo = view.findViewById(R.id.imageViewInfo);
+        imageViewInfo.setOnClickListener(this);
+        leftImageViewList.add(imageViewInfo);
 
-        buttonSetting = view.findViewById(R.id.buttonSetting);
-        buttonSetting.setOnClickListener(this);
+        imageViewSetting = view.findViewById(R.id.imageViewSetting);
+        imageViewSetting.setOnClickListener(this);
+        leftImageViewList.add(imageViewSetting);
 
 
         // 接收訊息
@@ -201,7 +212,7 @@ public class LobbyFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onResume() {
         super.onResume();
-        new UI.DownloadImageTask(imageViewPhoto).execute(getPicURL());
+//        new UI.DownloadImageTask(imageViewPhoto).execute(getPicURL());
     }
 
     private View.OnClickListener imageViewPhotoListener() {
@@ -222,7 +233,8 @@ public class LobbyFragment extends Fragment implements View.OnClickListener {
                     e.printStackTrace();
                 }
 
-                new UI.DownloadImageTask(infoPhoto).execute(getPicURL());
+//                new UI.DownloadImageTask(infoPhoto).execute(getPicURL());
+                UI.loadImageFromStorage(infoPhoto, mImagePath, "myPhoto");
 
                 textViewID = (TextView) viewShowInfo.findViewById(R.id.textViewID);
                 textViewID.setText("ID: " + player.getUserID());
@@ -392,27 +404,43 @@ public class LobbyFragment extends Fragment implements View.OnClickListener {
                 UI.showImmersiveModeDialog(alertDialogEditIntro, true);
                 break;
 
-            case R.id.buttonMessage:
+            case R.id.imageViewMessage:
+                setLeftImageViewListBackground(imageViewMessage);
+                imageViewMessage.setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_pf_green));
                 showFragment(fragmentMessage);
                 break;
 
-            case R.id.buttonFriend:
+            case R.id.imageViewFriend:
+                setLeftImageViewListBackground(imageViewFriend);
+                imageViewFriend.setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_pf_green));
                 showFragment(fragmentFriend);
                 break;
 
-            case R.id.buttonBag:
+            case R.id.imageViewBag:
+                setLeftImageViewListBackground(imageViewBag);
+                imageViewBag.setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_pf_green));
                 showFragment(fragmentBag);
                 break;
 
-            case R.id.buttonInfo:
+            case R.id.imageViewInfo:
+                setLeftImageViewListBackground(imageViewInfo);
+                imageViewInfo.setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_pf_green));
                 showFragment(fragmentInfo);
                 break;
 
-            case R.id.buttonSetting:
+            case R.id.imageViewSetting:
+                setLeftImageViewListBackground(imageViewSetting);
                 showFragment(fragmentSetting);
                 break;
 
         }
+    }
+
+    private void setLeftImageViewListBackground(ImageView imageViewClicked) {
+        for (ImageView iv : leftImageViewList) {
+            iv.setBackgroundResource(0);
+        }
+        imageViewClicked.setBackgroundResource(R.drawable.bg_pf_green);
     }
 
 
@@ -424,6 +452,9 @@ public class LobbyFragment extends Fragment implements View.OnClickListener {
             buttonCreateRoom.setVisibility(View.VISIBLE);
             buttonEnterRoom.setVisibility(View.VISIBLE);
             fragmentManagerLobby.beginTransaction().remove(fragmentClicked).commit();
+            for (ImageView iv : leftImageViewList) {
+                iv.setBackgroundResource(0);
+            }
         } else {
             for (Fragment f : fragmentList) {
                 fragmentManagerLobby.beginTransaction().remove(f).commit();

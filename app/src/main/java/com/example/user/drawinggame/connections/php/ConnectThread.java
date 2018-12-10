@@ -25,15 +25,10 @@ public abstract class ConnectThread extends Thread {
 
     private String phpFileName;
 
-    private Player player;
 
     private JSONObject sendObject;
 
     private String str_received;
-
-    public ConnectThread(Player player) {
-        this.player = player;
-    }
 
     @Override
     public void run() {

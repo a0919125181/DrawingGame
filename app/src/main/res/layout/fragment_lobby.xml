@@ -16,51 +16,51 @@
         android:layout_marginTop="0dp"
         android:orientation="vertical">
 
-        <Button
-            android:id="@+id/buttonMessage"
+        <ImageView
+            android:id="@+id/imageViewMessage"
             android:layout_width="wrap_content"
             android:layout_height="45dp"
-            android:layout_above="@+id/buttonFriend"
+            android:layout_above="@+id/imageViewFriend"
             android:layout_marginBottom="25dp"
-            android:background="@mipmap/speech_bubble"
+            android:src="@mipmap/speech_bubble"
             tools:text="Message" />
 
 
-        <Button
-            android:id="@+id/buttonFriend"
+        <ImageView
+            android:id="@+id/imageViewFriend"
             android:layout_width="wrap_content"
             android:layout_height="45dp"
-            android:layout_above="@+id/buttonBag"
+            android:layout_above="@+id/imageViewBag"
             android:layout_marginBottom="25dp"
-            android:background="@mipmap/network"
+            android:src="@mipmap/network"
             tools:text="Friend" />
 
 
-        <Button
-            android:id="@+id/buttonBag"
+        <ImageView
+            android:id="@+id/imageViewBag"
             android:layout_width="wrap_content"
             android:layout_height="45dp"
             android:layout_centerVertical="true"
-            android:background="@mipmap/backpack"
+            android:src="@mipmap/backpack"
             tools:text="Bag" />
 
 
-        <Button
-            android:id="@+id/buttonInfo"
+        <ImageView
+            android:id="@+id/imageViewInfo"
             android:layout_width="wrap_content"
             android:layout_height="45dp"
-            android:layout_below="@+id/buttonBag"
+            android:layout_below="@+id/imageViewBag"
             android:layout_marginTop="25dp"
-            android:background="@mipmap/question"
+            android:src="@mipmap/question"
             tools:text="Info" />
 
-        <Button
-            android:id="@+id/buttonSetting"
+        <ImageView
+            android:id="@+id/imageViewSetting"
             android:layout_width="wrap_content"
             android:layout_height="45dp"
-            android:layout_below="@+id/buttonInfo"
+            android:layout_below="@+id/imageViewInfo"
             android:layout_marginTop="25dp"
-            android:background="@mipmap/settings_gears"
+            android:src="@mipmap/settings_gears"
             tools:text="Setting" />
 
     </RelativeLayout>

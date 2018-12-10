@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_margin="4dp">
+    android:layout_margin="4dp"
+    android:descendantFocusability="blocksDescendants">
 
     <ImageView
         android:id="@+id/imageViewPhoto"
@@ -42,5 +44,25 @@
         android:text="Time"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/imageViewAccept"
+        android:layout_width="28dp"
+        android:layout_height="28dp"
+        android:layout_margin="8dp"
+        android:focusable="false"
+        app:layout_constraintBottom_toBottomOf="@+id/imageViewPhoto"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:srcCompat="@mipmap/accept" />
+
+    <ImageView
+        android:id="@+id/imageViewDecline"
+        android:layout_width="28dp"
+        android:layout_height="28dp"
+        android:layout_margin="8dp"
+        android:focusable="false"
+        app:layout_constraintBottom_toBottomOf="@+id/imageViewPhoto"
+        app:layout_constraintEnd_toStartOf="@+id/imageViewAccept"
+        app:srcCompat="@mipmap/decline" />
 
 </android.support.constraint.ConstraintLayout>

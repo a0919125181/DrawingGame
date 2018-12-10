@@ -13,7 +13,6 @@ public class LobbyGetPictureThread extends ConnectThread {
 
 
     public LobbyGetPictureThread(Player player, LobbyFragment lobbyFragment) {
-        super(player);
         this.player = player;
         this.lobbyFragment = lobbyFragment;
     }

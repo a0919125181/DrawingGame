@@ -154,6 +154,29 @@ public class Client_FunctionCode {
                 }).start();
                 break;
 
+            case "15":
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        // send answer
+                        try {
+                            OutputStream out = roomSocket.getOutputStream();
+                            out.write("15".getBytes());
+
+                            int len = say.getBytes().length;
+                            String lenStr = String.format("%02d", len);
+                            out.write(lenStr.getBytes());
+                            Log.e("len", lenStr);
+
+                            out.write(say.getBytes(Charset.forName("UTF-8")));
+
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }).start();
+                break;
+
         }
     }
 }

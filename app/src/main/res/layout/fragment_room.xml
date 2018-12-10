@@ -27,27 +27,27 @@
                 android:id="@+id/constraintLayoutPlayer1"
                 android:layout_width="50dp"
                 android:layout_height="80dp"
-                android:visibility="invisible"/>
+                android:visibility="invisible" />
 
 
             <android.support.constraint.ConstraintLayout
                 android:id="@+id/constraintLayoutPlayer2"
                 android:layout_width="50dp"
                 android:layout_height="80dp"
-                android:visibility="invisible"/>
+                android:visibility="invisible" />
 
 
             <android.support.constraint.ConstraintLayout
                 android:id="@+id/constraintLayoutPlayer3"
                 android:layout_width="50dp"
                 android:layout_height="80dp"
-                android:visibility="invisible"/>
+                android:visibility="invisible" />
 
             <android.support.constraint.ConstraintLayout
                 android:id="@+id/constraintLayoutPlayer4"
                 android:layout_width="50dp"
                 android:layout_height="80dp"
-                android:visibility="invisible"/>
+                android:visibility="invisible" />
 
 
         </LinearLayout>
@@ -70,7 +70,7 @@
 
 
     <LinearLayout
-        android:layout_width="250dp"
+        android:layout_width="300dp"
         android:layout_height="50dp"
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
@@ -80,12 +80,12 @@
         android:orientation="horizontal">
 
         <TextView
-            android:id="@+id/textViewCountDown"
-            android:layout_width="50dp"
+            android:id="@+id/textViewStatus"
+            android:layout_width="100dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:gravity="center_horizontal"
-            android:text="60"
+            android:text="狀態列"
             android:textAlignment="center" />
 
         <Button
@@ -155,7 +155,7 @@
     </FrameLayout>
 
     <RelativeLayout
-        android:layout_width="300dp"
+        android:layout_width="250dp"
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
         android:layout_alignParentLeft="true"
@@ -164,29 +164,37 @@
 
         <EditText
             android:id="@+id/editTextChat"
-            android:layout_width="200dp"
+            android:layout_width="150dp"
             android:layout_height="wrap_content"
             android:layout_alignParentStart="true"
             android:layout_alignParentLeft="true"
             android:layout_centerVertical="true"
+            android:layout_margin="5dp"
             android:maxLines="1"
             tools:text="Say something..." />
 
 
-        <Button
-            android:id="@+id/buttonSubmit"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
+        <ImageView
+            android:id="@+id/imageViewSubmit"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:layout_margin="5dp"
             android:layout_toEndOf="@+id/editTextChat"
             android:layout_toRightOf="@+id/editTextChat"
-            android:text="OK" />
+            android:src="@mipmap/forward" />
 
         <ImageView
             android:id="@+id/imageViewMic"
-            android:layout_width="45dp"
-            android:layout_height="45dp"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentRight="true"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:layout_marginStart="5dp"
+            android:layout_marginLeft="5dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginEnd="5dp"
+            android:layout_marginRight="5dp"
+            android:layout_marginBottom="5dp"
+            android:layout_toEndOf="@+id/imageViewSubmit"
+            android:layout_toRightOf="@+id/imageViewSubmit"
             android:src="@mipmap/microphone" />
 
     </RelativeLayout>

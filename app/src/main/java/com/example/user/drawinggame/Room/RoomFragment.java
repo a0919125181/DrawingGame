@@ -78,7 +78,7 @@ public class RoomFragment extends Fragment implements View.OnClickListener {
     private EditText editTextChat;
 
     // game controllers
-    private TextView textViewCountDown;
+    private TextView textViewStatus;
     private Button buttonStart;
     private Button buttonReady;
     private Button buttonLeave;
@@ -115,6 +115,7 @@ public class RoomFragment extends Fragment implements View.OnClickListener {
 
 
     ProcessFragment processFragment = new ProcessFragment();
+    private AnswerFragment answerFragment = new AnswerFragment();
 
     private String question;
 
@@ -138,6 +139,16 @@ public class RoomFragment extends Fragment implements View.OnClickListener {
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 case 1:
+                    processFragment.setTitle("開始畫");
+                    processFragmentSwitcher(processFragment);
+
+                    postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            processFragmentSwitcher(processFragment);
+                        }
+                    }, 800);
+
                     fragmentManagerRoom
                             .beginTransaction()
                             .replace(R.id.drawing_container, new DrawFragment(roomSocket))
@@ -145,6 +156,16 @@ public class RoomFragment extends Fragment implements View.OnClickListener {
 
                     break;
                 case 2:
+                    processFragment.setTitle("看圖");
+                    processFragmentSwitcher(processFragment);
+
+                    postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            processFragmentSwitcher(processFragment);
+                        }
+                    }, 800);
+
                     fragmentManagerRoom
                             .beginTransaction()
                             .replace(R.id.drawing_container, guessFragment = new GuessFragment())
@@ -173,6 +194,19 @@ public class RoomFragment extends Fragment implements View.OnClickListener {
                             .replace(R.id.drawing_container, new FingerDrawFragment())
                             .commit();
 
+
+                    if (playerSequenceList.getFirst().getUserID() != player.getUserID()) {
+                        String ans = String.valueOf(answerFragment.getEditTextAnswer().getText());
+                        textViewChat = new TextView(getContext());
+                        textViewChat.setText("你的答案: " + ans);
+                        textViewChat.setTextColor(Color.parseColor("#006400"));
+                        linearLayoutChat.addView(textViewChat);
+                        answerFragment.getEditTextAnswer().setText("");
+
+
+                        // send answer
+                    }
+
                     processFragment.setTitle("遊戲結束");
 
                     processFragmentSwitcher(processFragment);
@@ -198,9 +232,16 @@ public class RoomFragment extends Fragment implements View.OnClickListener {
                         }
                     });
 
+                    playerSequenceList.clear();
+
                     break;
 
                 case 5:
+                    // 空白
+                    fragmentManagerRoom
+                            .beginTransaction()
+                            .replace(R.id.drawing_container, new Fragment())
+                            .commit();
 
                     textViewChat = new TextView(getContext());
                     textViewChat.setText("題目: " + getQuestion());
@@ -227,11 +268,6 @@ public class RoomFragment extends Fragment implements View.OnClickListener {
                     break;
 
                 case 6:
-                    fragmentManagerRoom
-                            .beginTransaction()
-                            .replace(R.id.drawing_container, new FingerDrawFragment())
-                            .commit();
-
                     // 猜題
                     processFragment.setTitle("猜題");
 
@@ -244,14 +280,24 @@ public class RoomFragment extends Fragment implements View.OnClickListener {
                         }
                     }, 1500);
 
-                    if (player.getUserID() != playerSequenceList.getFirst().getUserID()){
+                    if (player.getUserID() != playerSequenceList.getFirst().getUserID()) {
                         textViewChat = new TextView(getContext());
-                        textViewChat.setText("請輸入答案:");
+                        textViewChat.setText("請輸入答案: ");
                         textViewChat.setTextColor(Color.parseColor("#006400"));
                         linearLayoutChat.addView(textViewChat);
+
+                        fragmentManagerRoom
+                                .beginTransaction()
+                                .replace(R.id.drawing_container, answerFragment)
+                                .commit();
+                    } else {
+                        fragmentManagerRoom
+                                .beginTransaction()
+                                .replace(R.id.drawing_container, new Fragment())
+                                .commit();
                     }
 
-                    playerSequenceList.clear();
+
 
                     break;
                 case 7:
@@ -264,6 +310,31 @@ public class RoomFragment extends Fragment implements View.OnClickListener {
                             processFragmentSwitcher(processFragment);
                         }
                     }, 1500);
+
+                    // 空白
+                    fragmentManagerRoom
+                            .beginTransaction()
+                            .replace(R.id.drawing_container, new Fragment())
+                            .commit();
+
+                    break;
+
+                case 8:
+                    // 等人畫
+
+                    processFragmentSwitcher(processFragment);
+
+                    postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            processFragmentSwitcher(processFragment);
+                        }
+                    }, 1500);
+
+                    fragmentManagerRoom
+                            .beginTransaction()
+                            .replace(R.id.drawing_container, new Fragment())
+                            .commit();
                     break;
             }
         }
@@ -295,12 +366,12 @@ public class RoomFragment extends Fragment implements View.OnClickListener {
         scrollViewChat = (ScrollView) view.findViewById(R.id.scrollViewChat);
         editTextChat = (EditText) view.findViewById(R.id.editTextChat);
 
-        Button buttonSubmit = (Button) view.findViewById(R.id.buttonSubmit);
-        buttonSubmit.setOnClickListener(this);
+        ImageView imageViewSubmit = (ImageView) view.findViewById(R.id.imageViewSubmit);
+        imageViewSubmit.setOnClickListener(this);
 
 
         // 右下
-        textViewCountDown = (TextView) view.findViewById(R.id.textViewCountDown);
+        textViewStatus = (TextView) view.findViewById(R.id.textViewStatus);
 
         buttonStart = (Button) view.findViewById(R.id.buttonStart);
         buttonStart.setOnClickListener(this);
@@ -393,7 +464,7 @@ public class RoomFragment extends Fragment implements View.OnClickListener {
     public void onClick(View view) {
         switch (view.getId()) {
 
-            case R.id.buttonSubmit:
+            case R.id.imageViewSubmit:
                 if (!editTextChat.getText().toString().equals("")) {
                     textViewChat = new TextView(getContext());
                     textViewChat.setText(player.getUserName() + ":\n" + editTextChat.getText());
@@ -424,18 +495,19 @@ public class RoomFragment extends Fragment implements View.OnClickListener {
                 }
                 Toast.makeText(getContext(), seq, Toast.LENGTH_LONG).show();
 
+
+                new Client_FunctionCode("15", roomSocket, "頑皮豹");
+
                 break;
 
             case R.id.buttonReady:
                 if (buttonReady.getText().equals("準備")) {
                     new Client_FunctionCode("021", roomSocket);
                     buttonReady.setText("取消");
-                    new Client_FunctionCode("10", roomSocket, player.getUserName() + "已準備");
 
                 } else if (buttonReady.getText().equals("取消")) {
                     new Client_FunctionCode("020", roomSocket);
                     buttonReady.setText("準備");
-                    new Client_FunctionCode("10", roomSocket, player.getUserName() + "取消準備");
                 }
                 break;
 

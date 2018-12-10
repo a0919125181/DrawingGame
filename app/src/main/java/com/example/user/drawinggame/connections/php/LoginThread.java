@@ -14,7 +14,6 @@ public class LoginThread extends ConnectThread {
     Player player;
 
     public LoginThread(Player player) {
-        super(player);
         this.player = player;
     }
 

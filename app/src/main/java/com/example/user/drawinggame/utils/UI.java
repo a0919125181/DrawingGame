@@ -1,7 +1,10 @@
 package com.example.user.drawinggame.utils;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
+import android.content.Context;
+import android.content.ContextWrapper;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Point;
@@ -18,6 +21,11 @@ import android.widget.ImageView;
 import com.example.user.drawinggame.MainActivity;
 import com.example.user.drawinggame.R;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 
@@ -133,6 +141,7 @@ public class UI {
             try {
                 InputStream in = new java.net.URL(urldisplay).openStream();
                 bmp = BitmapFactory.decodeStream(in);
+
             } catch (Exception e) {
                 Log.e("Error", e.getMessage());
                 e.printStackTrace();
@@ -146,4 +155,79 @@ public class UI {
         }
     }
 
+    public static class SaveImageTask extends AsyncTask<String, Void, Bitmap> {
+        private Context context;
+        private ImageView bmImage;
+        private String path;
+        private String picName;
+
+        public SaveImageTask(Context context, ImageView bmImage, String path, String picName) {
+            this.context = context;
+            this.bmImage = bmImage;
+            this.path = path;
+            this.picName = picName;
+        }
+
+        protected Bitmap doInBackground(String... urls) {
+            String urldisplay = urls[0];
+            Bitmap bmp = null;
+            try {
+                InputStream in = new java.net.URL(urldisplay).openStream();
+                bmp = BitmapFactory.decodeStream(in);
+
+                path = saveToInternalStorage(bmp, context, picName);
+
+
+            } catch (Exception e) {
+                Log.e("Error", e.getMessage());
+                e.printStackTrace();
+            }
+            return bmp;
+        }
+
+        protected void onPostExecute(Bitmap result) {
+            Log.e("path", path);
+            loadImageFromStorage(bmImage, path, picName);
+        }
+    }
+
+    // https://stackoverflow.com/questions/17674634/saving-and-reading-bitmaps-images-from-internal-memory-in-android
+    public static String saveToInternalStorage(Bitmap bitmapImage, Context context, String picName) {
+        ContextWrapper cw = new ContextWrapper(context);
+        File directory = cw.getDir("imageDir", Context.MODE_PRIVATE);
+        // Create imageDir
+        File mypath = new File(directory, picName);
+
+        FileOutputStream fos = null;
+        try {
+            fos = new FileOutputStream(mypath);
+            // Use the compress method on the BitMap object to write image to the OutputStream
+            bitmapImage.compress(Bitmap.CompressFormat.PNG, 100, fos);
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (fos != null) {
+                    fos.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return directory.getAbsolutePath();
+    }
+
+
+    public static void loadImageFromStorage(ImageView img, String path, String picName) {
+        Log.e("load", picName);
+        try {
+            File f = new File(path, picName);
+            Bitmap b = BitmapFactory.decodeStream(new FileInputStream(f));
+            img.setImageBitmap(b);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+
+    }
 }

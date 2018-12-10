@@ -8,8 +8,11 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.NumberPicker;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.user.drawinggame.R;
+import com.example.user.drawinggame.connections.php.SendMsgThread;
+import com.example.user.drawinggame.database_classes.Player;
 
 public class Listeners {
 
@@ -85,4 +88,29 @@ public class Listeners {
             }
         };
     }
+
+    public static View.OnClickListener addFriendListener(final Context context, final Player player, final Player playerSearch) {
+        return new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                SendMsgThread smt = new SendMsgThread(player, "加好友", playerSearch.getUserID(), 1);
+                smt.start();
+
+                while (!smt.isDone()) {
+                    try {
+                        Thread.sleep(100);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    if (smt.isSuccess()) {
+                        Toast.makeText(context, "交友邀請已送出", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(context, "邀請失敗", Toast.LENGTH_SHORT).show();
+                    }
+                }
+
+            }
+        };
+    }
+
 }

@@ -3,6 +3,7 @@ package com.example.user.drawinggame.Room;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
+import android.media.Image;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -11,6 +12,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.user.drawinggame.R;
 import com.example.user.drawinggame.connections.php.SendMsgThread;
@@ -40,13 +42,16 @@ public class PlayerFragment extends Fragment {
         this.player = player;
     }
 
+    private Player mPlayer;
+
     public PlayerFragment() {
         // Required empty public constructor
     }
 
     @SuppressLint("ValidFragment")
-    public PlayerFragment(Player player) {
+    public PlayerFragment(Player player, Player mPlayer) {
         this.player = player;
+        this.mPlayer = mPlayer;
     }
 
 
@@ -70,12 +75,26 @@ public class PlayerFragment extends Fragment {
                 ImageView imageViewFriend = viewFriendInfo.findViewById(R.id.imageViewFriend);
                 new UI.DownloadImageTask(imageViewFriend).execute(player.getPicURL());
 
-                Button buttonAddFriend = viewFriendInfo.findViewById(R.id.buttonAddFriend);
-                buttonAddFriend.setOnClickListener(new View.OnClickListener() {
+                ImageView imageViewAddFriend = viewFriendInfo.findViewById(R.id.imageViewAddFriend);
+                imageViewAddFriend.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        new SendMsgThread(player, "好友++", player.getUserID(), 1).start();
 
+                        SendMsgThread smt = new SendMsgThread(mPlayer, "好友++", player.getUserID(), 1);
+                        smt.start();
+
+                        while (!smt.isDone()) {
+                            try {
+                                Thread.sleep(100);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                            if (smt.isSuccess()) {
+                                Toast.makeText(getContext(), "交友邀請已送出", Toast.LENGTH_SHORT).show();
+                            } else {
+                                Toast.makeText(getContext(), "邀請失敗", Toast.LENGTH_SHORT).show();
+                            }
+                        }
                     }
                 });
 

@@ -32,7 +32,7 @@ import com.example.user.drawinggame.utils.UI;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class FriendFragment extends Fragment implements View.OnClickListener, AdapterView.OnItemClickListener {
+public class FriendFragment extends Fragment implements View.OnClickListener {
 
     private Player player;
 
@@ -71,7 +71,7 @@ public class FriendFragment extends Fragment implements View.OnClickListener, Ad
         player = MainActivity.appDatabase.playerDao().getPlayerBySerialID(Build.SERIAL);
 
         FragmentManager fragmentManagerLobby = getFragmentManager();
-        fragmentManagerLobby.beginTransaction().replace(R.id.friend_container, new FriendInviteFragment()).commit();
+        fragmentManagerLobby.beginTransaction().replace(R.id.friend_container, new FriendInviteFragment(player)).commit();
 
         radioGroup = (RadioGroup) view.findViewById(R.id.radioGroup);
         radioButtonID = (RadioButton) view.findViewById(R.id.radioButtonID);
@@ -83,7 +83,10 @@ public class FriendFragment extends Fragment implements View.OnClickListener, Ad
         radioGroup.setOnCheckedChangeListener(onCheckedChangeListenerSearch());
         radioButtonID.setChecked(true);
         buttonSearch.setOnClickListener(this);
-        
+
+
+        Button buttonImage = (Button) view.findViewById(R.id.buttonImage);
+        buttonImage.setOnClickListener(this);
 
         return view;
     }
@@ -91,6 +94,9 @@ public class FriendFragment extends Fragment implements View.OnClickListener, Ad
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
+            case R.id.buttonImage:
+                break;
+
             case R.id.buttonSearch:
 
                 if (editTextSearchID.getVisibility() == View.VISIBLE && !editTextSearchID.getText().toString().equals("")) {
@@ -138,11 +144,26 @@ public class FriendFragment extends Fragment implements View.OnClickListener, Ad
                         Log.e("show", "dialog");
                         UI.showImmersiveModeDialog(dialog, true);
 
-                        Button buttonAddFriend = viewFriendInfo.findViewById(R.id.buttonAddFriend);
-                        buttonAddFriend.setOnClickListener(new View.OnClickListener() {
+                        ImageView imageViewAddFriend = viewFriendInfo.findViewById(R.id.imageViewAddFriend);
+                        imageViewAddFriend.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                                new SendMsgThread(player, "加好友", playerSearch.getUserID(), 1).start();
+                                SendMsgThread smt = new SendMsgThread(player, "加好友", playerSearch.getUserID(), 1);
+                                smt.start();
+
+                                while (!smt.isDone()) {
+                                    try {
+                                        Thread.sleep(100);
+                                    } catch (InterruptedException e) {
+                                        e.printStackTrace();
+                                    }
+                                    if (smt.isSuccess()) {
+                                        Toast.makeText(getContext(), "交友邀請已送出", Toast.LENGTH_SHORT).show();
+                                    } else {
+                                        Toast.makeText(getContext(), "邀請失敗", Toast.LENGTH_SHORT).show();
+                                    }
+                                }
+
                             }
                         });
 
@@ -181,8 +202,5 @@ public class FriendFragment extends Fragment implements View.OnClickListener, Ad
         };
     }
 
-    @Override
-    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-    }
 }

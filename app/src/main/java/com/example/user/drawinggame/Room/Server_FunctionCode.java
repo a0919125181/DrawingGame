@@ -9,6 +9,8 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.user.drawinggame.R;
+import com.example.user.drawinggame.Room.Drawing.DrawFragment;
 import com.example.user.drawinggame.Room.Drawing.GuessView;
 import com.example.user.drawinggame.connections.TCP.Util;
 import com.example.user.drawinggame.connections.php.SearchThread;
@@ -27,10 +29,8 @@ public class Server_FunctionCode {
     private InputStream receiveFromServer;
     private RoomFragment fragment;
 
-
     private byte[] ID_array;
     private String ID;
-
 
     public Server_FunctionCode(String functionCode, InputStream receiveFromServer, RoomFragment fragment) {
         this.functionCode = functionCode;
@@ -64,10 +64,34 @@ public class Server_FunctionCode {
 
         ID = new String(ID_array);
         String readyCancel = new String(readyCancel_array);
-        if (readyCancel.equals("0"))
-            Log.i(ID, "取消準備");
-        else
-            Log.i(ID, "準備");
+        int id = Integer.parseInt(ID);
+
+        for (final PlayerFragment pf : fragment.playerFragmentList) {
+            if (pf.getPlayer().getUserID() == id) {
+
+                final String status;
+                if (readyCancel.equals("0")) {
+                    status = "取消準備";
+                    Log.i(ID, status);
+                } else {
+                    status = "已準備";
+                    Log.i(ID, status);
+                }
+
+
+                fragment.getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        TextView textViewChat = new TextView(fragment.getContext());
+                        textViewChat.setText(pf.getPlayer().getUserName() + " " + status);
+                        textViewChat.setTextColor(Color.DKGRAY);
+                        fragment.linearLayoutChat.addView(textViewChat);
+                    }
+                });
+
+            }
+        }
+
     }
 
     // 03
@@ -197,16 +221,22 @@ public class Server_FunctionCode {
         Log.i("接收座標", drawPointX + " , " + drawPointY + " 粗細 " + thickThin + " 畫筆顏色 " + color);
         Log.i("狀態", state);
 
-        GuessView gv = fragment.guessFragment.getGuessView();
-        gv.convertSize(screenWidth, screenHeight);
-        if (state.equals("D")) {
-            fragment.guessFragment.getGuessPath().setPast(drawPointX, drawPointY);
-        } else if (state.equals("M")) {
-            gv.setPathPen(fragment.guessFragment.getGuessPath().getPastX(), fragment.guessFragment.getGuessPath().getPastY(), drawPointX, drawPointY, thickThin, color);
-            fragment.guessFragment.getGuessPath().setPast(drawPointX, drawPointY);
-        } else {
-            gv.setPathPen(fragment.guessFragment.getGuessPath().getPastX(), fragment.guessFragment.getGuessPath().getPastY(), drawPointX, drawPointY, thickThin, color);
+
+        try {
+            GuessView gv = fragment.guessFragment.getGuessView();
+            gv.convertSize(screenWidth, screenHeight);
+            if (state.equals("D")) {
+                fragment.guessFragment.getGuessPath().setPast(drawPointX, drawPointY);
+            } else if (state.equals("M")) {
+                gv.setPathPen(fragment.guessFragment.getGuessPath().getPastX(), fragment.guessFragment.getGuessPath().getPastY(), drawPointX, drawPointY, thickThin, color);
+                fragment.guessFragment.getGuessPath().setPast(drawPointX, drawPointY);
+            } else {
+                gv.setPathPen(fragment.guessFragment.getGuessPath().getPastX(), fragment.guessFragment.getGuessPath().getPastY(), drawPointX, drawPointY, thickThin, color);
+            }
+        } catch (NullPointerException e) {
+            e.printStackTrace();
         }
+
     }
 
 
@@ -225,13 +255,13 @@ public class Server_FunctionCode {
         new SearchThread(player_enter).start();
 
         try {
-            Thread.sleep(200);
+            Thread.sleep(400);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
 
         Log.e("player enter", "name: " + player_enter.getUserName());
-        final PlayerFragment pf = new PlayerFragment(player_enter);
+        final PlayerFragment pf = new PlayerFragment(player_enter, fragment.player);
         fragment.playerFragmentList.add(pf);
 //        final String enterName = pf.getPlayer().getUserName();
 
@@ -266,18 +296,22 @@ public class Server_FunctionCode {
         });
     }
 
-
+    // 07
     private void receiveQuestion() {
-        byte[] question_array = new byte[6];
         try {
-            receiveFromServer.read(question_array, 0, 6); // 接收題目
+            byte[] question_len = new byte[2];
+            receiveFromServer.read(question_len, 0, 2); // 訊息bytes 大小
+            int len = Integer.parseInt(new String(question_len));
+
+            byte[] question_array = new byte[len];
+            receiveFromServer.read(question_array, 0, len); // 接收題目
+            String question = new String(question_array);
+            Log.i("收到題目", question);
+
+            fragment.setQuestion(question);
         } catch (IOException e) {
             e.printStackTrace();
         }
-        String question = new String(question_array);
-        Log.i("收到題目", question);
-
-        fragment.setQuestion(question);
     }
 
 
@@ -299,18 +333,42 @@ public class Server_FunctionCode {
         }
 
         // 切換
-        if (ID.equals(String.valueOf(fragment.player.getUserID()))) {
-            Message msg = new Message();
-            msg.what = 1;
-            fragment.handler_room.sendMessage(msg);
-        } else {
-            Message msg = new Message();
-            msg.what = 2;
-            fragment.handler_room.sendMessage(msg);
+        int id = Integer.parseInt(ID);
+
+        List<Player> psl = fragment.playerSequenceList;
+
+        Player drawPlayer = new Player();
+        int draw_pos = 0;
+        int my_pos = 0;
+
+        for (int i = 0; i < psl.size(); i++) {
+            if (psl.get(i).getUserID() == id) {
+                draw_pos = i;
+                drawPlayer = psl.get(i);
+            }
+            if (fragment.player.getUserID() == psl.get(i).getUserID()) {
+                my_pos = i;
+            }
         }
 
 
+        if (fragment.player.getUserID() == id) {
+            Message msg = new Message();
+            msg.what = 1;
+            fragment.handler_room.sendMessage(msg);
+        } else if (my_pos <= draw_pos + 1) {
+            Message msg = new Message();
+            msg.what = 2;
+            fragment.handler_room.sendMessage(msg);
+        } else {
+            fragment.processFragment.setTitle(drawPlayer.getUserName() + " 正在畫");
+            Message msg = new Message();
+            msg.what = 8;
+            fragment.handler_room.sendMessage(msg);
+        }
+
     }
+
 
     private void playerLeave() {
         ID_array = new byte[3];

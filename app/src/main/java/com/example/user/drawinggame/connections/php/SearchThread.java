@@ -14,7 +14,6 @@ public class SearchThread extends ConnectThread {
     private Player searched_player;
 
     public SearchThread(Player player) {
-        super(player);
         this.searched_player = player;
     }
 

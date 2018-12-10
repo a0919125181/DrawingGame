@@ -12,7 +12,6 @@ public class EditThread extends ConnectThread {
     private Player player;
 
     public EditThread(Player player) {
-        super(player);
         this.player = player;
     }
 
@@ -23,8 +22,6 @@ public class EditThread extends ConnectThread {
 
     @Override
     protected void init_object() {
-
-
         JSONObject postDataParams = new JSONObject();
         try {
             postDataParams.put("account", player.getAccount());

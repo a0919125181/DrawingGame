@@ -2,6 +2,7 @@ package com.example.user.drawinggame.connections.php;
 
 import android.util.Log;
 
+import com.example.user.drawinggame.MainActivity;
 import com.example.user.drawinggame.database_classes.Player;
 
 import org.json.JSONException;
@@ -13,8 +14,19 @@ public class SendMsgThread extends ConnectThread {
     private int receiverID;
     private int msgType;      // 0傳送訊息 1加好友
 
+    private boolean isDone = false;
+
+    public boolean isDone() {
+        return isDone;
+    }
+
+    private boolean isSuccess = false;
+
+    public boolean isSuccess() {
+        return isSuccess;
+    }
+
     public SendMsgThread(Player player, String msg, int receiverID, int type) {
-        super(player);
         this.player = player;
         this.msg = msg;
         this.receiverID = receiverID;
@@ -46,6 +58,20 @@ public class SendMsgThread extends ConnectThread {
     @Override
     protected void afterReceived() {
         // 接收處理
+        String sFromPHP = getStr_received();
+        if (!sFromPHP.equals("")) {
+
+            if (sFromPHP.equals("success")) {
+                Log.e("send msg", "success");
+                isSuccess = true;
+            } else if (sFromPHP.equals("fail")) {
+                Log.e("send msg", "fail");
+                isSuccess = false;
+            }
+
+            isDone = true;
+        }
+
     }
 
 }

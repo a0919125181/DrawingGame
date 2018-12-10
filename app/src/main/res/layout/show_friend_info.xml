@@ -85,11 +85,12 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textViewGender" />
 
-        <Button
-            android:id="@+id/buttonAddFriend"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Add"
+        <ImageView
+            android:id="@+id/imageViewAddFriend"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:src="@mipmap/add_user"
+            android:layout_margin="16dp"
             app:layout_constraintBottom_toBottomOf="@id/imageViewFriend"
             app:layout_constraintStart_toEndOf="@id/imageViewFriend" />
 

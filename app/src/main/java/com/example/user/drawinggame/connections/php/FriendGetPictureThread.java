@@ -13,7 +13,6 @@ public class FriendGetPictureThread extends ConnectThread {
 
 
     public FriendGetPictureThread(Player player,  FriendFragment friendFragment) {
-        super(player);
         this.player = player;
         this.friendFragment = friendFragment;
     }

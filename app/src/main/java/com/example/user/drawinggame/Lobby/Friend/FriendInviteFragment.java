@@ -1,6 +1,7 @@
 package com.example.user.drawinggame.Lobby.Friend;
 
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -9,12 +10,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.example.user.drawinggame.Lobby.Message.MessageAdapter;
 import com.example.user.drawinggame.MainActivity;
 import com.example.user.drawinggame.R;
+import com.example.user.drawinggame.connections.php.SearchThread;
 import com.example.user.drawinggame.database_classes.Message;
+import com.example.user.drawinggame.database_classes.Player;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -25,11 +30,18 @@ public class FriendInviteFragment extends Fragment implements AdapterView.OnItem
     private List<Message> messageList;
     private ListView listViewFriend;
 
+    private FriendAdapter adapter;
+
+    private Player player;
 
     public FriendInviteFragment() {
         // Required empty public constructor
     }
 
+    @SuppressLint("ValidFragment")
+    public FriendInviteFragment(Player player) {
+        this.player = player;
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -38,11 +50,11 @@ public class FriendInviteFragment extends Fragment implements AdapterView.OnItem
 
         messageList = MainActivity.appDatabase.messageDao().getMessagesByType(1);
 
-
-
         listViewFriend = (ListView) view.findViewById(R.id.listViewFriend);
-        MessageAdapter adapter = new MessageAdapter(getContext(), messageList);
+        adapter = new FriendAdapter(getContext(), messageList, player);
         listViewFriend.setAdapter(adapter);
+        listViewFriend.setOnItemClickListener(this);
+
 
         return view;
     }
@@ -50,7 +62,11 @@ public class FriendInviteFragment extends Fragment implements AdapterView.OnItem
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         // do item click
+        Log.e("click", String.valueOf(position));
+
     }
+
+
 
 
 }

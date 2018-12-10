@@ -13,7 +13,6 @@ public class RegisterThread extends ConnectThread {
     private Player player;
 
     public RegisterThread(Player player) {
-        super(player);
         this.player = player;
     }
 

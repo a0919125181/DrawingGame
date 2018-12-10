@@ -18,7 +18,6 @@ public class GetPictureThread extends ConnectThread {
 
 
     public GetPictureThread(Player player, Fragment fragment, ImageView imageView) {
-        super(player);
         this.player = player;
         this.fragment = fragment;
         this.imageView = imageView;

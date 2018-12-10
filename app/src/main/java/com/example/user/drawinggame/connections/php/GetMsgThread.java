@@ -1,7 +1,5 @@
 package com.example.user.drawinggame.connections.php;
 
-import android.util.Log;
-
 import com.example.user.drawinggame.MainActivity;
 import com.example.user.drawinggame.database_classes.Message;
 import com.example.user.drawinggame.database_classes.Player;
@@ -9,16 +7,13 @@ import com.example.user.drawinggame.database_classes.Player;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 public class GetMsgThread extends ConnectThread {
 
     private Player player;
 
     public GetMsgThread(Player player) {
-        super(player);
         this.player = player;
     }
 
@@ -47,7 +42,7 @@ public class GetMsgThread extends ConnectThread {
 
         String[] msg_arr = msg.split("##&#!");
 
-        if (!msg_arr[0].equals("")){
+        if (!msg_arr[0].equals("")) {
             for (String s : msg_arr) {
                 try {
                     JSONObject msg_object = new JSONObject(s);
@@ -58,18 +53,18 @@ public class GetMsgThread extends ConnectThread {
                             player.getUserID(),
                             player.getUserName(),
                             msg_object.getString("text"),
-                            new Date().toString(),
+                            new Date().toString(), // ****時間****
                             0,
                             msg_object.getInt("style"));
                     MainActivity.appDatabase.messageDao().addMessage(message);
                     MainActivity.appDatabase.messageDao().updateMessage(message);
 
+                    new MessageReceivedThread(message).start();
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
             }
         }
-
 
 
     }
