@@ -1,26 +1,20 @@
 package com.example.user.drawinggame.Room.Audio;
 
 import android.media.AudioTrack;
-
 import com.example.user.drawinggame.Room.RoomFragment;
-
-import java.util.ArrayList;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class AudioTrackPlay extends Thread {
-    AudioTrack track;
-
+    private AudioTrack track;
     private RoomFragment roomFragment;
-
     private CopyOnWriteArrayList<byte[]> voiceQueue = new CopyOnWriteArrayList<>();
-
-    public AudioTrackPlay(AudioTrack track) {
-        this.track = track;
-    }
+    private boolean isPlaying;
 
     public AudioTrackPlay(AudioTrack track, RoomFragment roomFragment) {
         this.track = track;
         this.roomFragment = roomFragment;
+
+        isPlaying = true;
     }
 
     private int senderID;
@@ -31,12 +25,12 @@ public class AudioTrackPlay extends Thread {
 
     @Override
     public void run() {
-        while (true) {
+        while (isPlaying) {
             playVoice();
         }
     }
 
-    synchronized void playVoice() {
+    private synchronized void playVoice() {
         if (voiceQueue.size() == 0) {
             try {
                 wait();
@@ -47,16 +41,12 @@ public class AudioTrackPlay extends Thread {
 
         //播放語音
         track.write(voiceQueue.get(0), 0, voiceQueue.get(0).length);
-
         voiceQueue.remove(0);
     }
 
     synchronized void putVoice(byte[] tempArray) {
         byte[] voiceByteArray = new byte[2500];
-        for (int i = 0; i < 2500; i++) {
-            voiceByteArray[i] = tempArray[i];
-        }
-
+        System.arraycopy(tempArray, 0, voiceByteArray, 0, 2500);
         voiceQueue.add(voiceByteArray);
 
         senderID = roomFragment.getAtr().getSenderID();

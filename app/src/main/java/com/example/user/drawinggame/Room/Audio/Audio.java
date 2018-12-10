@@ -27,7 +27,7 @@ public class Audio {
         this.id = id;
     }
 
-    void setPort(int port){
+    public void setPort(int port){
         this.port = port;
     }
 
@@ -47,7 +47,7 @@ public class Audio {
         return id;
     }
 
-    int getPort(){
+    public int getPort(){
         return port;
     }
 }

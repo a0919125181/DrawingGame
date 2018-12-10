@@ -1,31 +1,24 @@
 package com.example.user.drawinggame.Room.Audio;
 
-import android.media.AudioFormat;
 import android.media.AudioRecord;
-import android.media.MediaRecorder;
-import android.util.Log;
-
-import java.net.DatagramPacket;
+import com.example.user.drawinggame.Room.RoomFragment;
 import java.net.DatagramSocket;
-import java.net.InetAddress;
-import java.net.SocketException;
-import java.net.UnknownHostException;
 
 public class AudioRecordRecord extends Thread {
-    private Audio audio;
+    private RoomFragment rf;
 
+    private Audio audio;
     private AudioRecord audioRecord;
-    private DatagramSocket sendSocket;
 
     private byte[] buffer;
     private boolean isSocketOn; //語音通道state
     private boolean  isRecording; // 錄製state
 
-    public AudioRecordRecord(Audio audio){
+    public AudioRecordRecord(Audio audio, RoomFragment rf){
         this.audio = audio;
+        this.rf = rf;
 
-        audioRecord = audio.getAudioRecord();
-        sendSocket = audio.getDatagramSocket();
+        this.audioRecord = audio.getAudioRecord();
 
         buffer = new byte[2500];
         isSocketOn = true;
@@ -35,7 +28,8 @@ public class AudioRecordRecord extends Thread {
     @Override
     public void run(){
         audioRecord.startRecording();
-
+        isSocketOn = rf.getUdpConnectionState();
+        isSocketOn = true;
         while (isSocketOn) {
             while(isRecording) {
                 audioRecord.read(buffer, 0, buffer.length); // 錄製內容放到buffer
@@ -44,7 +38,6 @@ public class AudioRecordRecord extends Thread {
         }
 
         if(!isSocketOn) {
-            sendSocket.close(); // close UDP socket
             //錄製迴圈結束 關閉錄製
             if (audioRecord != null) {
                 audioRecord.stop();
@@ -55,7 +48,6 @@ public class AudioRecordRecord extends Thread {
     synchronized public void stopRecording(){
         try {
             isRecording = false;
-            Log.e("Hello", isRecording+"");
             this.wait();
         } catch (InterruptedException e) {
             e.printStackTrace();
@@ -64,7 +56,6 @@ public class AudioRecordRecord extends Thread {
 
     synchronized public void restartRecording(){
         isRecording = true;
-        Log.e("Hello", isRecording+"");
         notify();
     }
 }

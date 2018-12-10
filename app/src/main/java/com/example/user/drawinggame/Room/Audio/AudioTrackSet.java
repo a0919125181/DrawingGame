@@ -7,9 +7,9 @@ import android.media.AudioTrack;
 import com.example.user.drawinggame.Room.RoomFragment;
 
 public class AudioTrackSet {
-    AudioTrack track;
+    private AudioTrack track;
 
-    public AudioTrackSet(RoomFragment rf){
+    public AudioTrackSet(){
         //每秒樣本數(取樣率)
         int frequence = 44100;
 
@@ -24,10 +24,10 @@ public class AudioTrackSet {
 
         // AudioTrack 物件
         track = new AudioTrack(AudioManager.STREAM_MUSIC, frequence, channelInConfig, audioEncoding, bufferSize, AudioTrack.MODE_STREAM);
+    }
 
-        rf.setTrack(track);
-
-        track.play();
+    public AudioTrack getTrack(){
+        return track;
     }
 
 

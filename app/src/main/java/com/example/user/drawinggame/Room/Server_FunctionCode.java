@@ -7,19 +7,11 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ScrollView;
 import android.widget.TextView;
-import android.widget.Toast;
-
-import com.example.user.drawinggame.R;
-import com.example.user.drawinggame.Room.Drawing.DrawFragment;
 import com.example.user.drawinggame.Room.Drawing.GuessView;
-import com.example.user.drawinggame.connections.TCP.Util;
 import com.example.user.drawinggame.connections.php.SearchThread;
 import com.example.user.drawinggame.database_classes.Player;
-
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
 
@@ -40,6 +32,7 @@ public class Server_FunctionCode {
         getFunction();
     }
 
+    //01
     private void audioUDP() {
         byte[] UDP_port_array = new byte[4];
         try {
@@ -48,8 +41,8 @@ public class Server_FunctionCode {
             e.printStackTrace();
         }
         String UDP_port = new String(UDP_port_array);
-        Util.setVoiceCallPort_UDP(fragment, UDP_port); // 回傳UDP port
-        Log.i("UDP_port_array", UDP_port);
+        fragment.setUdpPort(UDP_port); // 回傳UDP port
+        Log.e("udpPort", UDP_port);
     }
 
     private void setReady() {
@@ -185,6 +178,7 @@ public class Server_FunctionCode {
         }
     }
 
+    //05
     private void painting() {
         ID_array = new byte[3];
         byte[] screenWidth_array = new byte[4];
@@ -239,7 +233,7 @@ public class Server_FunctionCode {
 
     }
 
-
+    //06
     private void playerEnter() {
         ID_array = new byte[3];
         try {
@@ -476,7 +470,13 @@ public class Server_FunctionCode {
 
     }
 
+    //12
+    private void checkUdpConnection(){
+        Log.e("UDP", "connect success");
+        fragment.setUdpConnectionState();
+    }
 
+    //20
     private void endGame() {
         Message msg = new Message();
         msg.what = 4;
@@ -517,6 +517,9 @@ public class Server_FunctionCode {
                 break;
             case "11":
                 guess();
+                break;
+            case "12":
+                checkUdpConnection();
                 break;
             case "20":
                 endGame();

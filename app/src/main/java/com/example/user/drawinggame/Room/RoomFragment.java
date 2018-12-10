@@ -91,7 +91,7 @@ public class RoomFragment extends Fragment implements View.OnClickListener {
     private AudioTrack track;
     private AudioTrackPlay atp;
     private ImageView imageViewMic;
-    boolean flag = true;
+    boolean isConnectUdpServer = false;
 
     public AudioTrackReceive getAtr() {
         return atr;
@@ -395,37 +395,22 @@ public class RoomFragment extends Fragment implements View.OnClickListener {
         playerLayoutList.add(constraintLayoutPlayer4);
 
 
-        // Audio
-        ac = new AudioConnect(VoiceCallPort_UDP, String.valueOf(player.getUserID()));
-        audio = ac.getAudio();
-
-        //AudioTrack設置
-        new AudioTrackSet(RoomFragment.this);
-
-        //播放語音 放到另外一個thread
-        atp = new AudioTrackPlay(track, this);
-        atp.start();
-
-        //接收語音
-        atr = new AudioTrackReceive(audio.getDatagramSocket(), track, atp);
-        atr.start();
-
-
-        imageViewMic = (ImageView) view.findViewById(R.id.imageViewMic);
+        imageViewMic = view.findViewById(R.id.imageViewMic);
         imageViewMic.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                    if (flag) {
-                        // 錄製
-                        arr = new AudioRecordRecord(audio);
-                        arr.start();
-                        flag = false;
+                    if (isConnectUdpServer) {
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                arr.restartRecording(); // notify
+                            }
+                        }).start();
                     } else {
-                        // notify
-                        arr.restartRecording();
+                        arr = new AudioRecordRecord(audio, RoomFragment.this); // 錄製
+                        arr.start();
                     }
-
                 } else if (event.getAction() == MotionEvent.ACTION_UP) {
                     new Thread(new Runnable() {
                         @Override
@@ -535,13 +520,38 @@ public class RoomFragment extends Fragment implements View.OnClickListener {
                 UI.showImmersiveModeDialog(alertDialog, true);
                 alertDialog.getWindow().setLayout(UI.width / 3, UI.height / 25 * 9);
                 break;
-
-
+                
         }
+    }
+
+    public void setUdpPort(String port){
+        // set Audio
+        ac = new AudioConnect(Integer.parseInt(port), String.valueOf(player.getUserID()));
+        audio = ac.getAudio();
+
+        //AudioTrack設置
+        track = (new AudioTrackSet()).getTrack();
+        track.play();
+
+        //播放語音 放到另外一個thread
+        atp = new AudioTrackPlay(track, RoomFragment.this);
+        atp.start();
+
+        //接收語音
+        atr = new AudioTrackReceive(audio, atp);
+        atr.start();
     }
 
     public void setTrack(AudioTrack track) {
         this.track = track;
+    }
+
+    void setUdpConnectionState(){
+        isConnectUdpServer = true;
+    }
+
+    public boolean getUdpConnectionState(){
+        return isConnectUdpServer;
     }
 
     void processFragmentSwitcher(Fragment fragment) {
@@ -561,7 +571,6 @@ public class RoomFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onDestroy() {
         super.onDestroy();
-
         audio.getDatagramSocket().close();
     }
 }

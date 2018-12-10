@@ -1,18 +1,14 @@
 package com.example.user.drawinggame.Room.Audio;
 
-import android.media.AudioTrack;
 import android.util.Log;
-
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.SocketException;
 
 public class AudioTrackReceive extends Thread {
-    private boolean isReceiving;
     private DatagramSocket socket;
-    AudioTrack track;
-    AudioTrackPlay atp;
+    private AudioTrackPlay atp;
 
     private int senderID;
 
@@ -20,32 +16,26 @@ public class AudioTrackReceive extends Thread {
         return senderID;
     }
 
-    public AudioTrackReceive(DatagramSocket socket, AudioTrack track, AudioTrackPlay atp) {
-        this.socket = socket;
-        this.track = track;
+    public AudioTrackReceive(Audio audio, AudioTrackPlay atp) {
+        this.socket = audio.getDatagramSocket();
         this.atp = atp;
     }
 
     @Override
     public void run() {
         byte[] buffer = new byte[2503]; //message buffer
-        isReceiving = true;
-
-
+        boolean isReceiving = true;
         while (isReceiving) {
             try {
                 DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
                 socket.receive(packet); //receive
-
                 atp.putVoice(buffer);
 
                 byte[] id = new byte[3];
-                id[0] = packet.getData()[2500];
-                id[1] = packet.getData()[2501];
-                id[2] = packet.getData()[2502];
+                System.arraycopy(packet.getData(),2500, id, 0, 3 );
+
                 senderID = Integer.parseInt(new String(id));
                 Log.e("id", String.valueOf(senderID));
-
             } catch (SocketException e) {
                 isReceiving = false;
                 e.printStackTrace();
