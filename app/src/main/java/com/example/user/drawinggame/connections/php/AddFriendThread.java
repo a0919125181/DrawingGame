@@ -12,7 +12,7 @@ public class AddFriendThread extends ConnectThread {
     private int receiverID;
     private int senderID;
 
-    private boolean isSuccess;
+    private boolean isSuccess = false;
 
     public boolean isSuccess() {
         return isSuccess;
@@ -47,11 +47,11 @@ public class AddFriendThread extends ConnectThread {
         // 接收處理
         String sFromPHP = getStr_received();
         if (sFromPHP.equals("success")) {
-            isSuccess = true;
             Log.e("add friend", "success");
+            isSuccess = true;
         } else if (sFromPHP.equals("fail")) {
-            isSuccess = false;
             Log.e("add friend", "fail");
+            isSuccess = false;
         }
     }
 }

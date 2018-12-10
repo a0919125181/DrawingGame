@@ -28,11 +28,20 @@ import com.example.user.drawinggame.connections.php.SendMsgThread;
 import com.example.user.drawinggame.database_classes.Player;
 import com.example.user.drawinggame.utils.UI;
 
+import java.util.ArrayList;
+import java.util.List;
+
 
 /**
  * A simple {@link Fragment} subclass.
  */
 public class FriendFragment extends Fragment implements View.OnClickListener {
+
+    private FragmentManager fragmentManagerFriend;
+
+    private MyFriendFragment myFriendFragment;
+    private FriendInviteFragment friendInviteFragment;
+    private List<Fragment> fragmentList = new ArrayList<>();
 
     private Player player;
 
@@ -70,8 +79,12 @@ public class FriendFragment extends Fragment implements View.OnClickListener {
 
         player = MainActivity.appDatabase.playerDao().getPlayerBySerialID(Build.SERIAL);
 
-        FragmentManager fragmentManagerLobby = getFragmentManager();
-        fragmentManagerLobby.beginTransaction().replace(R.id.friend_container, new FriendInviteFragment(player)).commit();
+        fragmentManagerFriend = getFragmentManager();
+        myFriendFragment = new MyFriendFragment();
+        fragmentList.add(myFriendFragment);
+        friendInviteFragment = new FriendInviteFragment(player);
+        fragmentList.add(friendInviteFragment);
+
 
         radioGroup = (RadioGroup) view.findViewById(R.id.radioGroup);
         radioButtonID = (RadioButton) view.findViewById(R.id.radioButtonID);
@@ -85,16 +98,40 @@ public class FriendFragment extends Fragment implements View.OnClickListener {
         buttonSearch.setOnClickListener(this);
 
 
-        Button buttonImage = (Button) view.findViewById(R.id.buttonImage);
-        buttonImage.setOnClickListener(this);
+        Button buttonMyFriend = (Button) view.findViewById(R.id.buttonMyFriend);
+        buttonMyFriend.setOnClickListener(this);
+
+        Button buttonFriendInvite = (Button) view.findViewById(R.id.buttonFriendInvite);
+        buttonFriendInvite.setOnClickListener(this);
 
         return view;
     }
 
+    private void rightFragmentSwitcher(Fragment fragmentClicked) {
+        if (fragmentClicked.isVisible()) {
+            fragmentManagerFriend.beginTransaction().remove(fragmentClicked).commit();
+        } else {
+
+            for (Fragment f : fragmentList) {
+                fragmentManagerFriend.beginTransaction().remove(f).commit();
+            }
+            fragmentManagerFriend.beginTransaction()
+                    .replace(R.id.friend_container, fragmentClicked)
+                    .commit();
+        }
+    }
+
+
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
-            case R.id.buttonImage:
+
+            case R.id.buttonMyFriend:
+                rightFragmentSwitcher(myFriendFragment);
+                break;
+
+            case R.id.buttonFriendInvite:
+                rightFragmentSwitcher(friendInviteFragment);
                 break;
 
             case R.id.buttonSearch:

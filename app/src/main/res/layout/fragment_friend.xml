@@ -73,13 +73,24 @@
             android:visibility="invisible" />
 
         <Button
-            android:id="@+id/buttonImage"
-            android:layout_width="wrap_content"
+            android:id="@+id/buttonMyFriend"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/editTextSearchName"
+            android:layout_above="@id/buttonFriendInvite"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentLeft="true"
             android:layout_margin="4dp"
-            android:text="圖片"
-            android:visibility="invisible" />
+            android:text="我的好友" />
+
+        <Button
+            android:id="@+id/buttonFriendInvite"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentBottom="true"
+            android:layout_margin="4dp"
+            android:text="好友邀請" />
 
 
     </RelativeLayout>

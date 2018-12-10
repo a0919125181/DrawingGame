@@ -352,13 +352,14 @@ public class RoomFragment extends Fragment implements View.OnClickListener {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_room, container, false);
 
+        player = MainActivity.appDatabase.playerDao().getPlayerBySerialID(Build.SERIAL);
+
         conn_server_tcp = new ReceiveFromServer_TCP(roomSocket, this);
         conn_server_tcp.start(); // 處理進房後的所有接收
 
         fragmentManagerRoom = getFragmentManager();
         fragmentManagerRoom.beginTransaction().replace(R.id.drawing_container, new FingerDrawFragment()).commit();
 
-        player = MainActivity.appDatabase.playerDao().getPlayerBySerialID(Build.SERIAL);
 
 
         // chatting area

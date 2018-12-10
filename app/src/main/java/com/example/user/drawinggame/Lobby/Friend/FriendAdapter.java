@@ -11,11 +11,13 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.user.drawinggame.MainActivity;
 import com.example.user.drawinggame.R;
 import com.example.user.drawinggame.connections.php.AddFriendThread;
 import com.example.user.drawinggame.connections.php.SearchThread;
+import com.example.user.drawinggame.connections.php.SendMsgThread;
 import com.example.user.drawinggame.database_classes.Message;
 import com.example.user.drawinggame.database_classes.Player;
 import com.example.user.drawinggame.utils.UI;
@@ -105,7 +107,12 @@ public class FriendAdapter extends BaseAdapter {
         holder.imageViewDecline.setOnClickListener(new ReplyListener(position));
 
         while (!st.isDone) {
-            Log.e("wait", "for searching");
+//            Log.e("wait", "for searching");
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
         new UI.DownloadImageTask(holder.imageViewPhoto).execute(player.getPicURL());
 
@@ -126,30 +133,61 @@ public class FriendAdapter extends BaseAdapter {
                     Log.e(String.valueOf(position), "accept");
                     Log.e(String.valueOf(position), "decline");
                     AlertDialog acceptDialog = new AlertDialog.Builder(context)
-                            .setTitle("確定要刪除''" + messageList.get(position).getSenderName() + "''的好友邀請嗎?")
+                            .setTitle("確定要接受''" + messageList.get(position).getSenderName() + "''的好友邀請嗎?")
                             .setPositiveButton("確定", new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
-                                    AddFriendThread aft = new AddFriendThread(player.getUserID(), messageList.get(position).getSenderID());
+
+                                    Player player_friend = new Player(messageList.get(position).getSenderID());
+                                    SearchThread st = new SearchThread(player_friend);
+                                    st.start();
+
+                                    while (!st.isDone) {
+                                        try {
+                                            Thread.sleep(100);
+                                        } catch (InterruptedException e) {
+                                            e.printStackTrace();
+                                        }
+                                    }
+
+
+                                    AddFriendThread aft = new AddFriendThread(player.getUserID(), player_friend.getUserID());
                                     aft.start();
 
-                                    try {
-                                        Thread.sleep(100);
-                                    } catch (InterruptedException e) {
-                                        e.printStackTrace();
+                                    while (!aft.isSuccess()) {
+                                        try {
+                                            Thread.sleep(100);
+                                        } catch (InterruptedException e) {
+                                            e.printStackTrace();
+                                        }
                                     }
 
-                                    if (aft.isSuccess()) {
-                                        MainActivity.appDatabase.messageDao().deleteMessage(messageList.get(position));
-                                        messageList.remove(position);
-                                        notifyDataSetChanged();
 
-                                        // ******************確認好友邀請
+                                    SendMsgThread smt = new SendMsgThread(player, "Hello!", player_friend.getUserID(), 0);
+                                    smt.start();
+
+                                    while (!smt.isDone() && !smt.isSuccess()) {
+                                        try {
+                                            Thread.sleep(100);
+                                        } catch (InterruptedException e) {
+                                            e.printStackTrace();
+                                        }
                                     }
+
+                                    Toast.makeText(context, "已接受邀請", Toast.LENGTH_SHORT).show();
+                                    MainActivity.appDatabase.friendDao().addFriend(player_friend);
+                                    Log.i("資料庫", "新增好友");
+
+                                    MainActivity.appDatabase.messageDao().deleteMessage(messageList.get(position));
+                                    messageList.remove(position);
+                                    notifyDataSetChanged();
+
 
                                 }
                             })
-                            .create();
+                            .
+
+                                    create();
                     UI.showImmersiveModeDialog(acceptDialog, true);
 
                     break;
