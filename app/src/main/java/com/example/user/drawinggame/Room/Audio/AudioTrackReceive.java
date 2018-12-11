@@ -35,7 +35,7 @@ public class AudioTrackReceive extends Thread {
                 System.arraycopy(packet.getData(),2500, id, 0, 3 );
 
                 senderID = Integer.parseInt(new String(id));
-                Log.e("id", String.valueOf(senderID));
+//                Log.e("id", String.valueOf(senderID));
             } catch (SocketException e) {
                 isReceiving = false;
                 e.printStackTrace();

@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.example.user.drawinggame.R;
@@ -20,6 +21,12 @@ import org.w3c.dom.Text;
  * A simple {@link Fragment} subclass.
  */
 public class AnswerFragment extends Fragment {
+
+    private boolean send = false;
+
+    public boolean isSend() {
+        return send;
+    }
 
     private RoomFragment fragment;
     private EditText editTextAnswer;
@@ -56,6 +63,7 @@ public class AnswerFragment extends Fragment {
                 editTextAnswer.setEnabled(false);
                 buttonSubmit.setEnabled(false);
                 sendAnswer();
+                send = true;
             }
         });
 
@@ -67,12 +75,20 @@ public class AnswerFragment extends Fragment {
         String ans = String.valueOf(editTextAnswer.getText());
 
         // send answer
-        new Client_FunctionCode("15", fragment.roomSocket, "頑皮豹");
+        new Client_FunctionCode("15", fragment.roomSocket, ans);
 
         TextView textViewChat = new TextView(getContext());
         textViewChat.setText("你的答案: " + ans);
         textViewChat.setTextColor(Color.parseColor("#006400"));
         fragment.linearLayoutChat.addView(textViewChat);
+
+        final ScrollView scrollViewChat = fragment.getScrollViewChat();
+        scrollViewChat.post(new Runnable() {
+            @Override
+            public void run() {
+                scrollViewChat.fullScroll(ScrollView.FOCUS_DOWN);
+            }
+        });
     }
 
 

@@ -133,6 +133,12 @@ public class LobbyFragment extends Fragment implements View.OnClickListener {
         player = MainActivity.appDatabase.playerDao().getPlayerBySerialID(Build.SERIAL);
         this.tempFile = new File("/sdcard/a.jpg"); // 這句一定要在onCreate()里面調用
 
+        // 更新資料**********
+
+        // 算等級經驗*****************
+
+
+
         // 右上
         imageViewPhoto = view.findViewById(R.id.imageViewPhoto);
         imageViewPhoto.setOnClickListener(imageViewPhotoListener());
@@ -213,6 +219,7 @@ public class LobbyFragment extends Fragment implements View.OnClickListener {
     public void onResume() {
         super.onResume();
 //        new UI.DownloadImageTask(imageViewPhoto).execute(getPicURL());
+
     }
 
     private View.OnClickListener imageViewPhotoListener() {

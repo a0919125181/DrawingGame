@@ -143,7 +143,7 @@ public class UI {
                 bmp = BitmapFactory.decodeStream(in);
 
             } catch (Exception e) {
-                Log.e("Error", e.getMessage());
+//                Log.e("Error", e.getMessage());
                 e.printStackTrace();
             }
             return bmp;
@@ -179,7 +179,7 @@ public class UI {
 
 
             } catch (Exception e) {
-                Log.e("Error", e.getMessage());
+//                Log.e("Error", e.getMessage());
                 e.printStackTrace();
             }
             return bmp;

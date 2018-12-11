@@ -10,6 +10,10 @@ public class AudioTrackPlay extends Thread {
     private CopyOnWriteArrayList<byte[]> voiceQueue = new CopyOnWriteArrayList<>();
     private boolean isPlaying;
 
+    public boolean isPlaying() {
+        return isPlaying;
+    }
+
     public AudioTrackPlay(AudioTrack track, RoomFragment roomFragment) {
         this.track = track;
         this.roomFragment = roomFragment;
@@ -42,6 +46,7 @@ public class AudioTrackPlay extends Thread {
         //播放語音
         track.write(voiceQueue.get(0), 0, voiceQueue.get(0).length);
         voiceQueue.remove(0);
+        senderID = 0;
     }
 
     synchronized void putVoice(byte[] tempArray) {

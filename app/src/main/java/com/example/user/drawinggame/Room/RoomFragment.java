@@ -177,6 +177,10 @@ public class RoomFragment extends Fragment implements View.OnClickListener {
                 case 3:
                     processFragment.setTitle("遊戲開始");
 
+                    for (PlayerFragment pf : playerFragmentList) {
+                        pf.getImageViewPlayer().setBackgroundResource(0);
+                    }
+
                     processFragmentSwitcher(processFragment);
 
                     postDelayed(new Runnable() {
@@ -197,16 +201,6 @@ public class RoomFragment extends Fragment implements View.OnClickListener {
                             .commit();
 
 
-                    if (playerSequenceList.getFirst().getUserID() != player.getUserID()) {
-                        String ans = String.valueOf(answerFragment.getEditTextAnswer().getText());
-
-                        textViewChat = new TextView(getContext());
-                        textViewChat.setText("你的答案: " + ans);
-                        textViewChat.setTextColor(Color.parseColor("#006400"));
-                        linearLayoutChat.addView(textViewChat);
-                    }
-
-
                     processFragment.setTitle("遊戲結束");
                     processFragmentSwitcher(processFragment);
                     postDelayed(new Runnable() {
@@ -216,7 +210,9 @@ public class RoomFragment extends Fragment implements View.OnClickListener {
                         }
                     }, 800);
 
+
                     buttonReady.setText("準備");
+
 
                     textViewChat = new TextView(getContext());
                     textViewChat.setText("答案: " + getQuestion());
@@ -335,12 +331,23 @@ public class RoomFragment extends Fragment implements View.OnClickListener {
                     break;
 
                 case 9:
+                    // talking
+                    for (PlayerFragment pf : playerFragmentList) {
+                        if (pf.getPlayer().getUserID() == atp.getSenderID()) {
+                            pf.getImageViewPlayer().setBackgroundResource(R.drawable.bg_pf_yello);
+                        }
+                    }
+                    break;
 
+                case 10:
+                    // stop talking
+                    for (PlayerFragment pf : playerFragmentList) {
+                        pf.getImageViewPlayer().setBackgroundResource(0);
+                    }
                     break;
             }
         }
     };
-
 
 
     public RoomFragment() {
@@ -412,6 +419,29 @@ public class RoomFragment extends Fragment implements View.OnClickListener {
                     } else {
                         arr = new AudioRecordRecord(audio, RoomFragment.this); // 錄製
                         arr.start();
+
+                        // who is talking
+//                        new Thread(new Runnable() {
+//                            @Override
+//                            public void run() {
+//                                while (true) {
+//                                    if (atr != null) {
+//                                        if (atp.isPlaying()) {
+//                                            if (atp.getSenderID() != 0) {
+//                                                Log.e("play id", String.valueOf(atp.getSenderID()));
+//                                                Message msg = new Message();
+//                                                msg.what = 9;
+//                                                handler_room.sendMessage(msg);
+//                                            }
+//                                        } else {
+//                                            Message msg = new Message();
+//                                            msg.what = 10;
+//                                            handler_room.sendMessage(msg);
+//                                        }
+//                                    }
+//                                }
+//                            }
+//                        }).start();
                     }
                 } else if (event.getAction() == MotionEvent.ACTION_UP) {
                     new Thread(new Runnable() {
@@ -424,24 +454,6 @@ public class RoomFragment extends Fragment implements View.OnClickListener {
                 return true;
             }
         });
-
-
-        // who is talking
-        Runnable talkingRunnable = new Runnable() {
-            @Override
-            public void run() {
-                while (playerFragmentList != null) {
-                    for (PlayerFragment pf : playerFragmentList) {
-                        if (pf != null && pf.getPlayer().getUserID() == atr.getSenderID()) {
-                            pf.getImageViewPlayer().setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_pf_yello));
-                        }
-                    }
-
-                }
-            }
-        };
-        Thread talkingThread = new Thread(talkingRunnable);
-//        talkingThread.start();
 
         return view;
     }
@@ -482,9 +494,6 @@ public class RoomFragment extends Fragment implements View.OnClickListener {
                 }
                 Toast.makeText(getContext(), seq, Toast.LENGTH_LONG).show();
 
-
-                new Client_FunctionCode("15", roomSocket, "頑皮豹");
-
                 break;
 
             case R.id.buttonReady:
@@ -514,13 +523,17 @@ public class RoomFragment extends Fragment implements View.OnClickListener {
                                 } catch (InterruptedException e) {
                                     e.printStackTrace();
                                 }
+
                                 UI.fragmentSwitcher(new LobbyFragment(), false);
+                                onDestroy();
                             }
                         })
                         .setNegativeButton("取消", null)
                         .create();
                 UI.showImmersiveModeDialog(alertDialog, true);
                 alertDialog.getWindow().setLayout(UI.width / 3, UI.height / 25 * 9);
+
+
                 break;
 
         }

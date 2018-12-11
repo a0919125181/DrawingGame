@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
+import com.example.user.drawinggame.R;
 import com.example.user.drawinggame.Room.Drawing.GuessView;
 import com.example.user.drawinggame.connections.php.SearchThread;
 import com.example.user.drawinggame.database_classes.Player;
@@ -59,7 +60,7 @@ public class Server_FunctionCode {
 
         ID = new String(ID_array);
         String readyCancel = new String(readyCancel_array);
-        int id = Integer.parseInt(ID);
+        final int id = Integer.parseInt(ID);
 
         for (final PlayerFragment pf : fragment.playerFragmentList) {
             if (pf.getPlayer().getUserID() == id) {
@@ -81,6 +82,23 @@ public class Server_FunctionCode {
                         textViewChat.setText(pf.getPlayer().getUserName() + " " + status);
                         textViewChat.setTextColor(Color.DKGRAY);
                         fragment.linearLayoutChat.addView(textViewChat);
+
+                        final ScrollView scrollViewChat = fragment.getScrollViewChat();
+                        scrollViewChat.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                scrollViewChat.fullScroll(ScrollView.FOCUS_DOWN);
+                            }
+                        });
+
+                        if (pf.getImageViewPlayer() != null) {
+                            if (status == "已準備") {
+                                pf.getImageViewPlayer().setBackgroundResource(R.drawable.button_brush);
+                            } else if (status == "取消準備") {
+                                pf.getImageViewPlayer().setBackgroundResource(0);
+                            }
+                        }
+
                     }
                 });
 
@@ -357,7 +375,7 @@ public class Server_FunctionCode {
             msg.what = 2;
             fragment.handler_room.sendMessage(msg);
         } else {
-            fragment.processFragment.setTitle(drawPlayer.getUserName() + " 正在畫");
+            fragment.processFragment.setTitle(drawPlayer.getUserName() + "\n正在畫");
             Message msg = new Message();
             msg.what = 8;
             fragment.handler_room.sendMessage(msg);
@@ -480,9 +498,11 @@ public class Server_FunctionCode {
 
     // 15
     private void ansCorrect() {
+        Log.e("function", "15");
         try {
             ID_array = new byte[3];
             byte[] correct_array = new byte[1];
+
             byte[] len_array = new byte[2];
 
 
@@ -490,7 +510,7 @@ public class Server_FunctionCode {
             receiveFromServer.read(correct_array, 0, 1);    // 接收答對 || 答錯
             receiveFromServer.read(len_array, 0, 2);        // 題目長度
 
-            int len = Integer.parseInt(new String(correct_array));
+            int len = Integer.parseInt(new String(len_array));
             byte[] ans = new byte[len];
             receiveFromServer.read(ans, 0, len);                // 題目
             final String guess = new String(ans);
@@ -499,10 +519,11 @@ public class Server_FunctionCode {
             int id = Integer.parseInt(new String(ID_array));
             int iCorrect = Integer.parseInt(new String(correct_array));
 
-            final Player player = new Player(id);
+
 
             List<Player> playerSequenceList = fragment.playerSequenceList;
             for (Player p : playerSequenceList) {
+                final Player player = p;
                 if (p.getUserID() == id) {
 
                     if (iCorrect == 1) {
@@ -513,6 +534,14 @@ public class Server_FunctionCode {
                                 textViewChat.setText(player.getUserName() + " 答對!");
                                 textViewChat.setTextColor(Color.parseColor("#FF8800"));
                                 fragment.linearLayoutChat.addView(textViewChat);
+
+                                final ScrollView scrollViewChat = fragment.getScrollViewChat();
+                                scrollViewChat.post(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        scrollViewChat.fullScroll(ScrollView.FOCUS_DOWN);
+                                    }
+                                });
                             }
                         });
                     } else if (iCorrect == 0) {
@@ -523,6 +552,14 @@ public class Server_FunctionCode {
                                 textViewChat.setText(player.getUserName() + " 答錯! (" + guess + ")");
                                 textViewChat.setTextColor(Color.parseColor("#BBBB00"));
                                 fragment.linearLayoutChat.addView(textViewChat);
+
+                                final ScrollView scrollViewChat = fragment.getScrollViewChat();
+                                scrollViewChat.post(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        scrollViewChat.fullScroll(ScrollView.FOCUS_DOWN);
+                                    }
+                                });
                             }
                         });
                     }
