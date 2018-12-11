@@ -75,11 +75,11 @@ public class GuessView extends View {
         mPath.reset();
     }
 
-    public void convertSize(String width, String height){
+    public void convertSize(String width, String height) {
         int ownWidth = this.getWidth();
         int ownHeight = this.getHeight();
 
-        widthScale = ownWidth / Integer.parseInt(width);
-        heightScale = ownHeight / Integer.parseInt(height);
+        widthScale = (float) ownWidth / (float) Integer.parseInt(width);
+        heightScale = (float) ownHeight / (float) Integer.parseInt(height);
     }
 }

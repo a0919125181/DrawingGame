@@ -115,7 +115,7 @@ public class RoomFragment extends Fragment implements View.OnClickListener {
 
 
     ProcessFragment processFragment = new ProcessFragment();
-    private AnswerFragment answerFragment = new AnswerFragment();
+    private AnswerFragment answerFragment;
 
     private String question;
 
@@ -189,6 +189,8 @@ public class RoomFragment extends Fragment implements View.OnClickListener {
                     break;
 
                 case 4:
+
+                    // 遊戲結束 功能代碼20
                     fragmentManagerRoom
                             .beginTransaction()
                             .replace(R.id.drawing_container, new FingerDrawFragment())
@@ -197,26 +199,22 @@ public class RoomFragment extends Fragment implements View.OnClickListener {
 
                     if (playerSequenceList.getFirst().getUserID() != player.getUserID()) {
                         String ans = String.valueOf(answerFragment.getEditTextAnswer().getText());
+
                         textViewChat = new TextView(getContext());
                         textViewChat.setText("你的答案: " + ans);
                         textViewChat.setTextColor(Color.parseColor("#006400"));
                         linearLayoutChat.addView(textViewChat);
-                        answerFragment.getEditTextAnswer().setText("");
-
-
-                        // send answer
                     }
 
+
                     processFragment.setTitle("遊戲結束");
-
                     processFragmentSwitcher(processFragment);
-
                     postDelayed(new Runnable() {
                         @Override
                         public void run() {
                             processFragmentSwitcher(processFragment);
                         }
-                    }, 1500);
+                    }, 800);
 
                     buttonReady.setText("準備");
 
@@ -288,7 +286,7 @@ public class RoomFragment extends Fragment implements View.OnClickListener {
 
                         fragmentManagerRoom
                                 .beginTransaction()
-                                .replace(R.id.drawing_container, answerFragment)
+                                .replace(R.id.drawing_container, answerFragment = new AnswerFragment(RoomFragment.this))
                                 .commit();
                     } else {
                         fragmentManagerRoom
@@ -296,7 +294,6 @@ public class RoomFragment extends Fragment implements View.OnClickListener {
                                 .replace(R.id.drawing_container, new Fragment())
                                 .commit();
                     }
-
 
 
                     break;
@@ -336,9 +333,14 @@ public class RoomFragment extends Fragment implements View.OnClickListener {
                             .replace(R.id.drawing_container, new Fragment())
                             .commit();
                     break;
+
+                case 9:
+
+                    break;
             }
         }
     };
+
 
 
     public RoomFragment() {
@@ -359,7 +361,6 @@ public class RoomFragment extends Fragment implements View.OnClickListener {
 
         fragmentManagerRoom = getFragmentManager();
         fragmentManagerRoom.beginTransaction().replace(R.id.drawing_container, new FingerDrawFragment()).commit();
-
 
 
         // chatting area
@@ -521,11 +522,11 @@ public class RoomFragment extends Fragment implements View.OnClickListener {
                 UI.showImmersiveModeDialog(alertDialog, true);
                 alertDialog.getWindow().setLayout(UI.width / 3, UI.height / 25 * 9);
                 break;
-                
+
         }
     }
 
-    public void setUdpPort(String port){
+    public void setUdpPort(String port) {
         // set Audio
         ac = new AudioConnect(Integer.parseInt(port), String.valueOf(player.getUserID()));
         audio = ac.getAudio();
@@ -547,11 +548,11 @@ public class RoomFragment extends Fragment implements View.OnClickListener {
         this.track = track;
     }
 
-    void setUdpConnectionState(){
+    void setUdpConnectionState() {
         isConnectUdpServer = true;
     }
 
-    public boolean getUdpConnectionState(){
+    public boolean getUdpConnectionState() {
         return isConnectUdpServer;
     }
 

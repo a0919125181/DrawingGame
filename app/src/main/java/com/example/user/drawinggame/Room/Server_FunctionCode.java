@@ -7,9 +7,11 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ScrollView;
 import android.widget.TextView;
+
 import com.example.user.drawinggame.Room.Drawing.GuessView;
 import com.example.user.drawinggame.connections.php.SearchThread;
 import com.example.user.drawinggame.database_classes.Player;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
@@ -471,9 +473,68 @@ public class Server_FunctionCode {
     }
 
     //12
-    private void checkUdpConnection(){
+    private void checkUdpConnection() {
         Log.e("UDP", "connect success");
         fragment.setUdpConnectionState();
+    }
+
+    // 15
+    private void ansCorrect() {
+        try {
+            ID_array = new byte[3];
+            byte[] correct_array = new byte[1];
+            byte[] len_array = new byte[2];
+
+
+            receiveFromServer.read(ID_array, 0, 3);         // 接收ID
+            receiveFromServer.read(correct_array, 0, 1);    // 接收答對 || 答錯
+            receiveFromServer.read(len_array, 0, 2);        // 題目長度
+
+            int len = Integer.parseInt(new String(correct_array));
+            byte[] ans = new byte[len];
+            receiveFromServer.read(ans, 0, len);                // 題目
+            final String guess = new String(ans);
+
+
+            int id = Integer.parseInt(new String(ID_array));
+            int iCorrect = Integer.parseInt(new String(correct_array));
+
+            final Player player = new Player(id);
+
+            List<Player> playerSequenceList = fragment.playerSequenceList;
+            for (Player p : playerSequenceList) {
+                if (p.getUserID() == id) {
+
+                    if (iCorrect == 1) {
+                        fragment.getActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                TextView textViewChat = new TextView(fragment.getContext());
+                                textViewChat.setText(player.getUserName() + " 答對!");
+                                textViewChat.setTextColor(Color.parseColor("#FF8800"));
+                                fragment.linearLayoutChat.addView(textViewChat);
+                            }
+                        });
+                    } else if (iCorrect == 0) {
+                        fragment.getActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                TextView textViewChat = new TextView(fragment.getContext());
+                                textViewChat.setText(player.getUserName() + " 答錯! (" + guess + ")");
+                                textViewChat.setTextColor(Color.parseColor("#BBBB00"));
+                                fragment.linearLayoutChat.addView(textViewChat);
+                            }
+                        });
+                    }
+
+                    break;
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
     }
 
     //20
@@ -520,6 +581,9 @@ public class Server_FunctionCode {
                 break;
             case "12":
                 checkUdpConnection();
+                break;
+            case "15":
+                ansCorrect();
                 break;
             case "20":
                 endGame();
