@@ -138,7 +138,6 @@ public class LobbyFragment extends Fragment implements View.OnClickListener {
         // 算等級經驗*****************
 
 
-
         // 右上
         imageViewPhoto = view.findViewById(R.id.imageViewPhoto);
         imageViewPhoto.setOnClickListener(imageViewPhotoListener());
@@ -212,7 +211,31 @@ public class LobbyFragment extends Fragment implements View.OnClickListener {
             }
         }).start();
 
+
+        calLvExp();
+
+
         return view;
+    }
+
+
+    // 算等級經驗
+    private void calLvExp() {
+        int mLv = player.getLevel();
+        int mExp = player.getExp();
+
+        Log.e("my Lv: " + mLv, "my exp: " + mExp);
+
+        for (int i = 0; i < 10; i++) {
+            int maxExp = (int) (Math.pow((i - 1), (5.0 / 3.0)) + 20);
+            Log.e("Lv: " + i, "max exp: " + maxExp);
+        }
+
+        int level = (int) Math.pow((mExp - 20), (3.0 / 5.0)) + 1;
+        Log.e("actual Lv: " + level, "my exp: " + mExp);
+
+        textViewLevel.getText();
+        progressBarExp.getProgress();
     }
 
     @Override

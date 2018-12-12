@@ -177,6 +177,8 @@ public class RoomFragment extends Fragment implements View.OnClickListener {
                 case 3:
                     processFragment.setTitle("遊戲開始");
 
+                    buttonReady.setEnabled(false);
+
                     for (PlayerFragment pf : playerFragmentList) {
                         pf.getImageViewPlayer().setBackgroundResource(0);
                     }
@@ -212,6 +214,7 @@ public class RoomFragment extends Fragment implements View.OnClickListener {
 
 
                     buttonReady.setText("準備");
+                    buttonReady.setEnabled(true);
 
 
                     textViewChat = new TextView(getContext());
