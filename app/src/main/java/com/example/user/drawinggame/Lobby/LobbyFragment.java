@@ -2,13 +2,16 @@ package com.example.user.drawinggame.Lobby;
 
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.media.Image;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.util.Log;
@@ -37,6 +40,7 @@ import com.example.user.drawinggame.utils.UI;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -288,7 +292,6 @@ public class LobbyFragment extends Fragment implements View.OnClickListener {
         };
     }
 
-
     private View.OnClickListener buttonCreateRoomListener() {
         return new View.OnClickListener() {
             @Override
@@ -304,14 +307,15 @@ public class LobbyFragment extends Fragment implements View.OnClickListener {
                     @Override
                     public void onClick(View v) {
                         alertDialogCreateRoom.dismiss();
-                        // create room connect
-//                        UI.fragmentSwitcher(new RoomFragment(), false);
+                        //create room connect
+                        //UI.fragmentSwitcher(new RoomFragment(), false);
                     }
                 });
 
 
                 UI.showImmersiveModeDialog(alertDialogCreateRoom, true);
                 alertDialogCreateRoom.getWindow().setLayout(UI.width / 2, UI.height / 3 * 2);
+
             }
         };
     }
@@ -332,28 +336,22 @@ public class LobbyFragment extends Fragment implements View.OnClickListener {
         switch (view.getId()) {
 
             case R.id.infoPhoto:
+                // 自選圖片
+                Intent intent = new Intent(Intent.ACTION_PICK);
+                // 開啟Pictures畫面Type設定為image
+                intent.setType("image/*");
+                // 使用Intent.ACTION_GET_CONTENT這個Action
+                // 會開啟選取圖檔視窗讓您選取手機內圖檔
+                intent.setAction(Intent.ACTION_GET_CONTENT);
+                intent.putExtra("crop", "true");                // crop = true 有這句才能叫出裁剪頁面.
+                intent.putExtra("aspectX", 1);                  // 这兩項為裁剪框的比例.
+                intent.putExtra("aspectY", 1);                  // x:y=1:1
+                intent.putExtra("output", Uri.fromFile(tempFile));
+                intent.putExtra("outputFormat", "JPEG");        // 返回格式
 
-
-                /**
-                 // 自選圖片
-                 Intent intent = new Intent(Intent.ACTION_PICK);
-                 // 開啟Pictures畫面Type設定為image
-                 intent.setType("image/*");
-                 // 使用Intent.ACTION_GET_CONTENT這個Action
-                 // 會開啟選取圖檔視窗讓您選取手機內圖檔
-                 intent.setAction(Intent.ACTION_GET_CONTENT);
-                 intent.putExtra("crop", "true");                // crop = true 有這句才能叫出裁剪頁面.
-                 intent.putExtra("aspectX", 1);                  // 这兩項為裁剪框的比例.
-                 intent.putExtra("aspectY", 1);                  // x:y=1:1
-                 intent.putExtra("output", Uri.fromFile(tempFile));
-                 intent.putExtra("outputFormat", "JPEG");        // 返回格式
-
-                 // 取得相片後返回本畫面
-                 startActivityForResult(Intent.createChooser(intent, "選擇圖片"), 1);
-                 */
-
+                // 取得相片後返回本畫面
+                startActivityForResult(Intent.createChooser(intent, "選擇圖片"), 1);
                 break;
-
             case R.id.buttonEdit:
                 buttonDone.setVisibility(View.VISIBLE);
                 infoPhoto.setEnabled(true);
@@ -385,6 +383,10 @@ public class LobbyFragment extends Fragment implements View.OnClickListener {
                 textViewName.setText(player.getUserName());
 
                 new EditThread(player).start();
+
+                Bitmap bm=((BitmapDrawable)infoPhoto.getDrawable()).getBitmap();
+                new UI.SaveImageTask(getContext(), imageViewPhoto, mImagePath, "myPhoto").execute(getPicURL());
+//                FileOutputStream outStream = openFileOutput("photo.jpg", Context.MODE_PRIVATE);
                 break;
 
             case R.id.textViewPlayerIntro:
