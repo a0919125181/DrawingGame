@@ -231,11 +231,13 @@ public class LobbyFragment extends Fragment implements View.OnClickListener {
 
         for (int i = 0; i < 10; i++) {
             int maxExp = (int) (Math.pow((i - 1), (5.0 / 3.0)) + 20);
-            Log.e("Lv: " + i, "max exp: " + maxExp);
+            Log.e("Lv: " + i, "max exp: " + (maxExp)+"+1");
         }
 
+
+        mExp = 24;
         int level = (int) Math.pow((mExp - 20), (3.0 / 5.0)) + 1;
-        Log.e("actual Lv: " + level, "my exp: " + mExp);
+        Log.e("Lv: " + level, "exp: " + mExp);
 
         textViewLevel.getText();
         progressBarExp.getProgress();
