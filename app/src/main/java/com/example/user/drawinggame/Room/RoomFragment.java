@@ -212,6 +212,8 @@ public class RoomFragment extends Fragment implements View.OnClickListener {
                         }
                     }, 800);
 
+                    UI.hideSystemUI(getActivity());
+
 
                     buttonReady.setText("準備");
                     buttonReady.setEnabled(true);
