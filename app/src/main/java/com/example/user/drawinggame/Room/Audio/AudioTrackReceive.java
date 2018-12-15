@@ -11,6 +11,7 @@ public class AudioTrackReceive extends Thread {
     private AudioTrackPlay atp;
 
     private int senderID;
+    boolean isReceiving;
 
     public int getSenderID() {
         return senderID;
@@ -19,12 +20,13 @@ public class AudioTrackReceive extends Thread {
     public AudioTrackReceive(Audio audio, AudioTrackPlay atp) {
         this.socket = audio.getDatagramSocket();
         this.atp = atp;
+        isReceiving = true;
     }
 
     @Override
     public void run() {
         byte[] buffer = new byte[2503]; //message buffer
-        boolean isReceiving = true;
+
         while (isReceiving) {
             try {
                 DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
@@ -38,11 +40,14 @@ public class AudioTrackReceive extends Thread {
 //                Log.e("id", String.valueOf(senderID));
             } catch (SocketException e) {
                 isReceiving = false;
-                e.printStackTrace();
             } catch (IOException e) {
-                e.printStackTrace();
+                Log.e("Error", e.getMessage());
             }
 
         }
+    }
+
+    public void closeReceiving(){
+        isReceiving = false;
     }
 }

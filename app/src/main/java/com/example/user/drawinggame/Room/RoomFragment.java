@@ -518,6 +518,7 @@ public class RoomFragment extends Fragment implements View.OnClickListener {
                             public void onClick(DialogInterface dialog, int which) {
                                 try {
 //                                    new Client_FunctionCode("09", roomSocket);
+                                    atr.closeReceiving();
                                     roomSocket.close();
                                     conn_server_tcp.exit = false;
                                     conn_server_tcp.join();

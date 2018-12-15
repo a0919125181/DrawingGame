@@ -1,17 +1,14 @@
 package com.example.user.drawinggame.Lobby;
 
-
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
-import android.media.Image;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
+import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.util.Log;
@@ -38,9 +35,9 @@ import com.example.user.drawinggame.database_classes.Player;
 import com.example.user.drawinggame.utils.Listeners;
 import com.example.user.drawinggame.utils.UI;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -86,15 +83,15 @@ public class LobbyFragment extends Fragment implements View.OnClickListener {
     private TextView textViewPlayerAge;
     private TextView textViewPlayerIntro;
 
-    private String mImagePath = "/data/user/0/com.example.user.drawinggame/app_imageDir/";
-
-    private ImageView infoPhoto;
-    private File tempFile;
+    private String mProfileImagePath = "data/user/0/com.example.user.drawinggame/app_imageDir";
     private String picURL;
 
-    public String getPicURL() {
-        return picURL;
-    }
+    private ImageView infoPhoto;
+//    private File tempFile;
+
+//    public String getPicURL() {
+//        return picURL;
+//    }
 
     public void setPicURL(String picURL) {
         this.picURL = picURL;
@@ -103,7 +100,6 @@ public class LobbyFragment extends Fragment implements View.OnClickListener {
     // edit intro xml
     private EditText editTextIntro;
     private Button buttonFinish;
-
 
     //
     private Fragment fragmentMessage = new MessageFragment();
@@ -135,7 +131,7 @@ public class LobbyFragment extends Fragment implements View.OnClickListener {
 
         // 獲取資料
         player = MainActivity.appDatabase.playerDao().getPlayerBySerialID(Build.SERIAL);
-        this.tempFile = new File("/sdcard/a.jpg"); // 這句一定要在onCreate()里面調用
+//        this.tempFile = new File("/sdcard/a.jpg"); // 這句一定要在onCreate()里面調用
 
         // 更新資料**********
 
@@ -154,7 +150,13 @@ public class LobbyFragment extends Fragment implements View.OnClickListener {
             e.printStackTrace();
         }
 
-        new UI.SaveImageTask(getContext(), imageViewPhoto, mImagePath, "myPhoto").execute(getPicURL());
+        try {//內存找不到 就從PHP撈
+            new UI().loadImageFromStorage(imageViewPhoto, mProfileImagePath, "profilePhoto");
+        } catch (FileNotFoundException e) {
+            new LobbyGetPictureThread(player, LobbyFragment.this).start();
+        }
+
+//        new UI.SaveImageTask(getContext(), imageViewPhoto, mImagePath, "myPhoto").execute(getPicURL());
 
 
         textViewName = view.findViewById(R.id.textViewName);
@@ -215,10 +217,7 @@ public class LobbyFragment extends Fragment implements View.OnClickListener {
             }
         }).start();
 
-
         calLvExp();
-
-
         return view;
     }
 
@@ -245,8 +244,13 @@ public class LobbyFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onResume() {
         super.onResume();
+        try {//內存找不到 就從PHP撈
+            new UI().loadImageFromStorage(imageViewPhoto, mProfileImagePath, "profilePhoto");
+        } catch (FileNotFoundException e) {
+            new LobbyGetPictureThread(player, LobbyFragment.this).start();
+        }
+//        new UI().loadImageFromStorage(infoPhoto, mProfileImagePath, "profilePhoto");
 //        new UI.DownloadImageTask(imageViewPhoto).execute(getPicURL());
-
     }
 
     private View.OnClickListener imageViewPhotoListener() {
@@ -259,8 +263,12 @@ public class LobbyFragment extends Fragment implements View.OnClickListener {
                 infoPhoto = (ImageView) viewShowInfo.findViewById(R.id.infoPhoto);
                 infoPhoto.setEnabled(false);
                 infoPhoto.setOnClickListener(LobbyFragment.this);
-                new LobbyGetPictureThread(player, LobbyFragment.this).start();
-
+                try { //內存找不到 就從PHP撈
+                    new UI().loadImageFromStorage(imageViewPhoto, mProfileImagePath, "profilePhoto");
+                } catch (FileNotFoundException e) {
+                    new LobbyGetPictureThread(player, LobbyFragment.this).start();
+                }
+//                new LobbyGetPictureThread(player, LobbyFragment.this).start();
                 try {
                     Thread.sleep(200);
                 } catch (InterruptedException e) {
@@ -268,7 +276,7 @@ public class LobbyFragment extends Fragment implements View.OnClickListener {
                 }
 
 //                new UI.DownloadImageTask(infoPhoto).execute(getPicURL());
-                UI.loadImageFromStorage(infoPhoto, mImagePath, "myPhoto");
+//                UI.loadImageFromStorage(infoPhoto, mImagePath, "myPhoto");
 
                 textViewID = (TextView) viewShowInfo.findViewById(R.id.textViewID);
                 textViewID.setText("ID: " + player.getUserID());
@@ -308,7 +316,6 @@ public class LobbyFragment extends Fragment implements View.OnClickListener {
                         .setView(viewShowInfo)
                         .create();
 
-
                 Log.e("show", "dialog");
                 UI.showImmersiveModeDialog(alertDialogShowInfo, true);
             }
@@ -335,7 +342,6 @@ public class LobbyFragment extends Fragment implements View.OnClickListener {
                     }
                 });
 
-
                 UI.showImmersiveModeDialog(alertDialogCreateRoom, true);
                 alertDialogCreateRoom.getWindow().setLayout(UI.width / 2, UI.height / 3 * 2);
 
@@ -357,23 +363,15 @@ public class LobbyFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
-
             case R.id.infoPhoto:
-                // 自選圖片
-                Intent intent = new Intent(Intent.ACTION_PICK);
-                // 開啟Pictures畫面Type設定為image
-                intent.setType("image/*");
-                // 使用Intent.ACTION_GET_CONTENT這個Action
-                // 會開啟選取圖檔視窗讓您選取手機內圖檔
-                intent.setAction(Intent.ACTION_GET_CONTENT);
-                intent.putExtra("crop", "true");                // crop = true 有這句才能叫出裁剪頁面.
-                intent.putExtra("aspectX", 1);                  // 这兩項為裁剪框的比例.
-                intent.putExtra("aspectY", 1);                  // x:y=1:1
-                intent.putExtra("output", Uri.fromFile(tempFile));
-                intent.putExtra("outputFormat", "JPEG");        // 返回格式
-
-                // 取得相片後返回本畫面
-                startActivityForResult(Intent.createChooser(intent, "選擇圖片"), 1);
+                Intent pickPhoto = new Intent(Intent.ACTION_PICK); // 自選圖片
+                pickPhoto.setType("image/*"); // 開啟Pictures畫面Type設定為image
+                pickPhoto.putExtra("crop", "true"); // 叫出裁剪頁面.
+                pickPhoto.putExtra("aspectX", 1);
+                pickPhoto.putExtra("aspectY", 1); // x:y=1:1
+                pickPhoto.putExtra("outputFormat", "JPEG"); // 返回格式
+                startActivityForResult(pickPhoto,1);
+//                pickPhoto.setAction(Intent.ACTION_GET_CONTENT);
                 break;
             case R.id.buttonEdit:
                 buttonDone.setVisibility(View.VISIBLE);
@@ -407,8 +405,30 @@ public class LobbyFragment extends Fragment implements View.OnClickListener {
 
                 new EditThread(player).start();
 
-                Bitmap bm=((BitmapDrawable)infoPhoto.getDrawable()).getBitmap();
-                new UI.SaveImageTask(getContext(), imageViewPhoto, mImagePath, "myPhoto").execute(getPicURL());
+                Bitmap bm = ((BitmapDrawable) infoPhoto.getDrawable()).getBitmap();
+                mProfileImagePath = new UI().saveToInternalStorage(bm, this.getContext(), "profilePhoto");
+                try { //內存找不到 就從PHP撈
+                    new UI().loadImageFromStorage(imageViewPhoto, mProfileImagePath, "profilePhoto");
+                } catch (FileNotFoundException e) {
+                    new LobbyGetPictureThread(player, LobbyFragment.this).start();
+                }
+
+                Profile profile = new Profile(String.valueOf(player.getUserID())); // 建profile物件
+                ByteArrayOutputStream stream = new ByteArrayOutputStream(); //三行將bitmap轉byte[]
+                bm.compress(Bitmap.CompressFormat.PNG, 100, stream);
+                byte[] imageInByte = stream.toByteArray();
+                Log.e("imageSize", imageInByte.length+"");
+                profile.setPhoto(imageInByte);
+                new SendProfilePhoto(profile).start(); // 傳送
+
+//                Bitmap bitmap = BitmapFactory.decodeByteArray(imageInByte, 0, imageInByte.length);
+//                stream = new ByteArrayOutputStream(); //三行將bitmap轉byte[]
+//                bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
+//                imageInByte = stream.toByteArray();
+//                profile.setPhoto(imageInByte);
+
+//                Log.e("path", mProfileImagePath);
+//                new UI.SaveImageTask(getContext(), imageViewPhoto, mImagePath, "myPhoto").execute(getPicURL());
 //                FileOutputStream outStream = openFileOutput("photo.jpg", Context.MODE_PRIVATE);
                 break;
 
@@ -421,6 +441,7 @@ public class LobbyFragment extends Fragment implements View.OnClickListener {
 
                 editTextIntro = viewIntro.findViewById(R.id.editTextIntro);
                 editTextIntro.setText(textViewPlayerIntro.getText());
+
 
                 buttonFinish = viewIntro.findViewById(R.id.buttonFinish);
                 buttonFinish.setOnClickListener(new View.OnClickListener() {
@@ -504,24 +525,19 @@ public class LobbyFragment extends Fragment implements View.OnClickListener {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        //當使用者按下確定後
-        if (resultCode == RESULT_OK) {
-            try {
-                final Uri imageUri = data.getData();
-                Log.e("imageUri", String.valueOf(imageUri));
-                final InputStream imageStream = getContext().getContentResolver().openInputStream(imageUri);
-                final Bitmap selectedImage = BitmapFactory.decodeStream(imageStream);
-                // 設定到ImageView
-                infoPhoto.setImageBitmap(selectedImage);
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-                Toast.makeText(getContext(), "Something went wrong", Toast.LENGTH_LONG).show();
-            }
-
-        } else {
-            Toast.makeText(getContext(), "You haven't picked Image", Toast.LENGTH_LONG).show();
+        if (resultCode == RESULT_OK) { //當使用者按下確定
+            final Bitmap selectedImage = data.getExtras().getParcelable("data");
+            infoPhoto.setImageBitmap(selectedImage);// 設定到ImageView
+//            try {
+//                Uri imageUri = data.getData();
+//                final InputStream imageStream = getContext().getContentResolver().openInputStream(imageUri);
+//                final Bitmap selectedImage = BitmapFactory.decodeStream(imageStream);
+//                infoPhoto.setImageBitmap(selectedImag、返回e);// 設定到ImageView
+//            } catch (FileNotFoundException e) {
+//                Toast.makeText(getContext(), "找不到檔案", Toast.LENGTH_LONG).show();
+//            }
+        } else { //當使用者按下取消
+            Toast.makeText(getContext(), "沒有選擇照片", Toast.LENGTH_LONG).show();
         }
     }
 

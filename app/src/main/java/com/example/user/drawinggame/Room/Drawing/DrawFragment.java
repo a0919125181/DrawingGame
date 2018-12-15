@@ -16,6 +16,7 @@ import android.widget.SeekBar;
 
 import com.example.user.drawinggame.MainActivity;
 import com.example.user.drawinggame.R;
+import com.example.user.drawinggame.Room.Client_FunctionCode;
 import com.example.user.drawinggame.Room.RoomFragment;
 import com.example.user.drawinggame.database_classes.AppDatabase;
 import com.example.user.drawinggame.database_classes.Player;
@@ -147,6 +148,7 @@ public class DrawFragment extends Fragment implements View.OnClickListener {
             case R.id.imageViewClear:
                 relativeLayoutDraw.removeAllViews();
                 imageViewPaint.callOnClick();
+                new Client_FunctionCode("13", socket);
                 break;
         }
     }

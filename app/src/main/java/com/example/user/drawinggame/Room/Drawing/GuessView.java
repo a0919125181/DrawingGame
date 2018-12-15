@@ -17,22 +17,27 @@ public class GuessView extends View {
     private Canvas mCanvas;     // 畫布
     private Path mPath;         // 畫線
 
-    private float mX, mY;
     private float widthScale;
     private float heightScale;
     private Paint paint;
+    private Paint clearPen;
 
     public GuessView(Context context) {
         super(context);
         this.context = context;
 
         mPath = new Path();
+
         paint = new Paint();
         paint.setAntiAlias(true);               // 抗鋸齒
         paint.setDither(true);                  // 防抖動
         paint.setStyle(Paint.Style.STROKE);     // 不填滿
         paint.setStrokeJoin(Paint.Join.ROUND);  // 圓角
         paint.setStrokeCap(Paint.Cap.ROUND);    // 單點形狀
+
+        clearPen = new Paint();
+        clearPen.setColor(Color.rgb(250, 250, 250));
+        clearPen.setStyle(Paint.Style.FILL);
     }
 
     @Override
@@ -67,7 +72,6 @@ public class GuessView extends View {
             paint.setColor(Color.rgb(250, 250, 250));
 
         paint.setStrokeWidth(Integer.parseInt(penSize)); //粗細
-        Log.e("SEE", penSize);
 
         mCanvas.drawPath(mPath, paint);
 
@@ -81,5 +85,10 @@ public class GuessView extends View {
 
         widthScale = (float) ownWidth / (float) Integer.parseInt(width);
         heightScale = (float) ownHeight / (float) Integer.parseInt(height);
+    }
+
+    public void drawWholeWhite(){
+        mCanvas.drawRect(0, 0, this.getWidth(), this.getHeight(), clearPen);
+        postInvalidate();
     }
 }

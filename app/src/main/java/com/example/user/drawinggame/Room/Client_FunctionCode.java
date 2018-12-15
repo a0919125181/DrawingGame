@@ -87,11 +87,6 @@ public class Client_FunctionCode {
                 String[] tempData = dataStr.split(" ");
                 userID_temp = userID;
 
-                Log.e("width", tempData[0]);
-                Log.e("height", tempData[1]);
-                Log.e("x", tempData[2]);
-                Log.e("y", tempData[3]);
-
                 width = String.format("%04d", Integer.parseInt(tempData[0]));
                 height = String.format("%04d", Integer.parseInt(tempData[1]));
                 x = String.format("%04d", Integer.parseInt(tempData[2]));
@@ -99,7 +94,6 @@ public class Client_FunctionCode {
                 penSize = Integer.parseInt(tempData[4]);
                 if (Integer.parseInt(tempData[5]) == Color.BLACK) {
                     penColor = 1;
-
                 } else {
                     penColor = 0;
                 }
@@ -147,6 +141,21 @@ public class Client_FunctionCode {
                             out.write(lenStr.getBytes());
                             Log.e("len", lenStr);
                             out.write(say.getBytes(Charset.forName("UTF-8")));
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }).start();
+                break;
+
+            case "13":
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        // send clear view
+                        try {
+                            OutputStream out = roomSocket.getOutputStream();
+                            out.write("13".getBytes());
                         } catch (IOException e) {
                             e.printStackTrace();
                         }

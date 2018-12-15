@@ -113,7 +113,7 @@ public class Server_FunctionCode {
             ID_array = new byte[15];
             receiveFromServer.read(ID_array, 0, 15); // 接收ID
             ID = new String(ID_array);
-            Log.i("順序", ID);
+            Log.e("順序", ID);
 
             int firstID = Integer.parseInt(ID.substring(0, 3));
             int secondID = Integer.parseInt(ID.substring(3, 6));
@@ -231,9 +231,9 @@ public class Server_FunctionCode {
         String color = new String(color_array);
         String state = new String(state_array);
 
-        Log.i("對方View寬高", screenWidth + " , " + screenHeight);
-        Log.i("接收座標", drawPointX + " , " + drawPointY + " 粗細 " + thickThin + " 畫筆顏色 " + color);
-        Log.i("狀態", state);
+//        Log.i("對方View寬高", screenWidth + " , " + screenHeight);
+//        Log.i("接收座標", drawPointX + " , " + drawPointY + " 粗細 " + thickThin + " 畫筆顏色 " + color);
+//        Log.i("狀態", state);
 
 
         try {
@@ -496,6 +496,17 @@ public class Server_FunctionCode {
         fragment.setUdpConnectionState();
     }
 
+    //13
+    private void clearGuessView(){
+        try{
+        GuessView gv = fragment.guessFragment.getGuessView();
+        gv.drawWholeWhite();
+        }catch(NullPointerException e){
+            Log.e("Warning", "沒畫板");
+        }
+
+    }
+
     // 15
     private void ansCorrect() {
         Log.e("function", "15");
@@ -618,6 +629,9 @@ public class Server_FunctionCode {
                 break;
             case "12":
                 checkUdpConnection();
+                break;
+            case "13":
+                clearGuessView();
                 break;
             case "15":
                 ansCorrect();

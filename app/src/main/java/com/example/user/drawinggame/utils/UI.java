@@ -21,12 +21,14 @@ import android.widget.ImageView;
 import com.example.user.drawinggame.MainActivity;
 import com.example.user.drawinggame.R;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.URL;
 
 public class UI {
@@ -127,6 +129,23 @@ public class UI {
         }
     }
 
+//    public static void uploadImageToPHP(String url, Bitmap bm, String account, File file) {
+//        try {
+//            ByteArrayOutputStream stream = new ByteArrayOutputStream();
+//            bm.compress(Bitmap.CompressFormat.JPEG, 90, stream);
+//            byte [] byte_arr = stream.toByteArray();
+//            String image_str = Base64.encodeBytes(byte_arr);
+//            ArrayList<NameValuePair> nameValuePairs = new  ArrayList<NameValuePair>();
+//
+//            OutputStream out = (OutputStream) new URL(url).getContent();
+//            out.write(account.getBytes());
+//            image.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
+//            return d;
+//        } catch (Exception e) {
+//            return null;
+//        }
+//    }
+
     // https://stackoverflow.com/questions/5776851/load-image-from-url
     public static class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
         ImageView bmImage;
@@ -141,10 +160,8 @@ public class UI {
             try {
                 InputStream in = new java.net.URL(urldisplay).openStream();
                 bmp = BitmapFactory.decodeStream(in);
-
             } catch (Exception e) {
-//                Log.e("Error", e.getMessage());
-                e.printStackTrace();
+                Log.e("Error", e.getMessage());
             }
             return bmp;
         }
@@ -176,25 +193,28 @@ public class UI {
                 bmp = BitmapFactory.decodeStream(in);
 
                 path = saveToInternalStorage(bmp, context, picName);
-
-
             } catch (Exception e) {
-//                Log.e("Error", e.getMessage());
-                e.printStackTrace();
+                Log.e("Error", e.getMessage());
             }
             return bmp;
         }
 
         protected void onPostExecute(Bitmap result) {
             Log.e("path", path);
-            loadImageFromStorage(bmImage, path, picName);
+            try {
+                loadImageFromStorage(bmImage, path, picName);
+            } catch (FileNotFoundException e) {
+                Log.e("Error",e.getMessage());
+            }
         }
     }
 
     // https://stackoverflow.com/questions/17674634/saving-and-reading-bitmaps-images-from-internal-memory-in-android
     public static String saveToInternalStorage(Bitmap bitmapImage, Context context, String picName) {
+        //cpntext fragment的context
         ContextWrapper cw = new ContextWrapper(context);
         File directory = cw.getDir("imageDir", Context.MODE_PRIVATE);
+
         // Create imageDir
         File mypath = new File(directory, picName);
 
@@ -202,7 +222,7 @@ public class UI {
         try {
             fos = new FileOutputStream(mypath);
             // Use the compress method on the BitMap object to write image to the OutputStream
-            bitmapImage.compress(Bitmap.CompressFormat.PNG, 100, fos);
+            bitmapImage.compress(Bitmap.CompressFormat.JPEG, 100, fos);
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
@@ -214,20 +234,17 @@ public class UI {
                 e.printStackTrace();
             }
         }
-
         return directory.getAbsolutePath();
     }
 
 
-    public static void loadImageFromStorage(ImageView img, String path, String picName) {
+    public static void loadImageFromStorage(ImageView img, String path, String picName) throws FileNotFoundException {
         Log.e("load", picName);
-        try {
+
             File f = new File(path, picName);
             Bitmap b = BitmapFactory.decodeStream(new FileInputStream(f));
             img.setImageBitmap(b);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
+
 
     }
 }
