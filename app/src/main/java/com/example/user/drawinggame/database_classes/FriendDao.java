@@ -14,7 +14,7 @@ import static android.arch.persistence.room.OnConflictStrategy.IGNORE;
 public interface FriendDao {
 
     @Insert(onConflict = IGNORE)
-    void addFriend(Player player);
+    void addFriend(Friend friend);
 
     @Query("SELECT * FROM friends WHERE id = :id")
     Friend getFriendByID(int id);

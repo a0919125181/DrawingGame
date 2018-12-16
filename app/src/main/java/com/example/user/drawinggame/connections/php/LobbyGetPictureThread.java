@@ -11,6 +11,11 @@ public class LobbyGetPictureThread extends ConnectThread {
     private Player player;
     private LobbyFragment lobbyFragment;
 
+    private boolean isDone = false;
+
+    public boolean isDone() {
+        return isDone;
+    }
 
     public LobbyGetPictureThread(Player player, LobbyFragment lobbyFragment) {
         this.player = player;
@@ -39,5 +44,6 @@ public class LobbyGetPictureThread extends ConnectThread {
         // 接收處理
         String picURL = "http://140.127.74.133" + getStr_received();
         lobbyFragment.setPicURL(picURL);
+        isDone = true;
     }
 }

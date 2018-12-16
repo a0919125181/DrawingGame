@@ -53,7 +53,7 @@ public class GetMsgThread extends ConnectThread {
                             player.getUserID(),
                             player.getUserName(),
                             msg_object.getString("text"),
-                            new Date().toString(), // ****時間****
+                            msg_object.getString("time"),
                             0,
                             msg_object.getInt("style"));
                     MainActivity.appDatabase.messageDao().addMessage(message);

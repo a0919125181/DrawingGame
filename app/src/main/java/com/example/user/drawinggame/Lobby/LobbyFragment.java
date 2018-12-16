@@ -3,12 +3,9 @@ package com.example.user.drawinggame.Lobby;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.util.Log;
@@ -27,18 +24,17 @@ import com.example.user.drawinggame.Lobby.Message.MessageFragment;
 import com.example.user.drawinggame.MainActivity;
 import com.example.user.drawinggame.R;
 import com.example.user.drawinggame.Room.RoomFragment;
-import com.example.user.drawinggame.connections.php.EditThread;
 import com.example.user.drawinggame.connections.TCP.EnterRoomThread;
+import com.example.user.drawinggame.connections.php.EditThread;
 import com.example.user.drawinggame.connections.php.GetMsgThread;
 import com.example.user.drawinggame.connections.php.LobbyGetPictureThread;
+import com.example.user.drawinggame.connections.php.LoginThread;
 import com.example.user.drawinggame.database_classes.Player;
 import com.example.user.drawinggame.utils.Listeners;
 import com.example.user.drawinggame.utils.UI;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -88,6 +84,11 @@ public class LobbyFragment extends Fragment implements View.OnClickListener {
     private String picURL;
 
     private ImageView infoPhoto;
+//    private File tempFile;
+
+    public String getPicURL() {
+        return picURL;
+    }
 
     public void setPicURL(String picURL) {
         this.picURL = picURL;
@@ -131,42 +132,33 @@ public class LobbyFragment extends Fragment implements View.OnClickListener {
         // 獲取資料
         player = MainActivity.appDatabase.playerDao().getPlayerBySerialID(Build.SERIAL);
 
-        // 更新資料**********
+        // 更新資料
+        LoginThread lt = new LoginThread(player);
+        lt.start();
 
-        // 算等級經驗*****************
+        while (!lt.isDone()) {
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+
+
+//        this.tempFile = new File("/sdcard/a.jpg"); // 這句一定要在onCreate()里面調用
 
 
         // 右上
         imageViewPhoto = view.findViewById(R.id.imageViewPhoto);
         imageViewPhoto.setOnClickListener(imageViewPhotoListener());
-
-        new LobbyGetPictureThread(player, LobbyFragment.this).start();
-
-        try {
-            sleep(200);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-        try { //內存找不到 就從PHP撈
-            new UI().loadImageFromStorage(imageViewPhoto, mProfileImagePath, "profilePhoto");
-            Log.e("Get from", "storage");
-        } catch (FileNotFoundException e) {
-            Log.e("Get from", "PHP");
-            new LobbyGetPictureThread(player, LobbyFragment.this).start();
-            new UI.SaveImageTask(getContext(), imageViewPhoto, mProfileImagePath, "myPhoto").execute(getPicURL());
-            try {
-                new UI().loadImageFromStorage(imageViewPhoto, mProfileImagePath, "myPhoto");
-            }catch(FileNotFoundException ee){
-                Log.e("Error", "都找不到照片");
-            }
-        }
+        getPicFromPHPServer(imageViewPhoto);
 
         textViewName = view.findViewById(R.id.textViewName);
         textViewName.setText(player.getUserName());
 
         progressBarExp = view.findViewById(R.id.progressBarExp);
-        progressBarExp.setProgress(player.getExp());
+        // 算等級經驗
+        calLvExp();
 
         textViewLevel = view.findViewById(R.id.textViewLevel);
         textViewLevel.setText(String.valueOf(player.getLevel()));
@@ -220,7 +212,7 @@ public class LobbyFragment extends Fragment implements View.OnClickListener {
             }
         }).start();
 
-        calLvExp();
+
         return view;
     }
 
@@ -232,37 +224,24 @@ public class LobbyFragment extends Fragment implements View.OnClickListener {
 
         Log.e("my Lv: " + mLv, "my exp: " + mExp);
 
-        for (int i = 0; i < 10; i++) {
-            int maxExp = (int) (Math.pow((i - 1), (5.0 / 3.0)) + 20);
-            Log.e("Lv: " + i, "max exp: " + (maxExp)+"+1");
+        for (int i = 1; i < 11; i++) {
+            int maxExp = (int) (Math.pow((i - 1), (1.33)) + 20);
+            Log.e("Lv: " + i, "max exp: " + (maxExp));
         }
 
-
-        mExp = 24;
+        int maxExp = (int) (Math.pow((mLv - 1), (1.33)) + 20);
         int level = (int) Math.pow((mExp - 20), (3.0 / 5.0)) + 1;
-        Log.e("Lv: " + level, "exp: " + mExp);
 
-        textViewLevel.getText();
-        progressBarExp.getProgress();
+        Log.e("my Lv: " + mLv, "max exp: " + maxExp);
+
+        Log.e("progress", String.valueOf((100 * mExp / maxExp)));
+        progressBarExp.setProgress((100 * mExp / maxExp));
     }
 
     @Override
     public void onResume() {
         super.onResume();
-
-        try { //內存找不到 就從PHP撈
-            new UI().loadImageFromStorage(imageViewPhoto, mProfileImagePath, "profilePhoto");
-            Log.e("Get from", "storage");
-        } catch (FileNotFoundException e) {
-            Log.e("Get from", "PHP");
-            new LobbyGetPictureThread(player, LobbyFragment.this).start();
-            new UI.SaveImageTask(getContext(), imageViewPhoto, mProfileImagePath, "myPhoto").execute(getPicURL());
-            try {
-                new UI().loadImageFromStorage(imageViewPhoto, mProfileImagePath, "myPhoto");
-            }catch(FileNotFoundException ee){
-                Log.e("Error", "都找不到照片");
-            }
-        }
+//        updateProfilePhoto(imageViewPhoto);
     }
 
     private View.OnClickListener imageViewPhotoListener() {
@@ -276,26 +255,9 @@ public class LobbyFragment extends Fragment implements View.OnClickListener {
                 infoPhoto.setEnabled(false);
                 infoPhoto.setOnClickListener(LobbyFragment.this);
 
-                try { //內存找不到 就從PHP撈
-                    new UI().loadImageFromStorage(infoPhoto, mProfileImagePath, "profilePhoto");
-                    Log.e("Get from", "storage");
-                } catch (FileNotFoundException e) {
-                    Log.e("Get from", "PHP");
-                    new LobbyGetPictureThread(player, LobbyFragment.this).start();
-                    new UI.SaveImageTask(getContext(), infoPhoto, mProfileImagePath, "myPhoto").execute(getPicURL());
-                    new UI.SaveImageTask(getContext(), imageViewPhoto, mProfileImagePath, "myPhoto").execute(getPicURL());
-                    try {
-                        new UI().loadImageFromStorage(infoPhoto, mProfileImagePath, "myPhoto");
-                    }catch(FileNotFoundException ee){
-                        Log.e("Error", "都找不到照片");
-                    }
-                }
-//                new LobbyGetPictureThread(player, LobbyFragment.this).start();
-                try {
-                    sleep(200);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+                // update profile photo
+                updateProfilePhoto(infoPhoto);
+
 //                new UI.DownloadImageTask(infoPhoto).execute(getPicURL());
 //                UI.loadImageFromStorage(infoPhoto, mImagePath, "myPhoto");
 
@@ -381,6 +343,29 @@ public class LobbyFragment extends Fragment implements View.OnClickListener {
         };
     }
 
+    private void updateProfilePhoto(ImageView imageView) {
+        //  內存找不到 就從PHP撈
+        try {
+            UI.loadImageFromStorage(imageView, mProfileImagePath, "profilePhoto");
+        } catch (FileNotFoundException e) {
+            getPicFromPHPServer(imageView);
+        }
+    }
+
+    private void getPicFromPHPServer(ImageView imageView) {
+        LobbyGetPictureThread lgpt = new LobbyGetPictureThread(player, LobbyFragment.this);
+        lgpt.start();
+
+        while (!lgpt.isDone()) {
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        new UI.SaveImageTask(getContext(), imageView, mProfileImagePath, "profilePhoto").execute(picURL);
+    }
+
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
@@ -390,7 +375,8 @@ public class LobbyFragment extends Fragment implements View.OnClickListener {
                 pickPhoto.putExtra("crop", "true"); // 叫出裁剪頁面.
                 pickPhoto.putExtra("aspectX", 1);
                 pickPhoto.putExtra("aspectY", 1); // x:y=1:1
-                pickPhoto.putExtra("outputFormat", "PNG"); // 返回格式
+                pickPhoto.putExtra("outputFormat", "JPEG"); // 返回格式
+                startActivityForResult(pickPhoto, 1);
 //                pickPhoto.setAction(Intent.ACTION_GET_CONTENT);
                 startActivityForResult(pickPhoto,1);
 
@@ -428,12 +414,16 @@ public class LobbyFragment extends Fragment implements View.OnClickListener {
                 new EditThread(player).start();
 
                 Bitmap bm = ((BitmapDrawable) infoPhoto.getDrawable()).getBitmap();
-                mProfileImagePath = new UI().saveToInternalStorage(bm, this.getContext(), "profilePhoto");
+                mProfileImagePath = UI.saveToInternalStorage(bm, this.getContext(), "profilePhoto");
+
+                // update profile photo
+                updateProfilePhoto(infoPhoto);
 
                 Profile profile = new Profile(String.valueOf(player.getUserID())); // 建profile物件
                 ByteArrayOutputStream stream = new ByteArrayOutputStream(); //三行將bitmap轉byte[]
                 bm.compress(Bitmap.CompressFormat.PNG, 100, stream);
                 byte[] imageInByte = stream.toByteArray();
+                Log.e("imageSize", imageInByte.length + "");
                 profile.setPhoto(imageInByte);
                 new SendProfilePhoto(profile).start(); // 傳送
 

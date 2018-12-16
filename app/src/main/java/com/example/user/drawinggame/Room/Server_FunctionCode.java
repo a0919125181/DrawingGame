@@ -10,6 +10,7 @@ import android.widget.TextView;
 
 import com.example.user.drawinggame.R;
 import com.example.user.drawinggame.Room.Drawing.GuessView;
+import com.example.user.drawinggame.connections.TCP.Util;
 import com.example.user.drawinggame.connections.php.SearchThread;
 import com.example.user.drawinggame.database_classes.Player;
 
@@ -44,6 +45,7 @@ public class Server_FunctionCode {
             e.printStackTrace();
         }
         String UDP_port = new String(UDP_port_array);
+        Util.setVoiceCallPort_UDP(fragment, UDP_port);
         fragment.setUdpPort(UDP_port); // 回傳UDP port
         Log.e("udpPort", UDP_port);
     }
@@ -187,7 +189,7 @@ public class Server_FunctionCode {
                 public void run() {
                     for (PlayerFragment pf : fragment.playerFragmentList) {
                         if (pf.getPlayer().getUserID() == id) {
-                            fragment.processFragment.setTitle(pf.getPlayer().getUserName() + " 看題目");
+                            fragment.processFragment.setTitle(pf.getPlayer().getUserName() + "\n看題目");
                             Message msg = new Message();
                             msg.what = 7;
                             fragment.handler_room.sendMessage(msg);
@@ -497,11 +499,11 @@ public class Server_FunctionCode {
     }
 
     //13
-    private void clearGuessView(){
-        try{
-        GuessView gv = fragment.guessFragment.getGuessView();
-        gv.drawWholeWhite();
-        }catch(NullPointerException e){
+    private void clearGuessView() {
+        try {
+            GuessView gv = fragment.guessFragment.getGuessView();
+            gv.drawWholeWhite();
+        } catch (NullPointerException e) {
             Log.e("Warning", "沒畫板");
         }
 
@@ -529,7 +531,6 @@ public class Server_FunctionCode {
 
             int id = Integer.parseInt(new String(ID_array));
             int iCorrect = Integer.parseInt(new String(correct_array));
-
 
 
             List<Player> playerSequenceList = fragment.playerSequenceList;
