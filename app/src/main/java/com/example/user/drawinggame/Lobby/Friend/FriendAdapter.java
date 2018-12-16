@@ -18,10 +18,12 @@ import com.example.user.drawinggame.R;
 import com.example.user.drawinggame.connections.php.AddFriendThread;
 import com.example.user.drawinggame.connections.php.SearchThread;
 import com.example.user.drawinggame.connections.php.SendMsgThread;
+import com.example.user.drawinggame.database_classes.Friend;
 import com.example.user.drawinggame.database_classes.Message;
 import com.example.user.drawinggame.database_classes.Player;
 import com.example.user.drawinggame.utils.UI;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -98,10 +100,15 @@ public class FriendAdapter extends BaseAdapter {
         holder.textViewMessage.setText(message.getMsgContent());
 
 
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
-        Date dt = new Date(message.getMsgTime());
-        String dts = sdf.format(dt);
-        holder.textViewTime.setText(dts);
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        try {
+            Date dt = sdf.parse(message.getMsgTime());
+            String dts = sdf.format(dt);
+            holder.textViewTime.setText(dts);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
 
         holder.imageViewAccept.setOnClickListener(new ReplyListener(position));
         holder.imageViewDecline.setOnClickListener(new ReplyListener(position));
@@ -163,7 +170,7 @@ public class FriendAdapter extends BaseAdapter {
                                     }
 
 
-                                    SendMsgThread smt = new SendMsgThread(player, "Hello!", player_friend.getUserID(), 0);
+                                    SendMsgThread smt = new SendMsgThread(player, "Hello!", player_friend.getUserID(), 2);
                                     smt.start();
 
                                     while (!smt.isDone() && !smt.isSuccess()) {
@@ -175,8 +182,11 @@ public class FriendAdapter extends BaseAdapter {
                                     }
 
                                     Toast.makeText(context, "已接受邀請", Toast.LENGTH_SHORT).show();
-                                    MainActivity.appDatabase.friendDao().addFriend(player_friend);
+                                    Friend friend = new Friend(player_friend);
+                                    MainActivity.appDatabase.friendDao().addFriend(friend);
                                     Log.i("資料庫", "新增好友");
+
+                                    Log.i("friend lv", String.valueOf(friend.getLevel()));
 
                                     MainActivity.appDatabase.messageDao().deleteMessage(messageList.get(position));
                                     messageList.remove(position);

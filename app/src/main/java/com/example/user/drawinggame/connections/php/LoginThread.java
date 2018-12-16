@@ -13,6 +13,12 @@ import org.json.JSONObject;
 public class LoginThread extends ConnectThread {
     Player player;
 
+    private boolean isDone = false;
+
+    public boolean isDone() {
+        return isDone;
+    }
+
     public LoginThread(Player player) {
         this.player = player;
     }
@@ -52,7 +58,8 @@ public class LoginThread extends ConnectThread {
             player.setDay(object.getInt("day"));
             MainActivity.appDatabase.playerDao().addPlayer(player);
             MainActivity.appDatabase.playerDao().updatePlayer(player);
-            UI.fragmentSwitcher(new LobbyFragment(), false);
+
+            isDone = true;
         } catch (JSONException e) {
             e.printStackTrace();
         }

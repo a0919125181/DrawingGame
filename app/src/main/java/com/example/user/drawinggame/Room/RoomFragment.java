@@ -421,9 +421,11 @@ public class RoomFragment extends Fragment implements View.OnClickListener {
                                 arr.restartRecording(); // notify
                             }
                         }).start();
+                        imageViewMic.setBackgroundResource(R.drawable.bg_pf_yello);
                     } else {
                         arr = new AudioRecordRecord(audio, RoomFragment.this); // 錄製
                         arr.start();
+                        imageViewMic.setBackgroundResource(R.drawable.bg_pf_yello);
 
                         // who is talking
 //                        new Thread(new Runnable() {
@@ -455,6 +457,7 @@ public class RoomFragment extends Fragment implements View.OnClickListener {
                             arr.stopRecording();
                         }
                     }).start();
+                    imageViewMic.setBackgroundResource(0);
                 }
                 return true;
             }
@@ -493,11 +496,8 @@ public class RoomFragment extends Fragment implements View.OnClickListener {
                 break;
 
             case R.id.buttonStart:
-                String seq = "順序:";
-                for (int i = 0; i < playerSequenceList.size(); i++) {
-                    seq += "\nPlayer " + (i + 1) + ": " + playerSequenceList.get(i).getUserName();
-                }
-                Toast.makeText(getContext(), seq, Toast.LENGTH_LONG).show();
+                String port = "TCP: " + RoomPort_TCP + "\nUDP: " + VoiceCallPort_UDP;
+                Toast.makeText(getContext(), port, Toast.LENGTH_LONG).show();
 
                 break;
 
@@ -527,6 +527,8 @@ public class RoomFragment extends Fragment implements View.OnClickListener {
                                 } catch (IOException e) {
                                     e.printStackTrace();
                                 } catch (InterruptedException e) {
+                                    e.printStackTrace();
+                                } catch (NullPointerException e) {
                                     e.printStackTrace();
                                 }
 
@@ -592,6 +594,10 @@ public class RoomFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        audio.getDatagramSocket().close();
+        try {
+            audio.getDatagramSocket().close();
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+        }
     }
 }

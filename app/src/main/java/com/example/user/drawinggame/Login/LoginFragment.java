@@ -15,6 +15,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.user.drawinggame.Lobby.LobbyFragment;
 import com.example.user.drawinggame.MainActivity;
 import com.example.user.drawinggame.R;
 import com.example.user.drawinggame.connections.php.LoginThread;
@@ -66,7 +67,18 @@ public class LoginFragment extends Fragment {
         buttonLogin = view.findViewById(R.id.buttonLogin);
         buttonLogin.setOnClickListener(buttonLoginListener());
 
-        new LoginThread(player).start();
+        LoginThread lt = new LoginThread(player);
+        lt.start();
+
+        while (!lt.isDone()) {
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+
+        UI.fragmentSwitcher(new LobbyFragment(), false);
 
         return view;
     }

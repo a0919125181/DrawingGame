@@ -244,7 +244,5 @@ public class UI {
             File f = new File(path, picName);
             Bitmap b = BitmapFactory.decodeStream(new FileInputStream(f));
             img.setImageBitmap(b);
-
-
     }
 }
