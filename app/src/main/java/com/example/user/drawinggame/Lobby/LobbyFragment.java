@@ -94,10 +94,6 @@ public class LobbyFragment extends Fragment implements View.OnClickListener {
         this.picURL = picURL;
     }
 
-    public String getPicURL() {
-        return picURL;
-    }
-
     // edit intro xml
     private EditText editTextIntro;
     private Button buttonFinish;
