@@ -79,9 +79,13 @@ public class RoomFragment extends Fragment implements View.OnClickListener {
 
     // game controllers
     private TextView textViewStatus;
-    private Button buttonStart;
+    private Button buttonPrompt;
     private Button buttonReady;
     private Button buttonLeave;
+
+    public TextView getTextViewStatus() {
+        return textViewStatus;
+    }
 
     //Audio
     private Audio audio;
@@ -154,6 +158,8 @@ public class RoomFragment extends Fragment implements View.OnClickListener {
                             .replace(R.id.drawing_container, new DrawFragment(roomSocket))
                             .commit();
 
+                    textViewStatus.setText("趕快畫");
+
                     break;
                 case 2:
                     processFragment.setTitle("看圖");
@@ -173,9 +179,13 @@ public class RoomFragment extends Fragment implements View.OnClickListener {
 
                     gp = new GuessPath();
                     guessFragment.setGuessView(new GuessView(getContext()));
+
+                    textViewStatus.setText("仔細看");
+
                     break;
                 case 3:
                     processFragment.setTitle("遊戲開始");
+                    textViewStatus.setText("遊戲開始");
 
                     buttonReady.setEnabled(false);
 
@@ -217,7 +227,7 @@ public class RoomFragment extends Fragment implements View.OnClickListener {
 
                     buttonReady.setText("準備");
                     buttonReady.setEnabled(true);
-
+                    textViewStatus.setText("請準備");
 
                     textViewChat = new TextView(getContext());
                     textViewChat.setText("答案: " + getQuestion());
@@ -269,6 +279,7 @@ public class RoomFragment extends Fragment implements View.OnClickListener {
                 case 6:
                     // 猜題
                     processFragment.setTitle("猜題");
+                    textViewStatus.setText("猜題");
 
                     processFragmentSwitcher(processFragment);
 
@@ -321,7 +332,6 @@ public class RoomFragment extends Fragment implements View.OnClickListener {
                     // 等人畫
 
                     processFragmentSwitcher(processFragment);
-
                     postDelayed(new Runnable() {
                         @Override
                         public void run() {
@@ -387,8 +397,8 @@ public class RoomFragment extends Fragment implements View.OnClickListener {
         // 右下
         textViewStatus = (TextView) view.findViewById(R.id.textViewStatus);
 
-        buttonStart = (Button) view.findViewById(R.id.buttonStart);
-        buttonStart.setOnClickListener(this);
+        buttonPrompt = (Button) view.findViewById(R.id.buttonPrompt);
+        buttonPrompt.setOnClickListener(this);
 
         buttonReady = (Button) view.findViewById(R.id.buttonReady);
         buttonReady.setOnClickListener(this);
@@ -495,7 +505,7 @@ public class RoomFragment extends Fragment implements View.OnClickListener {
             case R.id.imageViewMic:
                 break;
 
-            case R.id.buttonStart:
+            case R.id.buttonPrompt:
                 String port = "TCP: " + RoomPort_TCP + "\nUDP: " + VoiceCallPort_UDP;
                 Toast.makeText(getContext(), port, Toast.LENGTH_LONG).show();
 
@@ -505,10 +515,13 @@ public class RoomFragment extends Fragment implements View.OnClickListener {
                 if (buttonReady.getText().equals("準備")) {
                     new Client_FunctionCode("021", roomSocket);
                     buttonReady.setText("取消");
+                    textViewStatus.setText("等待其他人\n準備");
 
                 } else if (buttonReady.getText().equals("取消")) {
                     new Client_FunctionCode("020", roomSocket);
                     buttonReady.setText("準備");
+                    textViewStatus.setText("請準備");
+
                 }
                 break;
 

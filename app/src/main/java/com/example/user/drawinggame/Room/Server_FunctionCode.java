@@ -349,7 +349,7 @@ public class Server_FunctionCode {
         }
 
         // 切換
-        int id = Integer.parseInt(ID);
+        final int id = Integer.parseInt(ID);
 
         List<Player> psl = fragment.playerSequenceList;
 
@@ -377,7 +377,19 @@ public class Server_FunctionCode {
             msg.what = 2;
             fragment.handler_room.sendMessage(msg);
         } else {
-            fragment.processFragment.setTitle(drawPlayer.getUserName() + "\n正在畫");
+            final String drawPlayerName = drawPlayer.getUserName();
+            fragment.processFragment.setTitle(drawPlayerName + "\n正在畫");
+
+            
+
+            fragment.getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    fragment.getTextViewStatus().setText(String.valueOf(drawPlayerName + "\n正在畫"));
+                }
+            });
+
+
             Message msg = new Message();
             msg.what = 8;
             fragment.handler_room.sendMessage(msg);

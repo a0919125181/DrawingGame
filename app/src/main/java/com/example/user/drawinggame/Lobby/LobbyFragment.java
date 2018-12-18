@@ -1,9 +1,11 @@
 package com.example.user.drawinggame.Lobby;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -61,6 +63,11 @@ public class LobbyFragment extends Fragment implements View.OnClickListener {
     // 中間
     private Button buttonCreateRoom;
     private Button buttonEnterRoom;
+    private boolean enter = true;
+
+    public boolean isEnter() {
+        return enter;
+    }
 
     // 左邊
     private ImageView imageViewMessage;
@@ -164,7 +171,7 @@ public class LobbyFragment extends Fragment implements View.OnClickListener {
             new UI.SaveImageTask(getContext(), imageViewPhoto, mProfileImagePath, "myPhoto").execute(getPicURL());
             try {
                 new UI().loadImageFromStorage(imageViewPhoto, mProfileImagePath, "myPhoto");
-            }catch(FileNotFoundException ee){
+            } catch (FileNotFoundException ee) {
                 Log.e("Error", "都找不到照片");
             }
         }
@@ -267,7 +274,7 @@ public class LobbyFragment extends Fragment implements View.OnClickListener {
             new UI.SaveImageTask(getContext(), imageViewPhoto, mProfileImagePath, "myPhoto").execute(getPicURL());
             try {
                 new UI().loadImageFromStorage(imageViewPhoto, mProfileImagePath, "myPhoto");
-            }catch(FileNotFoundException ee){
+            } catch (FileNotFoundException ee) {
                 Log.e("Error", "都找不到照片");
             }
         }
@@ -294,7 +301,7 @@ public class LobbyFragment extends Fragment implements View.OnClickListener {
                     new UI.SaveImageTask(getContext(), imageViewPhoto, mProfileImagePath, "myPhoto").execute(getPicURL());
                     try {
                         new UI().loadImageFromStorage(infoPhoto, mProfileImagePath, "myPhoto");
-                    }catch(FileNotFoundException ee){
+                    } catch (FileNotFoundException ee) {
                         Log.e("Error", "都找不到照片");
                     }
                 }
@@ -381,10 +388,27 @@ public class LobbyFragment extends Fragment implements View.OnClickListener {
 
     private View.OnClickListener buttonEnterRoomListener() {
         return new View.OnClickListener() {
+            @SuppressLint("StaticFieldLeak")
             @Override
             public void onClick(View view) {
                 RoomFragment roomFragment = new RoomFragment();
-                new EnterRoomThread(player.getUserID(), roomFragment).start();
+
+                if (enter) {
+                    new EnterRoomThread(player.getUserID(), roomFragment).start();
+                }
+                enter = false;
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            sleep(1000);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                        enter = false;
+                    }
+
+                }).start();
             }
         };
     }
@@ -423,7 +447,7 @@ public class LobbyFragment extends Fragment implements View.OnClickListener {
                 pickPhoto.putExtra("aspectY", 1); // x:y=1:1
                 pickPhoto.putExtra("outputFormat", "PNG"); // 返回格式
 //                pickPhoto.setAction(Intent.ACTION_GET_CONTENT);
-                startActivityForResult(pickPhoto,1);
+                startActivityForResult(pickPhoto, 1);
 
                 break;
             case R.id.buttonEdit:
@@ -485,7 +509,7 @@ public class LobbyFragment extends Fragment implements View.OnClickListener {
                     new UI.SaveImageTask(getContext(), imageViewPhoto, mProfileImagePath, "myPhoto").execute(getPicURL());
                     try {
                         new UI().loadImageFromStorage(infoPhoto, mProfileImagePath, "myPhoto");
-                    }catch(FileNotFoundException ee){
+                    } catch (FileNotFoundException ee) {
                         Log.e("Error", "都找不到照片");
                     }
                 }

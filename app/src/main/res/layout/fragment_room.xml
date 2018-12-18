@@ -82,19 +82,19 @@
         <TextView
             android:id="@+id/textViewStatus"
             android:layout_width="100dp"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_weight="1"
-            android:gravity="center_horizontal"
-            android:text="狀態列"
+            android:gravity="center"
+            android:text="所有人\n準備後開始"
             android:textAlignment="center" />
 
         <Button
-            android:id="@+id/buttonStart"
+            android:id="@+id/buttonPrompt"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:enabled="true"
-            android:text="開始" />
+            android:text="提示" />
 
         <Button
             android:id="@+id/buttonReady"
