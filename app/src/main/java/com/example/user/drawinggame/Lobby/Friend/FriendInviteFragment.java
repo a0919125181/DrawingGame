@@ -10,16 +10,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.Toast;
 
-import com.example.user.drawinggame.Lobby.Message.MessageAdapter;
 import com.example.user.drawinggame.MainActivity;
 import com.example.user.drawinggame.R;
-import com.example.user.drawinggame.connections.php.SearchThread;
 import com.example.user.drawinggame.database_classes.Message;
 import com.example.user.drawinggame.database_classes.Player;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -30,7 +26,7 @@ public class FriendInviteFragment extends Fragment implements AdapterView.OnItem
     private List<Message> messageList;
     private ListView listViewFriend;
 
-    private FriendAdapter adapter;
+    private FriendInviteAdapter adapter;
 
     private Player player;
 
@@ -51,7 +47,7 @@ public class FriendInviteFragment extends Fragment implements AdapterView.OnItem
         messageList = MainActivity.appDatabase.messageDao().getMessagesByType(1);
 
         listViewFriend = (ListView) view.findViewById(R.id.listViewFriend);
-        adapter = new FriendAdapter(getContext(), messageList, player);
+        adapter = new FriendInviteAdapter(getContext(), messageList, player);
         listViewFriend.setAdapter(adapter);
         listViewFriend.setOnItemClickListener(this);
 

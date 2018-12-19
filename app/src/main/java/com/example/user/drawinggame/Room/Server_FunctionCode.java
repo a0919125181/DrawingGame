@@ -268,12 +268,15 @@ public class Server_FunctionCode {
 
         Player player_enter = new Player();
         player_enter.setUserID(Integer.parseInt(ID));
-        new SearchThread(player_enter).start();
+        SearchThread st = new SearchThread(player_enter);
+        st.start();
 
-        try {
-            Thread.sleep(400);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+        while (!st.isDone) {
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
 
         Log.e("player enter", "name: " + player_enter.getUserName());

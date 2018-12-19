@@ -7,6 +7,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import com.example.user.drawinggame.MainActivity;
@@ -22,11 +24,13 @@ import java.util.List;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class MyFriendFragment extends Fragment {
+public class MyFriendFragment extends Fragment implements AdapterView.OnItemClickListener {
 
     private List<Message> messageFriendList;
 
-    TextView textView;
+    private ListView listViewMyFriend;
+
+    private MyFriendAdapter myFriendAdapter;
 
     public MyFriendFragment() {
         // Required empty public constructor
@@ -62,19 +66,36 @@ public class MyFriendFragment extends Fragment {
 
         // *******好友更新
 
-        textView = view.findViewById(R.id.textView);
-        String s = "My Friend";
-
         List<Friend> friendList = MainActivity.appDatabase.friendDao().getAllFriends();
         Log.i("msg size", String.valueOf(messageFriendList.size()));
 
-        for (Friend f : friendList) {
-            s += ("\n" + f.getUserName());
+
+        List<Friend[]> myFriendsList = new ArrayList<>();
+        for (int i = 0; i < friendList.size(); i += 3) {
+            Friend[] friends = new Friend[3];
+            try {
+                friends[0] = friendList.get(i);
+                friends[1] = friendList.get(i + 1);
+                friends[2] = friendList.get(i + 2);
+            } catch (IndexOutOfBoundsException e) {
+                e.printStackTrace();
+            }
+
+            myFriendsList.add(friends);
         }
 
-        textView.setText(s);
+
+        listViewMyFriend = view.findViewById(R.id.listViewMyFriend);
+        myFriendAdapter = new MyFriendAdapter(getContext(), myFriendsList);
+        listViewMyFriend.setAdapter(myFriendAdapter);
+        listViewMyFriend.setOnItemClickListener(this);
+
 
         return view;
     }
 
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+    }
 }

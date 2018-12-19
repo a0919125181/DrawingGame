@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ImageView
+        android:id="@+id/imageViewFriend1"
+        android:layout_width="110dp"
+        android:layout_height="110dp"
+        android:layout_margin="8dp"
+        android:src="@mipmap/avatar"
+        android:visibility="invisible"
+        app:layout_constraintEnd_toStartOf="@id/imageViewFriend2" />
+
+    <TextView
+        android:id="@+id/textViewName1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Name1"
+        android:visibility="invisible"
+        app:layout_constraintEnd_toEndOf="@id/imageViewFriend1"
+        app:layout_constraintStart_toStartOf="@id/imageViewFriend1"
+        app:layout_constraintTop_toBottomOf="@id/imageViewFriend1" />
+
+    <ImageView
+        android:id="@+id/imageViewFriend2"
+        android:layout_width="110dp"
+        android:layout_height="110dp"
+        android:layout_margin="8dp"
+        android:src="@mipmap/avatar"
+        android:visibility="invisible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/textViewName2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Name2"
+        android:visibility="invisible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/imageViewFriend2" />
+
+
+    <ImageView
+        android:id="@+id/imageViewFriend3"
+        android:layout_width="110dp"
+        android:layout_height="110dp"
+        android:layout_margin="8dp"
+        android:src="@mipmap/avatar"
+        android:visibility="invisible"
+        app:layout_constraintStart_toEndOf="@id/imageViewFriend2" />
+
+    <TextView
+        android:id="@+id/textViewName3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Name3"
+        android:visibility="invisible"
+        app:layout_constraintEnd_toEndOf="@id/imageViewFriend3"
+        app:layout_constraintStart_toStartOf="@id/imageViewFriend3"
+        app:layout_constraintTop_toBottomOf="@id/imageViewFriend3" />
+
+
+</android.support.constraint.ConstraintLayout>

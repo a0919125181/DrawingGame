@@ -30,7 +30,7 @@ import java.util.List;
 
 
 // http://theopentutorials.com/tutorials/android/listview/android-custom-listview-with-image-and-text-using-baseadapter/
-public class FriendAdapter extends BaseAdapter {
+public class FriendInviteAdapter extends BaseAdapter {
     private Context context;
     private List<Message> messageList;
     private Player player;
@@ -47,7 +47,7 @@ public class FriendAdapter extends BaseAdapter {
         ImageView imageViewDecline;
     }
 
-    public FriendAdapter(Context context, List<Message> messageList, Player player) {
+    public FriendInviteAdapter(Context context, List<Message> messageList, Player player) {
         this.context = context;
         this.messageList = messageList;
         this.player = player;
