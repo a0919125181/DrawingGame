@@ -23,6 +23,7 @@ import android.widget.Toast;
 import com.example.user.drawinggame.MainActivity;
 import com.example.user.drawinggame.R;
 import com.example.user.drawinggame.connections.php.FriendGetPictureThread;
+import com.example.user.drawinggame.connections.php.GetMyFriend;
 import com.example.user.drawinggame.connections.php.SearchThread;
 import com.example.user.drawinggame.connections.php.SendMsgThread;
 import com.example.user.drawinggame.database_classes.Player;
@@ -78,6 +79,9 @@ public class FriendFragment extends Fragment implements View.OnClickListener {
         View view = inflater.inflate(R.layout.fragment_friend, container, false);
 
         player = MainActivity.appDatabase.playerDao().getPlayerBySerialID(Build.SERIAL);
+
+        // 更新朋友資料
+        new GetMyFriend(getContext(), player.getUserID()).start();
 
         fragmentManagerFriend = getFragmentManager();
         myFriendFragment = new MyFriendFragment();

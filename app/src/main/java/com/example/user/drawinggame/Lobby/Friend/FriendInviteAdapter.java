@@ -3,7 +3,11 @@ package com.example.user.drawinggame.Lobby.Friend;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.ContextWrapper;
 import android.content.DialogInterface;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.os.AsyncTask;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,6 +27,10 @@ import com.example.user.drawinggame.database_classes.Message;
 import com.example.user.drawinggame.database_classes.Player;
 import com.example.user.drawinggame.utils.UI;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -34,6 +42,9 @@ public class FriendInviteAdapter extends BaseAdapter {
     private Context context;
     private List<Message> messageList;
     private Player player;
+
+    private final String sDefaultPath = "data/user/0/com.example.user.drawinggame/app_";
+    private final String sFriendPhotoPath = "friends_photo";
 
     private ViewHolder holder;
 
@@ -186,6 +197,8 @@ public class FriendInviteAdapter extends BaseAdapter {
                                     MainActivity.appDatabase.friendDao().addFriend(friend);
                                     Log.i("資料庫", "新增好友");
 
+                                    new UI.SaveFriendImageTask(context, sFriendPhotoPath, String.valueOf(friend.getUserID())).execute(friend.getPicURL());
+
                                     Log.i("friend lv", String.valueOf(friend.getLevel()));
 
                                     MainActivity.appDatabase.messageDao().deleteMessage(messageList.get(position));
@@ -195,9 +208,7 @@ public class FriendInviteAdapter extends BaseAdapter {
 
                                 }
                             })
-                            .
-
-                                    create();
+                            .create();
                     UI.showImmersiveModeDialog(acceptDialog, true);
 
                     break;

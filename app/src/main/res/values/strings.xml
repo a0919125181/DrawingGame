@@ -1,6 +1,5 @@
 <resources>
     <string name="app_name">DrawingGame</string>
+    <string name="default_save_path">data/user/0/com.example.user.drawinggame/app_</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

@@ -10,9 +10,9 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.example.user.drawinggame.Lobby.Message.MessageAdapter;
 import com.example.user.drawinggame.R;
 import com.example.user.drawinggame.database_classes.Friend;
+import com.example.user.drawinggame.utils.UI;
 
 import java.util.List;
 
@@ -21,6 +21,9 @@ public class MyFriendAdapter extends BaseAdapter {
     private Context context;
 
     private List<Friend[]> myFriendList;
+
+    private final String sDefaultPath = "data/user/0/com.example.user.drawinggame/app_";
+    private final String sFriendPhotoPath = "friends_photo";
 
     public MyFriendAdapter(Context context, List<Friend[]> myFriendList) {
         this.context = context;
@@ -78,14 +81,62 @@ public class MyFriendAdapter extends BaseAdapter {
         try {
             holder.textViewName1.setText(friends[0].getUserName());
             holder.textViewName1.setVisibility(View.VISIBLE);
+            holder.imageViewFriend1.setImageBitmap(UI.getBitmapFromStorage(sDefaultPath + sFriendPhotoPath, String.valueOf(friends[0].getUserID())));
+            holder.imageViewFriend1.setVisibility(View.VISIBLE);
+
             holder.textViewName2.setText(friends[1].getUserName());
             holder.textViewName2.setVisibility(View.VISIBLE);
+            holder.imageViewFriend2.setImageBitmap(UI.getBitmapFromStorage(sDefaultPath + sFriendPhotoPath, String.valueOf(friends[1].getUserID())));
+            holder.imageViewFriend2.setVisibility(View.VISIBLE);
+
+
             holder.textViewName3.setText(friends[2].getUserName());
             holder.textViewName3.setVisibility(View.VISIBLE);
+            holder.imageViewFriend3.setImageBitmap(UI.getBitmapFromStorage(sDefaultPath + sFriendPhotoPath, String.valueOf(friends[2].getUserID())));
+            holder.imageViewFriend3.setVisibility(View.VISIBLE);
+
         } catch (NullPointerException e) {
             e.printStackTrace();
         }
 
+        holder.imageViewFriend1.setOnClickListener(new FriendPhotoClickListener(position));
+        holder.imageViewFriend2.setOnClickListener(new FriendPhotoClickListener(position));
+        holder.imageViewFriend3.setOnClickListener(new FriendPhotoClickListener(position));
+
+
         return convertView;
     }
+
+    private class FriendPhotoClickListener implements View.OnClickListener {
+        private int position;
+        private Friend[] friends;
+
+        public FriendPhotoClickListener(int position) {
+            this.position = position;
+        }
+
+        @Override
+        public void onClick(View view) {
+            friends = (Friend[]) getItem(position);
+
+            switch (view.getId()) {
+                case R.id.imageViewFriend1:
+                    Log.i("friend name", friends[0].getUserName());
+
+                    break;
+
+                case R.id.imageViewFriend2:
+                    Log.i("friend name", friends[1].getUserName());
+
+                    break;
+
+                case R.id.imageViewFriend3:
+                    Log.i("friend name", friends[2].getUserName());
+
+                    break;
+
+            }
+        }
+    }
+
 }

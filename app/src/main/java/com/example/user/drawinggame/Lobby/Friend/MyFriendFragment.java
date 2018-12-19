@@ -17,6 +17,7 @@ import com.example.user.drawinggame.connections.php.SearchThread;
 import com.example.user.drawinggame.database_classes.Friend;
 import com.example.user.drawinggame.database_classes.Message;
 import com.example.user.drawinggame.database_classes.Player;
+import com.example.user.drawinggame.utils.UI;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,6 +32,9 @@ public class MyFriendFragment extends Fragment implements AdapterView.OnItemClic
     private ListView listViewMyFriend;
 
     private MyFriendAdapter myFriendAdapter;
+
+    private final String sDefaultPath = "data/user/0/com.example.user.drawinggame/app_";
+    private final String sFriendPhotoPath = "friends_photo";
 
     public MyFriendFragment() {
         // Required empty public constructor
@@ -59,12 +63,16 @@ public class MyFriendFragment extends Fragment implements AdapterView.OnItemClic
             }
 
             Log.i("new friend", player.getUserName());
-            MainActivity.appDatabase.friendDao().addFriend(new Friend(player));
+            Friend friend = new Friend(player);
+            MainActivity.appDatabase.friendDao().addFriend(friend);
             MainActivity.appDatabase.messageDao().deleteMessage(msg);
+
+            new UI.SaveFriendImageTask(getContext(), sFriendPhotoPath, String.valueOf(friend.getUserID())).execute(friend.getPicURL());
+
+            // 新增訊息
+
         }
 
-
-        // *******好友更新
 
         List<Friend> friendList = MainActivity.appDatabase.friendDao().getAllFriends();
         Log.i("msg size", String.valueOf(messageFriendList.size()));

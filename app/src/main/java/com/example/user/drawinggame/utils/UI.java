@@ -1,6 +1,5 @@
 package com.example.user.drawinggame.utils;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
@@ -21,14 +20,12 @@ import android.widget.ImageView;
 import com.example.user.drawinggame.MainActivity;
 import com.example.user.drawinggame.R;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.net.URL;
 
 public class UI {
@@ -155,10 +152,10 @@ public class UI {
         }
 
         protected Bitmap doInBackground(String... urls) {
-            String urldisplay = urls[0];
+            String urlDisplay = urls[0];
             Bitmap bmp = null;
             try {
-                InputStream in = new java.net.URL(urldisplay).openStream();
+                InputStream in = new java.net.URL(urlDisplay).openStream();
                 bmp = BitmapFactory.decodeStream(in);
             } catch (Exception e) {
                 Log.e("Error", e.getMessage());
@@ -194,6 +191,7 @@ public class UI {
 
                 path = saveToInternalStorage(bmp, context, picName);
             } catch (Exception e) {
+                Log.e("Error", "都找不到照片");
                 Log.e("Error", e.getMessage());
             }
             return bmp;
@@ -204,25 +202,25 @@ public class UI {
             try {
                 loadImageFromStorage(bmImage, path, picName);
             } catch (FileNotFoundException e) {
-                Log.e("Error",e.getMessage());
+                Log.e("Error", e.getMessage());
             }
         }
     }
 
     // https://stackoverflow.com/questions/17674634/saving-and-reading-bitmaps-images-from-internal-memory-in-android
     public static String saveToInternalStorage(Bitmap bitmapImage, Context context, String picName) {
-        //cpntext fragment的context
+        // fragment的context
         ContextWrapper cw = new ContextWrapper(context);
         File directory = cw.getDir("imageDir", Context.MODE_PRIVATE);
 
         // Create imageDir
-        File mypath = new File(directory, picName);
+        File myPath = new File(directory, picName);
 
         FileOutputStream fos = null;
         try {
-            fos = new FileOutputStream(mypath);
+            fos = new FileOutputStream(myPath);
             // Use the compress method on the BitMap object to write image to the OutputStream
-            bitmapImage.compress(Bitmap.CompressFormat.JPEG, 100, fos);
+            bitmapImage.compress(Bitmap.CompressFormat.PNG, 100, fos);
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
@@ -241,8 +239,75 @@ public class UI {
     public static void loadImageFromStorage(ImageView img, String path, String picName) throws FileNotFoundException {
         Log.e("load", picName);
 
+        File f = new File(path, picName);
+        Bitmap b = BitmapFactory.decodeStream(new FileInputStream(f));
+        img.setImageBitmap(b);
+    }
+
+    public static class SaveFriendImageTask extends AsyncTask<String, Void, Bitmap> {
+        private Context context;
+        private String picDir;
+        private String picName;
+
+        public SaveFriendImageTask(Context context, String picDir, String picName) {
+            this.context = context;
+            this.picDir = picDir;
+            this.picName = picName;
+        }
+
+        protected Bitmap doInBackground(String... urls) {
+            String urlDisplay = urls[0];
+            Bitmap bmp = null;
+            try {
+                InputStream in = new java.net.URL(urlDisplay).openStream();
+                bmp = BitmapFactory.decodeStream(in);
+                saveFriendImageToInternalStorage(bmp, context, picDir, picName);
+            } catch (Exception e) {
+                Log.e("Error", e.getMessage());
+            }
+            return bmp;
+        }
+    }
+
+    public static String saveFriendImageToInternalStorage(Bitmap bitmapImage, Context context, String picDir, String picName) {
+        // fragment的context
+        ContextWrapper cw = new ContextWrapper(context);
+        File directory = cw.getDir(picDir, Context.MODE_PRIVATE);
+
+        // Create imageDir
+        File myPath = new File(directory, picName);
+
+        FileOutputStream fos = null;
+        try {
+            fos = new FileOutputStream(myPath);
+            // Use the compress method on the BitMap object to write image to the OutputStream
+            bitmapImage.compress(Bitmap.CompressFormat.PNG, 100, fos);
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (fos != null) {
+                    fos.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return directory.getAbsolutePath();
+    }
+
+    public static Bitmap getBitmapFromStorage(String path, String picName) {
+        try {
             File f = new File(path, picName);
             Bitmap b = BitmapFactory.decodeStream(new FileInputStream(f));
-            img.setImageBitmap(b);
+
+//            Log.e("get bitmap name", picName);
+
+            return b;
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
+
 }

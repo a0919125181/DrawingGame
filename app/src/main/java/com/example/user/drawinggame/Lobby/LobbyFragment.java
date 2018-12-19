@@ -150,10 +150,6 @@ public class LobbyFragment extends Fragment implements View.OnClickListener {
             }
         }
 
-
-//        this.tempFile = new File("/sdcard/a.jpg"); // 這句一定要在onCreate()里面調用
-
-
         // 右上
         imageViewPhoto = view.findViewById(R.id.imageViewPhoto);
         imageViewPhoto.setOnClickListener(imageViewPhotoListener());
@@ -166,18 +162,14 @@ public class LobbyFragment extends Fragment implements View.OnClickListener {
             e.printStackTrace();
         }
 
-        try { //內存找不到 就從PHP撈
-            new UI().loadImageFromStorage(imageViewPhoto, mProfileImagePath, "profilePhoto");
+        // 內存找不到 就從PHP撈
+        try {
+            UI.loadImageFromStorage(imageViewPhoto, mProfileImagePath, "profilePhoto");
             Log.e("Get from", "storage");
         } catch (FileNotFoundException e) {
             Log.e("Get from", "PHP");
             new LobbyGetPictureThread(player, LobbyFragment.this).start();
-            new UI.SaveImageTask(getContext(), imageViewPhoto, mProfileImagePath, "myPhoto").execute(getPicURL());
-            try {
-                new UI().loadImageFromStorage(imageViewPhoto, mProfileImagePath, "myPhoto");
-            } catch (FileNotFoundException ee) {
-                Log.e("Error", "都找不到照片");
-            }
+            new UI.SaveImageTask(getContext(), imageViewPhoto, mProfileImagePath, "profilePhoto").execute(getPicURL());
         }
 
         textViewName = view.findViewById(R.id.textViewName);
@@ -194,7 +186,6 @@ public class LobbyFragment extends Fragment implements View.OnClickListener {
         textViewMoney.setText(String.valueOf(player.getMoney()));
 
         // 中間
-
         buttonCreateRoom = view.findViewById(R.id.buttonCreateRoom);
         buttonCreateRoom.setOnClickListener(buttonCreateRoomListener());
 
@@ -260,25 +251,6 @@ public class LobbyFragment extends Fragment implements View.OnClickListener {
         progressBarExp.setProgress((100 * mExp / maxExp));
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-
-        try { //內存找不到 就從PHP撈
-            new UI().loadImageFromStorage(imageViewPhoto, mProfileImagePath, "profilePhoto");
-            Log.e("Get from", "storage");
-        } catch (FileNotFoundException e) {
-            Log.e("Get from", "PHP");
-            new LobbyGetPictureThread(player, LobbyFragment.this).start();
-            new UI.SaveImageTask(getContext(), imageViewPhoto, mProfileImagePath, "myPhoto").execute(getPicURL());
-            try {
-                new UI().loadImageFromStorage(imageViewPhoto, mProfileImagePath, "myPhoto");
-            } catch (FileNotFoundException ee) {
-                Log.e("Error", "都找不到照片");
-            }
-        }
-    }
-
     private View.OnClickListener imageViewPhotoListener() {
         return new View.OnClickListener() {
             @Override
@@ -291,27 +263,14 @@ public class LobbyFragment extends Fragment implements View.OnClickListener {
                 infoPhoto.setOnClickListener(LobbyFragment.this);
 
                 try { //內存找不到 就從PHP撈
-                    new UI().loadImageFromStorage(infoPhoto, mProfileImagePath, "profilePhoto");
+                    UI.loadImageFromStorage(infoPhoto, mProfileImagePath, "profilePhoto");
                     Log.e("Get from", "storage");
                 } catch (FileNotFoundException e) {
                     Log.e("Get from", "PHP");
                     new LobbyGetPictureThread(player, LobbyFragment.this).start();
-                    new UI.SaveImageTask(getContext(), infoPhoto, mProfileImagePath, "myPhoto").execute(getPicURL());
-                    new UI.SaveImageTask(getContext(), imageViewPhoto, mProfileImagePath, "myPhoto").execute(getPicURL());
-                    try {
-                        new UI().loadImageFromStorage(infoPhoto, mProfileImagePath, "myPhoto");
-                    } catch (FileNotFoundException ee) {
-                        Log.e("Error", "都找不到照片");
-                    }
+                    new UI.SaveImageTask(getContext(), infoPhoto, mProfileImagePath, "profilePhoto").execute(getPicURL());
+                    new UI.SaveImageTask(getContext(), imageViewPhoto, mProfileImagePath, "profilePhoto").execute(getPicURL());
                 }
-//                new LobbyGetPictureThread(player, LobbyFragment.this).start();
-                try {
-                    sleep(200);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-//                new UI.DownloadImageTask(infoPhoto).execute(getPicURL());
-//                UI.loadImageFromStorage(infoPhoto, mImagePath, "myPhoto");
 
                 textViewID = (TextView) viewShowInfo.findViewById(R.id.textViewID);
                 textViewID.setText("ID: " + player.getUserID());
@@ -372,8 +331,9 @@ public class LobbyFragment extends Fragment implements View.OnClickListener {
                     @Override
                     public void onClick(View v) {
                         alertDialogCreateRoom.dismiss();
+
                         //create room connect
-                        //UI.fragmentSwitcher(new RoomFragment(), false);
+                        UI.getBitmapFromStorage("data/user/0/com.example.user.drawinggame/app_friends_photo", "profilePhoto");
                     }
                 });
 
@@ -425,9 +385,15 @@ public class LobbyFragment extends Fragment implements View.OnClickListener {
         LobbyGetPictureThread lgpt = new LobbyGetPictureThread(player, LobbyFragment.this);
         lgpt.start();
 
+        int count = 0;
         while (!lgpt.isDone()) {
             try {
+                if (count > 100) {
+                    Log.e("get pic", "timeout");
+                    break;
+                }
                 Thread.sleep(100);
+                count++;
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -484,7 +450,7 @@ public class LobbyFragment extends Fragment implements View.OnClickListener {
                 new EditThread(player).start();
 
                 Bitmap bm = ((BitmapDrawable) infoPhoto.getDrawable()).getBitmap();
-                mProfileImagePath = new UI().saveToInternalStorage(bm, this.getContext(), "profilePhoto");
+                mProfileImagePath = UI.saveToInternalStorage(bm, this.getContext(), "profilePhoto");
 
                 Profile profile = new Profile(String.valueOf(player.getUserID())); // 建profile物件
                 ByteArrayOutputStream stream = new ByteArrayOutputStream(); //三行將bitmap轉byte[]
@@ -500,19 +466,14 @@ public class LobbyFragment extends Fragment implements View.OnClickListener {
                 }
 
                 try { //內存找不到 就從PHP撈
-                    new UI().loadImageFromStorage(infoPhoto, mProfileImagePath, "profilePhoto");
-                    new UI().loadImageFromStorage(imageViewPhoto, mProfileImagePath, "profilePhoto");
+                    UI.loadImageFromStorage(infoPhoto, mProfileImagePath, "profilePhoto");
+                    UI.loadImageFromStorage(imageViewPhoto, mProfileImagePath, "profilePhoto");
                     Log.e("Get from", "storage");
                 } catch (FileNotFoundException e) {
                     Log.e("Get from", "PHP");
                     new LobbyGetPictureThread(player, LobbyFragment.this).start();
-                    new UI.SaveImageTask(getContext(), infoPhoto, mProfileImagePath, "myPhoto").execute(getPicURL());
-                    new UI.SaveImageTask(getContext(), imageViewPhoto, mProfileImagePath, "myPhoto").execute(getPicURL());
-                    try {
-                        new UI().loadImageFromStorage(infoPhoto, mProfileImagePath, "myPhoto");
-                    } catch (FileNotFoundException ee) {
-                        Log.e("Error", "都找不到照片");
-                    }
+                    new UI.SaveImageTask(getContext(), infoPhoto, mProfileImagePath, "profilePhoto").execute(getPicURL());
+                    new UI.SaveImageTask(getContext(), imageViewPhoto, mProfileImagePath, "profilePhoto").execute(getPicURL());
                 }
 
 //                Log.e("path", mProfileImagePath);
@@ -622,7 +583,7 @@ public class LobbyFragment extends Fragment implements View.OnClickListener {
                     final Uri imageUri = data.getData();
                     final InputStream imageStream = getContext().getContentResolver().openInputStream(imageUri);
                     final Bitmap selectedImage = BitmapFactory.decodeStream(imageStream);
-                    Log.e("infoPhoto", infoPhoto+"");
+                    Log.e("infoPhoto", infoPhoto + "");
                     infoPhoto.setImageBitmap(selectedImage);// 設定到ImageView
                 } catch (FileNotFoundException e) {
                     e.getStackTrace();

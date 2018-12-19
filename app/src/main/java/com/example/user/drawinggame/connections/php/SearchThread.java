@@ -31,7 +31,7 @@ public class SearchThread extends ConnectThread {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        Log.e("search params", postDataParams.toString());
+//        Log.e("search params", postDataParams.toString());
 
         setSendObject(postDataParams);
     }
@@ -47,7 +47,7 @@ public class SearchThread extends ConnectThread {
             searched_player.setLevel(object.getInt("lv"));
             searched_player.setPicURL("http://140.127.74.133/drawgame/picture/" + object.getString("userPhoto"));
 
-            Log.e("searched player name", searched_player.getUserName());
+//            Log.e("searched player name", searched_player.getUserName());
             isDone = true;
         } catch (JSONException e) {
             e.printStackTrace();
