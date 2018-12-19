@@ -3,8 +3,10 @@ package com.example.user.drawinggame.connections.php;
 import android.os.Build;
 import android.util.Log;
 
+import com.example.user.drawinggame.Lobby.LobbyFragment;
 import com.example.user.drawinggame.MainActivity;
 import com.example.user.drawinggame.database_classes.Player;
+import com.example.user.drawinggame.utils.UI;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -43,12 +45,37 @@ public class RegisterThread extends ConnectThread {
         // 接收處理
         if (msg.equals("success")) {
             Log.e("add player", "successfully");
-            new LoginThread(player).start();
+
+            LoginThread lt = new LoginThread(player);
+            lt.start();
+
+            while (!lt.isDone()) {
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+            UI.fragmentSwitcher(new LobbyFragment(), false);
+
         } else if (msg.equals("fail")) {
             Log.e("check db", "account already exists");
-            player = MainActivity.appDatabase.playerDao().getPlayerBySerialID(Build.SERIAL);
+//            player = MainActivity.appDatabase.playerDao().getPlayerBySerialID(Build.SERIAL);
+
             // do login send account(serialID)
-            new LoginThread(player).start();
+            LoginThread lt = new LoginThread(player);
+            lt.start();
+
+            while (!lt.isDone()) {
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            UI.fragmentSwitcher(new LobbyFragment(), false);
+
         }
     }
 

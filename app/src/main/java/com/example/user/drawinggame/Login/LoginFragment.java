@@ -67,18 +67,24 @@ public class LoginFragment extends Fragment {
         buttonLogin = view.findViewById(R.id.buttonLogin);
         buttonLogin.setOnClickListener(buttonLoginListener());
 
-        LoginThread lt = new LoginThread(player);
-        lt.start();
-
-        while (!lt.isDone()) {
-            try {
-                Thread.sleep(100);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+        if (MainActivity.appDatabase.playerDao().getPlayerBySerialID(serialID) != null) {
+            buttonRegister.setVisibility(View.INVISIBLE);
+        } else {
+            buttonLogin.setVisibility(View.INVISIBLE);
         }
 
-        UI.fragmentSwitcher(new LobbyFragment(), false);
+//        LoginThread lt = new LoginThread(player);
+//        lt.start();
+//
+//        while (!lt.isDone()) {
+//            try {
+//                Thread.sleep(100);
+//            } catch (InterruptedException e) {
+//                e.printStackTrace();
+//            }
+//        }
+//
+//        UI.fragmentSwitcher(new LobbyFragment(), false);
 
         return view;
     }
@@ -147,8 +153,20 @@ public class LoginFragment extends Fragment {
                 if (MainActivity.appDatabase.playerDao().getPlayerBySerialID(serialID) != null) {
                     Log.e("check db", "account already exists");
                     player = MainActivity.appDatabase.playerDao().getPlayerBySerialID(serialID);
+
                     // do login send account(serialID)
-                    new LoginThread(player).start();
+                    LoginThread lt = new LoginThread(player);
+                    lt.start();
+
+                    while (!lt.isDone()) {
+                        try {
+                            Thread.sleep(100);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+                    UI.fragmentSwitcher(new LobbyFragment(), false);
                 } else {
                     Toast.makeText(getContext(), "請先註冊帳號", Toast.LENGTH_SHORT).show();
                 }

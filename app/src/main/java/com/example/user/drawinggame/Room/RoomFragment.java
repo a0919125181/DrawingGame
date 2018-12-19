@@ -63,6 +63,12 @@ public class RoomFragment extends Fragment implements View.OnClickListener {
     public Socket roomSocket;
     private ReceiveFromServer_TCP conn_server_tcp;
 
+    private boolean complete;
+
+    public boolean isComplete() {
+        return complete;
+    }
+
     FragmentManager fragmentManagerRoom;
     Player player;
 
@@ -143,6 +149,11 @@ public class RoomFragment extends Fragment implements View.OnClickListener {
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 case 1:
+                    fragmentManagerRoom
+                            .beginTransaction()
+                            .replace(R.id.drawing_container, new DrawFragment(roomSocket))
+                            .commit();
+
                     processFragment.setTitle("開始畫");
                     processFragmentSwitcher(processFragment);
 
@@ -153,15 +164,15 @@ public class RoomFragment extends Fragment implements View.OnClickListener {
                         }
                     }, 800);
 
-                    fragmentManagerRoom
-                            .beginTransaction()
-                            .replace(R.id.drawing_container, new DrawFragment(roomSocket))
-                            .commit();
-
                     textViewStatus.setText("趕快畫");
 
                     break;
                 case 2:
+                    fragmentManagerRoom
+                            .beginTransaction()
+                            .replace(R.id.drawing_container, guessFragment = new GuessFragment())
+                            .commit();
+
                     processFragment.setTitle("看圖");
                     processFragmentSwitcher(processFragment);
 
@@ -171,11 +182,6 @@ public class RoomFragment extends Fragment implements View.OnClickListener {
                             processFragmentSwitcher(processFragment);
                         }
                     }, 800);
-
-                    fragmentManagerRoom
-                            .beginTransaction()
-                            .replace(R.id.drawing_container, guessFragment = new GuessFragment())
-                            .commit();
 
                     gp = new GuessPath();
                     guessFragment.setGuessView(new GuessView(getContext()));
@@ -199,13 +205,13 @@ public class RoomFragment extends Fragment implements View.OnClickListener {
                         @Override
                         public void run() {
                             processFragmentSwitcher(processFragment);
+
                         }
                     }, 1500);
 
                     break;
 
                 case 4:
-
                     // 遊戲結束 功能代碼20
                     fragmentManagerRoom
                             .beginTransaction()
@@ -291,15 +297,15 @@ public class RoomFragment extends Fragment implements View.OnClickListener {
                     }, 1500);
 
                     if (player.getUserID() != playerSequenceList.getFirst().getUserID()) {
-                        textViewChat = new TextView(getContext());
-                        textViewChat.setText("請輸入答案: ");
-                        textViewChat.setTextColor(Color.parseColor("#006400"));
-                        linearLayoutChat.addView(textViewChat);
-
                         fragmentManagerRoom
                                 .beginTransaction()
                                 .replace(R.id.drawing_container, answerFragment = new AnswerFragment(RoomFragment.this))
                                 .commit();
+
+                        textViewChat = new TextView(getContext());
+                        textViewChat.setText("請輸入答案: ");
+                        textViewChat.setTextColor(Color.parseColor("#006400"));
+                        linearLayoutChat.addView(textViewChat);
                     } else {
                         fragmentManagerRoom
                                 .beginTransaction()
@@ -310,6 +316,12 @@ public class RoomFragment extends Fragment implements View.OnClickListener {
 
                     break;
                 case 7:
+                    // 空白
+                    fragmentManagerRoom
+                            .beginTransaction()
+                            .replace(R.id.drawing_container, new Fragment())
+                            .commitAllowingStateLoss();
+
                     // username 看題目
                     processFragmentSwitcher(processFragment);
 
@@ -320,16 +332,14 @@ public class RoomFragment extends Fragment implements View.OnClickListener {
                         }
                     }, 1500);
 
-                    // 空白
-                    fragmentManagerRoom
-                            .beginTransaction()
-                            .replace(R.id.drawing_container, new Fragment())
-                            .commit();
-
                     break;
 
                 case 8:
                     // 等人畫
+                    fragmentManagerRoom
+                            .beginTransaction()
+                            .replace(R.id.drawing_container, new Fragment())
+                            .commit();
 
                     processFragmentSwitcher(processFragment);
                     postDelayed(new Runnable() {
@@ -339,10 +349,6 @@ public class RoomFragment extends Fragment implements View.OnClickListener {
                         }
                     }, 1500);
 
-                    fragmentManagerRoom
-                            .beginTransaction()
-                            .replace(R.id.drawing_container, new Fragment())
-                            .commit();
                     break;
 
                 case 9:
@@ -381,7 +387,9 @@ public class RoomFragment extends Fragment implements View.OnClickListener {
         conn_server_tcp = new ReceiveFromServer_TCP(roomSocket, this);
         conn_server_tcp.start(); // 處理進房後的所有接收
 
-        fragmentManagerRoom = getFragmentManager();
+//        fragmentManagerRoom = getFragmentManager();
+        fragmentManagerRoom = getChildFragmentManager();
+
         fragmentManagerRoom.beginTransaction().replace(R.id.drawing_container, new FingerDrawFragment()).commit();
 
 
@@ -592,14 +600,14 @@ public class RoomFragment extends Fragment implements View.OnClickListener {
 
     void processFragmentSwitcher(Fragment fragment) {
         if (processFragment.isVisible()) {
-            fragmentManagerRoom.beginTransaction().remove(fragment).commit();
+            fragmentManagerRoom.beginTransaction().remove(fragment).commitAllowingStateLoss();
         } else {
-            fragmentManagerRoom.beginTransaction().remove(fragment).commit();
+            fragmentManagerRoom.beginTransaction().remove(fragment).commitAllowingStateLoss();
             fragmentManagerRoom
                     .beginTransaction()
                     .setCustomAnimations(R.anim.fade_in, R.anim.fade_in)
                     .replace(R.id.process_container, processFragment)
-                    .commit();
+                    .commitAllowingStateLoss();
         }
     }
 

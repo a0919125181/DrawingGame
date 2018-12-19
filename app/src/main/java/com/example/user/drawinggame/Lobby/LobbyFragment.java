@@ -251,11 +251,6 @@ public class LobbyFragment extends Fragment implements View.OnClickListener {
 
         Log.e("my Lv: " + mLv, "my exp: " + mExp);
 
-        for (int i = 1; i < 11; i++) {
-            int maxExp = (int) (Math.pow((i - 1), (1.33)) + 20);
-            Log.e("Lv: " + i, "max exp: " + (maxExp));
-        }
-
         int maxExp = (int) (Math.pow((mLv - 1), (1.33)) + 20);
         int level = (int) Math.pow((mExp - 20), (3.0 / 5.0)) + 1;
 
@@ -409,7 +404,7 @@ public class LobbyFragment extends Fragment implements View.OnClickListener {
                         } catch (InterruptedException e) {
                             e.printStackTrace();
                         }
-                        enter = false;
+                        enter = true;
                     }
 
                 }).start();
