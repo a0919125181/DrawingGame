@@ -4,10 +4,13 @@ import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.util.Log;
@@ -37,6 +40,7 @@ import com.example.user.drawinggame.utils.UI;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -442,10 +446,12 @@ public class LobbyFragment extends Fragment implements View.OnClickListener {
             case R.id.infoPhoto:
                 Intent pickPhoto = new Intent(Intent.ACTION_PICK); // 自選圖片
                 pickPhoto.setType("image/*"); // 開啟Pictures畫面Type設定為image
-                pickPhoto.putExtra("crop", "true"); // 叫出裁剪頁面.
-                pickPhoto.putExtra("aspectX", 1);
-                pickPhoto.putExtra("aspectY", 1); // x:y=1:1
-                pickPhoto.putExtra("outputFormat", "PNG"); // 返回格式
+                if (android.os.Build.VERSION.SDK_INT >= 24) {
+                    pickPhoto.putExtra("crop", "true"); // 叫出裁剪頁面.
+                    pickPhoto.putExtra("aspectX", 1);
+                    pickPhoto.putExtra("aspectY", 1); // x:y=1:1
+                    pickPhoto.putExtra("outputFormat", "PNG"); // 返回格式
+                }
 //                pickPhoto.setAction(Intent.ACTION_GET_CONTENT);
                 startActivityForResult(pickPhoto, 1);
 
@@ -613,8 +619,21 @@ public class LobbyFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == RESULT_OK) { //當使用者按下確定
-            final Bitmap selectedImage = data.getExtras().getParcelable("data");
-            infoPhoto.setImageBitmap(selectedImage);// 設定到ImageView
+            try {
+                final Bitmap selectedImage = data.getExtras().getParcelable("data");
+                infoPhoto.setImageBitmap(selectedImage);// 設定到ImageView
+            } catch (NullPointerException ep) {
+                try {
+                    final Uri imageUri = data.getData();
+                    final InputStream imageStream = getContext().getContentResolver().openInputStream(imageUri);
+                    final Bitmap selectedImage = BitmapFactory.decodeStream(imageStream);
+                    Log.e("infoPhoto", infoPhoto+"");
+                    infoPhoto.setImageBitmap(selectedImage);// 設定到ImageView
+                } catch (FileNotFoundException e) {
+                    e.getStackTrace();
+                }
+            }
+
 //            try {
 //                Uri imageUri = data.getData();
 //                final InputStream imageStream = getContext().getContentResolver().openInputStream(imageUri);
