@@ -38,14 +38,6 @@ public class MessageFragment extends Fragment implements AdapterView.OnItemClick
 
         messageList = MainActivity.appDatabase.messageDao().getMessagesByType(0);
 
-        Log.e("open", "--------------------");
-        for (Message m : messageList) {
-            Log.e("message sender", String.valueOf(m.getSenderID()));
-            Log.e("message content", m.getMsgContent());
-            Log.e("message time", m.getMsgTime());
-        }
-        Log.e("close", "--------------------");
-
 
         listViewMessage = (ListView) view.findViewById(R.id.listViewMessage);
         MessageAdapter adapter = new MessageAdapter(getContext(), messageList);

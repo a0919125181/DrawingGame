@@ -255,7 +255,7 @@ public class Server_FunctionCode {
 
     }
 
-    //06
+    // 06
     private void playerEnter() {
         ID_array = new byte[3];
         try {
@@ -509,7 +509,7 @@ public class Server_FunctionCode {
         }
     }
 
-    // 11
+    // 11 猜
     private void guess() {
         Log.e("guess", "answer");
         byte[] guess_array = new byte[3];

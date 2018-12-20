@@ -285,6 +285,10 @@ public class RoomFragment extends Fragment implements View.OnClickListener {
                     processFragment.setTitle("猜題");
                     textViewStatus.setText("猜題");
 
+                    for (PlayerFragment pf : playerFragmentList) {
+                        pf.getImageViewPlayer().setBackgroundResource(0);
+                    }
+
                     processFragmentSwitcher(processFragment);
 
                     postDelayed(new Runnable() {

@@ -10,9 +10,11 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.user.drawinggame.MainActivity;
 import com.example.user.drawinggame.R;
 import com.example.user.drawinggame.connections.php.GetPictureThread;
 import com.example.user.drawinggame.connections.php.SearchThread;
+import com.example.user.drawinggame.database_classes.Friend;
 import com.example.user.drawinggame.database_classes.Message;
 import com.example.user.drawinggame.database_classes.Player;
 import com.example.user.drawinggame.utils.UI;
@@ -26,6 +28,8 @@ public class MessageAdapter extends BaseAdapter {
     private Context context;
     private List<Message> messageList;
 
+    private final String sDefaultPath = "data/user/0/com.example.user.drawinggame/app_";
+    private final String sFriendPhotoPath = "friends_photo";
 
     public MessageAdapter(Context context, List<Message> messageList) {
         this.context = context;
@@ -63,6 +67,11 @@ public class MessageAdapter extends BaseAdapter {
 
         if (convertView == null) {
             convertView = mInflater.inflate(R.layout.message_list_item, null);
+
+            convertView.findViewById(R.id.imageViewAccept).setVisibility(View.INVISIBLE);
+            convertView.findViewById(R.id.imageViewDecline).setVisibility(View.INVISIBLE);
+
+
             holder = new ViewHolder();
             holder.imageViewPhoto = (ImageView) convertView.findViewById(R.id.imageViewPhoto);
             holder.textViewName = (TextView) convertView.findViewById(R.id.textViewName);
@@ -73,23 +82,12 @@ public class MessageAdapter extends BaseAdapter {
             holder = (ViewHolder) convertView.getTag();
         }
 
-
         Message message = (Message) getItem(position);
-
-        Player player = new Player(message.getSenderID());
-        SearchThread st = new SearchThread(player);
-        st.start();
 
         holder.textViewName.setText(String.valueOf(message.getSenderName()));
         holder.textViewMessage.setText(message.getMsgContent());
         holder.textViewTime.setText(message.getMsgTime());
-
-
-        while (!st.isDone) {
-            Log.e("waiting", String.valueOf(new Date()));
-        }
-
-        new UI.DownloadImageTask(holder.imageViewPhoto).execute(player.getPicURL());
+        holder.imageViewPhoto.setImageBitmap(UI.getBitmapFromStorage(sDefaultPath + sFriendPhotoPath, String.valueOf(message.getSenderID())));
 
         return convertView;
     }

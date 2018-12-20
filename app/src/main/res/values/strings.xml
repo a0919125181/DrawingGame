@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">DrawingGame</string>
+    <string name="app_name">GaksonDraw</string>
     <string name="default_save_path">data/user/0/com.example.user.drawinggame/app_</string>
 
 </resources>
