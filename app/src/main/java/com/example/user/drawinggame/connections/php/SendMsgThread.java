@@ -12,7 +12,7 @@ public class SendMsgThread extends ConnectThread {
     private Player player;
     private String msg;
     private int receiverID;
-    private int msgType;      // 0傳送訊息 1加好友
+    private int msgType;      // 0傳送訊息 1加好友 2確認好友
 
     private boolean isDone = false;
 

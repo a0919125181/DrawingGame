@@ -1,6 +1,8 @@
 package com.example.user.drawinggame.Lobby.Friend;
 
 
+import android.annotation.SuppressLint;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -27,6 +29,8 @@ import java.util.List;
  */
 public class MyFriendFragment extends Fragment implements AdapterView.OnItemClickListener {
 
+    private Player mPlayer;
+
     private List<Message> messageFriendList;
 
     private ListView listViewMyFriend;
@@ -41,10 +45,13 @@ public class MyFriendFragment extends Fragment implements AdapterView.OnItemClic
     }
 
 
+    @SuppressLint("HardwareIds")
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_my_friend, container, false);
+
+        mPlayer = MainActivity.appDatabase.playerDao().getPlayerBySerialID(Build.SERIAL);
 
         messageFriendList = MainActivity.appDatabase.messageDao().getMessagesByType(2);
 
@@ -94,7 +101,7 @@ public class MyFriendFragment extends Fragment implements AdapterView.OnItemClic
 
 
         listViewMyFriend = view.findViewById(R.id.listViewMyFriend);
-        myFriendAdapter = new MyFriendAdapter(getContext(), myFriendsList);
+        myFriendAdapter = new MyFriendAdapter(getContext(), mPlayer, myFriendsList);
         listViewMyFriend.setAdapter(myFriendAdapter);
         listViewMyFriend.setOnItemClickListener(this);
 

@@ -334,7 +334,7 @@ public class Server_FunctionCode {
     }
 
 
-    // 08
+    // 08 換id畫圖
     private void playerTurn() {
         ID_array = new byte[3];
         try {
@@ -370,6 +370,7 @@ public class Server_FunctionCode {
             }
         }
 
+        final String drawPlayerName = drawPlayer.getUserName();
 
         if (fragment.player.getUserID() == id) {
             Message msg = new Message();
@@ -379,11 +380,6 @@ public class Server_FunctionCode {
             Message msg = new Message();
             msg.what = 2;
             fragment.handler_room.sendMessage(msg);
-        } else {
-            final String drawPlayerName = drawPlayer.getUserName();
-            fragment.processFragment.setTitle(drawPlayerName + "\n正在畫");
-
-            
 
             fragment.getActivity().runOnUiThread(new Runnable() {
                 @Override
@@ -392,11 +388,34 @@ public class Server_FunctionCode {
                 }
             });
 
-
+        } else {
             Message msg = new Message();
             msg.what = 8;
             fragment.handler_room.sendMessage(msg);
+
+            fragment.processFragment.setTitle(drawPlayerName + "\n正在畫");
+
+            fragment.getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    fragment.getTextViewStatus().setText(String.valueOf(drawPlayerName + "\n正在畫"));
+                }
+            });
         }
+
+        fragment.getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                List<PlayerFragment> playerFragmentList = fragment.playerFragmentList;
+                for (PlayerFragment pf : playerFragmentList) {
+                    if (pf.getPlayer().getUserID() == id) {
+                        pf.getImageViewPlayer().setBackgroundResource(R.drawable.bg_pf_blue);
+                    }else {
+                        pf.getImageViewPlayer().setBackgroundResource(0);
+                    }
+                }
+            }
+        });
 
     }
 

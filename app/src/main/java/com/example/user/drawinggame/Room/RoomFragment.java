@@ -186,8 +186,6 @@ public class RoomFragment extends Fragment implements View.OnClickListener {
                     gp = new GuessPath();
                     guessFragment.setGuessView(new GuessView(getContext()));
 
-                    textViewStatus.setText("仔細看");
-
                     break;
                 case 3:
                     processFragment.setTitle("遊戲開始");
@@ -514,8 +512,16 @@ public class RoomFragment extends Fragment implements View.OnClickListener {
                 break;
 
             case R.id.buttonPrompt:
-                String port = "TCP: " + RoomPort_TCP + "\nUDP: " + VoiceCallPort_UDP;
-                Toast.makeText(getContext(), port, Toast.LENGTH_LONG).show();
+//                String port = "TCP: " + RoomPort_TCP + "\nUDP: " + VoiceCallPort_UDP;
+//                Toast.makeText(getContext(), port, Toast.LENGTH_SHORT).show();
+
+                StringBuilder seq = new StringBuilder("順序:");
+                for (Player p : playerSequenceList) {
+                    seq.append("\n").append(p.getUserName());
+                }
+                if (playerSequenceList.size() > 1) {
+                    Toast.makeText(getContext(), seq.toString(), Toast.LENGTH_LONG).show();
+                }
 
                 break;
 

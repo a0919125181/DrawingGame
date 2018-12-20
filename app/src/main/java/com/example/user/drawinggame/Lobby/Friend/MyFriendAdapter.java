@@ -1,17 +1,24 @@
 package com.example.user.drawinggame.Lobby.Friend;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.user.drawinggame.R;
+import com.example.user.drawinggame.connections.php.SendMsgThread;
 import com.example.user.drawinggame.database_classes.Friend;
+import com.example.user.drawinggame.database_classes.Player;
 import com.example.user.drawinggame.utils.UI;
 
 import java.util.List;
@@ -20,13 +27,16 @@ public class MyFriendAdapter extends BaseAdapter {
 
     private Context context;
 
+    private Player player;
+
     private List<Friend[]> myFriendList;
 
     private final String sDefaultPath = "data/user/0/com.example.user.drawinggame/app_";
     private final String sFriendPhotoPath = "friends_photo";
 
-    public MyFriendAdapter(Context context, List<Friend[]> myFriendList) {
+    public MyFriendAdapter(Context context, Player player, List<Friend[]> myFriendList) {
         this.context = context;
+        this.player = player;
         this.myFriendList = myFriendList;
     }
 
@@ -122,21 +132,71 @@ public class MyFriendAdapter extends BaseAdapter {
             switch (view.getId()) {
                 case R.id.imageViewFriend1:
                     Log.i("friend name", friends[0].getUserName());
-
+                    sendFriendMessage(friends[0]);
                     break;
 
                 case R.id.imageViewFriend2:
                     Log.i("friend name", friends[1].getUserName());
-
+                    sendFriendMessage(friends[1]);
                     break;
 
                 case R.id.imageViewFriend3:
                     Log.i("friend name", friends[2].getUserName());
-
+                    sendFriendMessage(friends[2]);
                     break;
 
             }
         }
+    }
+
+    private void sendFriendMessage(final Friend friend) {
+        View viewSendFriendMsg = LayoutInflater.from(context).inflate(R.layout.send_friend_msg, null);
+
+        TextView textViewTitle = viewSendFriendMsg.findViewById(R.id.textViewTitle);
+        textViewTitle.setText("傳給" + friend.getUserName() + ":");
+
+        final EditText editTextMsg = viewSendFriendMsg.findViewById(R.id.editTextMsg);
+
+        Button buttonSend = viewSendFriendMsg.findViewById(R.id.buttonSend);
+        buttonSend.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String say = editTextMsg.getText().toString();
+                SendMsgThread smt = new SendMsgThread(player, say, friend.getUserID(), 0);
+                smt.start();
+
+                editTextMsg.setText("");
+
+                int count = 0;
+
+                while (!smt.isDone()) {
+                    if (count > 100) {
+                        Log.e("send msg", "timeout");
+                        break;
+                    }
+                    count++;
+
+                    try {
+                        Thread.sleep(100);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                if(smt.isSuccess()) {
+                    Toast.makeText(context,"已傳送",Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(context,"傳送失敗",Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+        AlertDialog dialog = new AlertDialog.Builder(context)
+                .setView(viewSendFriendMsg)
+                .create();
+
+        UI.showImmersiveModeDialog(dialog, true);
+        dialog.getWindow().setLayout(UI.width / 2, UI.height / 2);
     }
 
 }
