@@ -188,6 +188,7 @@ public class LobbyFragment extends Fragment implements View.OnClickListener {
         // 中間
         buttonCreateRoom = view.findViewById(R.id.buttonCreateRoom);
         buttonCreateRoom.setOnClickListener(buttonCreateRoomListener());
+        buttonCreateRoom.setEnabled(false);
 
         buttonEnterRoom = view.findViewById(R.id.buttonEnterRoom);
         buttonEnterRoom.setOnClickListener(buttonEnterRoomListener());
