@@ -293,7 +293,7 @@ public class Server_FunctionCode {
                     ConstraintLayout layout = fragment.playerLayoutList.get(i);
                     if (layout.getVisibility() == View.INVISIBLE) {
                         layout.setVisibility(View.VISIBLE);
-                        fragment.fragmentManagerRoom.beginTransaction().replace(layout.getId(), pf).commit();
+                        fragment.fragmentManagerRoom.beginTransaction().replace(layout.getId(), pf).commitAllowingStateLoss();
 
                         break;
                     }
@@ -449,7 +449,7 @@ public class Server_FunctionCode {
                         pfl.remove(pf);
 
                         layout.setVisibility(View.INVISIBLE);
-                        fragment.fragmentManagerRoom.beginTransaction().remove(pf).commit();
+                        fragment.fragmentManagerRoom.beginTransaction().remove(pf).commitAllowingStateLoss();
 
                         break;
                     }

@@ -152,7 +152,7 @@ public class RoomFragment extends Fragment implements View.OnClickListener {
                     fragmentManagerRoom
                             .beginTransaction()
                             .replace(R.id.drawing_container, new DrawFragment(roomSocket))
-                            .commit();
+                            .commitAllowingStateLoss();
 
                     processFragment.setTitle("開始畫");
                     processFragmentSwitcher(processFragment);
@@ -171,7 +171,7 @@ public class RoomFragment extends Fragment implements View.OnClickListener {
                     fragmentManagerRoom
                             .beginTransaction()
                             .replace(R.id.drawing_container, guessFragment = new GuessFragment())
-                            .commit();
+                            .commitAllowingStateLoss();
 
                     processFragment.setTitle("看圖");
                     processFragmentSwitcher(processFragment);
@@ -214,7 +214,7 @@ public class RoomFragment extends Fragment implements View.OnClickListener {
                     fragmentManagerRoom
                             .beginTransaction()
                             .replace(R.id.drawing_container, new FingerDrawFragment())
-                            .commit();
+                            .commitAllowingStateLoss();
 
 
                     processFragment.setTitle("遊戲結束");
@@ -254,7 +254,7 @@ public class RoomFragment extends Fragment implements View.OnClickListener {
                     fragmentManagerRoom
                             .beginTransaction()
                             .replace(R.id.drawing_container, new Fragment())
-                            .commit();
+                            .commitAllowingStateLoss();
 
                     textViewChat = new TextView(getContext());
                     textViewChat.setText("題目: " + getQuestion());
@@ -302,7 +302,7 @@ public class RoomFragment extends Fragment implements View.OnClickListener {
                         fragmentManagerRoom
                                 .beginTransaction()
                                 .replace(R.id.drawing_container, answerFragment = new AnswerFragment(RoomFragment.this))
-                                .commit();
+                                .commitAllowingStateLoss();
 
                         textViewChat = new TextView(getContext());
                         textViewChat.setText("請輸入答案: ");
@@ -312,7 +312,7 @@ public class RoomFragment extends Fragment implements View.OnClickListener {
                         fragmentManagerRoom
                                 .beginTransaction()
                                 .replace(R.id.drawing_container, new Fragment())
-                                .commit();
+                                .commitAllowingStateLoss();
                     }
 
 
@@ -341,7 +341,7 @@ public class RoomFragment extends Fragment implements View.OnClickListener {
                     fragmentManagerRoom
                             .beginTransaction()
                             .replace(R.id.drawing_container, new Fragment())
-                            .commit();
+                            .commitAllowingStateLoss();
 
                     processFragmentSwitcher(processFragment);
                     postDelayed(new Runnable() {
@@ -392,7 +392,7 @@ public class RoomFragment extends Fragment implements View.OnClickListener {
 //        fragmentManagerRoom = getFragmentManager();
         fragmentManagerRoom = getChildFragmentManager();
 
-        fragmentManagerRoom.beginTransaction().replace(R.id.drawing_container, new FingerDrawFragment()).commit();
+        fragmentManagerRoom.beginTransaction().replace(R.id.drawing_container, new FingerDrawFragment()).commitAllowingStateLoss();
 
 
         // chatting area
