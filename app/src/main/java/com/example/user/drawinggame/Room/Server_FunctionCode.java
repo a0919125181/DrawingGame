@@ -410,7 +410,7 @@ public class Server_FunctionCode {
                 for (PlayerFragment pf : playerFragmentList) {
                     if (pf.getPlayer().getUserID() == id) {
                         pf.getImageViewPlayer().setBackgroundResource(R.drawable.bg_pf_blue);
-                    }else {
+                    } else {
                         pf.getImageViewPlayer().setBackgroundResource(0);
                     }
                 }
@@ -543,6 +543,25 @@ public class Server_FunctionCode {
 
     }
 
+    // 14
+    private void countDown() {
+        byte[] second_array = new byte[2];
+        try {
+            receiveFromServer.read(second_array, 0, 2);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        final int second = Integer.parseInt(new String(second_array));
+
+        fragment.getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                fragment.getTextViewCountDown().setText(second + "s");
+            }
+        });
+    }
+
     // 15
     private void ansCorrect() {
         Log.e("function", "15");
@@ -667,6 +686,9 @@ public class Server_FunctionCode {
                 break;
             case "13":
                 clearGuessView();
+                break;
+            case "14":
+                countDown();
                 break;
             case "15":
                 ansCorrect();

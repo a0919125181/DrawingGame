@@ -84,10 +84,15 @@ public class RoomFragment extends Fragment implements View.OnClickListener {
     private EditText editTextChat;
 
     // game controllers
+    private TextView textViewCountDown;
     private TextView textViewStatus;
     private Button buttonPrompt;
     private Button buttonReady;
     private Button buttonLeave;
+
+    public TextView getTextViewCountDown() {
+        return textViewCountDown;
+    }
 
     public TextView getTextViewStatus() {
         return textViewStatus;
@@ -228,6 +233,7 @@ public class RoomFragment extends Fragment implements View.OnClickListener {
 
                     UI.hideSystemUI(getActivity());
 
+                    textViewCountDown.setText("");
 
                     buttonReady.setText("準備");
                     buttonReady.setEnabled(true);
@@ -405,6 +411,8 @@ public class RoomFragment extends Fragment implements View.OnClickListener {
 
 
         // 右下
+        textViewCountDown = (TextView) view.findViewById(R.id.textViewCountDown);
+
         textViewStatus = (TextView) view.findViewById(R.id.textViewStatus);
 
         buttonPrompt = (Button) view.findViewById(R.id.buttonPrompt);

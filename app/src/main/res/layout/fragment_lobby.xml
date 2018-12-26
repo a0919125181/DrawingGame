@@ -1,22 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Lobby.LobbyFragment"
-    android:background="@mipmap/bg2">
+    android:background="@mipmap/bg2"
+    tools:context=".Lobby.LobbyFragment">
 
     <RelativeLayout
         android:id="@+id/relativeLayoutLeft"
-        android:layout_margin="8dp"
         android:layout_width="40dp"
         android:layout_height="match_parent"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true"
+        android:layout_margin="8dp"
         android:layout_marginTop="0dp"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
         <RelativeLayout
             android:id="@+id/message"
@@ -37,8 +37,8 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@id/imageViewMessage"
                 android:gravity="center"
-                android:textSize="10sp"
-                android:text="訊息" />
+                android:text="訊息"
+                android:textSize="10sp" />
 
         </RelativeLayout>
 
@@ -64,8 +64,8 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@id/imageViewFriend"
                 android:gravity="center"
-                android:textSize="10sp"
-                android:text="好友" />
+                android:text="好友"
+                android:textSize="10sp" />
 
         </RelativeLayout>
 
@@ -88,8 +88,8 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@id/imageViewBag"
                 android:gravity="center"
-                android:textSize="10sp"
-                android:text="背包" />
+                android:text="背包"
+                android:textSize="10sp" />
 
         </RelativeLayout>
 
@@ -112,8 +112,8 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@id/imageViewInfo"
                 android:gravity="center"
-                android:textSize="10sp"
-                android:text="資訊" />
+                android:text="資訊"
+                android:textSize="10sp" />
 
         </RelativeLayout>
 
@@ -137,11 +137,10 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@id/imageViewSetting"
                 android:gravity="center"
-                android:textSize="10sp"
-                android:text="設定" />
+                android:text="設定"
+                android:textSize="10sp" />
 
         </RelativeLayout>
-
 
 
     </RelativeLayout>
@@ -149,8 +148,9 @@
     <RelativeLayout
         android:id="@+id/relativeLayoutTop"
         android:layout_width="match_parent"
+        android:layout_height="70dp"
         android:layout_margin="8dp"
-        android:layout_height="70dp">
+        app:layout_constraintTop_toTopOf="parent">
 
         <TextView
             android:id="@+id/textViewTopMid"
@@ -164,8 +164,10 @@
             android:layout_width="70dp"
             android:layout_height="70dp"
             android:layout_alignParentTop="true"
-            android:layout_marginStart="70dp"
-            android:layout_marginLeft="70dp"
+            android:layout_marginStart="60dp"
+            android:layout_marginLeft="60dp"
+            android:layout_marginEnd="4dp"
+            android:layout_marginRight="4dp"
             android:layout_toEndOf="@+id/textViewTopMid"
             android:layout_toRightOf="@+id/textViewTopMid"
             android:src="@mipmap/avatar"
@@ -173,6 +175,7 @@
 
         <TextView
             android:id="@+id/textViewName"
+            android:maxLines="1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
@@ -234,39 +237,44 @@
         android:id="@+id/buttonCreateRoom"
         android:layout_width="80dp"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/relativeLayoutTop"
-        android:layout_marginStart="60dp"
-        android:layout_marginLeft="60dp"
-        android:layout_marginTop="30dp"
-        android:layout_toEndOf="@+id/relativeLayoutLeft"
-        android:layout_toRightOf="@+id/relativeLayoutLeft"
+        android:layout_marginEnd="350dp"
+        android:layout_marginRight="350dp"
+        android:layout_marginBottom="100dp"
+        android:background="@drawable/buttonshape"
+        android:text="新增房間"
         android:visibility="invisible"
-        android:text="新增房間" />
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <Button
         android:id="@+id/buttonEnterRoom"
         android:layout_width="80dp"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/relativeLayoutTop"
-        android:layout_marginStart="10dp"
-        android:layout_marginLeft="10dp"
-        android:layout_marginTop="30dp"
-        android:layout_toEndOf="@+id/buttonCreateRoom"
-        android:layout_toRightOf="@+id/buttonCreateRoom"
+        android:layout_marginEnd="150dp"
+        android:layout_marginRight="150dp"
+        android:layout_marginBottom="100dp"
         android:background="@drawable/buttonshape"
-        android:text="進入房間" />
+        android:text="進入房間"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <FrameLayout
         android:id="@+id/frameLayoutSlide"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@+id/relativeLayoutTop"
-        android:layout_margin="8dp"
+        android:layout_marginLeft="60dp"
+        android:layout_marginTop="100dp"
+        android:layout_marginRight="4dp"
+        android:layout_marginBottom="4dp"
         android:layout_toEndOf="@+id/relativeLayoutLeft"
         android:layout_toRightOf="@+id/relativeLayoutLeft">
 
     </FrameLayout>
 
 
-</RelativeLayout>
+</android.support.constraint.ConstraintLayout>
 

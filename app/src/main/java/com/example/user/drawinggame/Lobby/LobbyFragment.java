@@ -520,9 +520,14 @@ public class LobbyFragment extends Fragment implements View.OnClickListener {
                 break;
 
             case R.id.imageViewBag:
-                setLeftImageViewListBackground(imageViewBag);
-                imageViewBag.setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_pf_green));
-                showFragment(fragmentBag);
+                if (player.getLevel() > 99) {
+                    setLeftImageViewListBackground(imageViewBag);
+                    imageViewBag.setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_pf_green));
+                    showFragment(fragmentBag);
+                } else {
+                    Toast.makeText(getContext(), "等級不夠，進行遊戲獲取經驗值，等級提升至100時，即可解鎖背包功能。", Toast.LENGTH_SHORT).show();
+                }
+
                 break;
 
             case R.id.imageViewInfo:

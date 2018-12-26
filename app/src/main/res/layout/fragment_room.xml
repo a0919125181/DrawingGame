@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -8,14 +8,9 @@
 
 
     <RelativeLayout
+        android:id="@+id/relativeLayoutPlayer"
         android:layout_width="50dp"
-        android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true"
-        android:layout_marginStart="4dp"
-        android:layout_marginLeft="4dp"
-        android:layout_marginTop="8dp">
+        android:layout_height="wrap_content">
 
         <LinearLayout
             android:id="@+id/linearLayoutPlayers"
@@ -59,80 +54,85 @@
 
     <RelativeLayout
         android:id="@+id/drawing_container"
-        android:layout_width="450dp"
-        android:layout_height="320dp"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentBottom="true"
-        android:layout_marginBottom="60dp">
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginStart="260dp"
+        android:layout_marginLeft="260dp"
+        android:layout_marginBottom="60dp"
+        app:layout_constraintStart_toEndOf="@id/relativeLayoutChat">
 
     </RelativeLayout>
 
 
-    <LinearLayout
-        android:layout_width="350dp"
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentBottom="true">
-
-        <TextView
-            android:id="@+id/countDown"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="100"
-            android:textAlignment="center" />
+        android:layout_marginStart="260dp"
+        android:layout_marginLeft="260dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginRight="20dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
 
         <TextView
             android:id="@+id/textViewStatus"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
+            android:layout_height="match_parent"
+            android:layout_margin="4dp"
             android:gravity="center"
             android:text="所有人\n準備後開始"
-            android:textAlignment="center" />
+            android:textAlignment="center"
+            app:layout_constraintEnd_toStartOf="@id/textViewCountDown"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/textViewCountDown"
+            android:layout_width="45dp"
+            android:layout_height="45dp"
+            android:background="@mipmap/stopwatch"
+            android:gravity="center"
+            android:text=""
+            app:layout_constraintEnd_toStartOf="@id/buttonPrompt" />
+
 
         <Button
             android:id="@+id/buttonPrompt"
-            android:layout_width="wrap_content"
+            android:layout_width="70dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
+            android:layout_margin="4dp"
             android:background="@drawable/buttonshape"
-            android:enabled="true"
-            android:text="提示" />
+            android:text="提示"
+            app:layout_constraintEnd_toStartOf="@id/buttonReady" />
 
         <Button
             android:id="@+id/buttonReady"
-            android:layout_width="wrap_content"
+            android:layout_width="70dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
+            android:layout_margin="4dp"
             android:background="@drawable/buttonshape"
-            android:text="準備" />
+            android:text="準備"
+            app:layout_constraintEnd_toStartOf="@id/buttonLeave" />
 
         <Button
             android:id="@+id/buttonLeave"
-            android:layout_width="wrap_content"
+            android:layout_width="70dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
+            android:layout_margin="4dp"
             android:background="@drawable/buttonshape"
-            android:text="離開" />
+            android:text="離開"
+            app:layout_constraintEnd_toEndOf="parent" />
 
-    </LinearLayout>
+    </android.support.constraint.ConstraintLayout>
 
     <RelativeLayout
-        android:layout_width="match_parent"
+        android:id="@+id/relativeLayoutChat"
+        android:layout_width="180dp"
         android:layout_height="match_parent"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentRight="true"
-        android:layout_marginStart="65dp"
-        android:layout_marginLeft="65dp"
-        android:layout_marginTop="20dp"
-        android:layout_marginEnd="460dp"
-        android:layout_marginRight="460dp"
+        android:layout_marginStart="4dp"
+        android:layout_marginLeft="4dp"
         android:layout_marginBottom="60dp"
-        android:background="#666666">
+        android:background="#000000"
+        app:layout_constraintStart_toEndOf="@id/relativeLayoutPlayer">
 
         <ScrollView
             android:id="@+id/scrollViewChat"
@@ -154,23 +154,14 @@
 
     </RelativeLayout>
 
-    <FrameLayout
-        android:id="@+id/process_container"
-        android:layout_width="300dp"
-        android:layout_height="200dp"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true">
-
-    </FrameLayout>
 
     <RelativeLayout
         android:id="@+id/chatRoomLayout"
         android:layout_width="250dp"
         android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentBottom="true"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
 
         <EditText
             android:id="@+id/editTextChat"
@@ -210,4 +201,16 @@
     </RelativeLayout>
 
 
-</RelativeLayout>
+    <FrameLayout
+        android:id="@+id/process_container"
+        android:layout_width="300dp"
+        android:layout_height="200dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+    </FrameLayout>
+
+
+</android.support.constraint.ConstraintLayout>
