@@ -4,6 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_margin="8dp"
+    android:background="#000000"
+    android:padding="5dp"
     tools:context=".Lobby.InfoFragment">
 
     <TextView
@@ -11,12 +13,14 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="遊戲規則"
+        android:background="#ffffff"
         android:textSize="36sp"/>
 
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:scrollbars="vertical"
+        android:background="#ffffff"
         android:layout_below="@+id/textViewTitle">
 
 

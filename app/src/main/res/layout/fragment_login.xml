@@ -12,18 +12,25 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="註冊"
+        android:textColor="#c0c0c0"
+        android:background="@drawable/loginbuttonshape"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.684" />
+        app:layout_constraintVertical_bias="0.85" />
 
     <Button
         android:id="@+id/buttonLogin"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="登入"
-        app:layout_constraintStart_toStartOf="@id/buttonRegister"
-        app:layout_constraintTop_toBottomOf="@+id/buttonRegister" />
+        android:textColor="#c0c0c0"
+        android:background="@drawable/loginbuttonshape"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.85" />
 
 </android.support.constraint.ConstraintLayout>

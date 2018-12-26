@@ -232,26 +232,28 @@
 
     <Button
         android:id="@+id/buttonCreateRoom"
-        android:layout_width="85dp"
+        android:layout_width="80dp"
         android:layout_height="wrap_content"
         android:layout_below="@+id/relativeLayoutTop"
-        android:layout_marginStart="85dp"
-        android:layout_marginLeft="85dp"
-        android:layout_marginTop="20dp"
+        android:layout_marginStart="60dp"
+        android:layout_marginLeft="60dp"
+        android:layout_marginTop="30dp"
         android:layout_toEndOf="@+id/relativeLayoutLeft"
         android:layout_toRightOf="@+id/relativeLayoutLeft"
+        android:visibility="invisible"
         android:text="新增房間" />
 
     <Button
         android:id="@+id/buttonEnterRoom"
-        android:layout_width="85dp"
+        android:layout_width="80dp"
         android:layout_height="wrap_content"
         android:layout_below="@+id/relativeLayoutTop"
-        android:layout_marginStart="35dp"
-        android:layout_marginLeft="35dp"
-        android:layout_marginTop="20dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="30dp"
         android:layout_toEndOf="@+id/buttonCreateRoom"
         android:layout_toRightOf="@+id/buttonCreateRoom"
+        android:background="@drawable/buttonshape"
         android:text="進入房間" />
 
     <FrameLayout

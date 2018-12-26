@@ -552,7 +552,7 @@ public class LobbyFragment extends Fragment implements View.OnClickListener {
         // https://www.codexpedia.com/android/android-slide-animations/
         // https://stackoverflow.com/questions/8876126/swap-fragment-in-an-activity-via-animation
         if (fragmentClicked.isVisible()) {
-            buttonCreateRoom.setVisibility(View.VISIBLE);
+//            buttonCreateRoom.setVisibility(View.VISIBLE);
             buttonEnterRoom.setVisibility(View.VISIBLE);
             fragmentManagerLobby.beginTransaction().remove(fragmentClicked).commit();
             for (ImageView iv : leftImageViewList) {
